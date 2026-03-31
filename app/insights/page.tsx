@@ -1,0 +1,485 @@
+"use client";
+import PageSkeleton from "@/components/PageSkeleton";
+
+// app/insights/page.tsx
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
+import { supabase } from "@/lib/supabase";
+import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
+
+const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
+  menstrual:  { bg: "#FEF2F2", text: "#B91C1C", dot: "#F87171" },
+  follicular: { bg: "#F0FDF4", text: "#166534", dot: "#34D399" },
+  ovulation:  { bg: "#FFFBEB", text: "#92400E", dot: "#FBBF24" },
+  luteal:     { bg: "#F5F3FF", text: "#5B21B6", dot: "#A78BFA" },
+};
+const PHASE_EMOJIS: Record<string, string> = {
+  menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
+};
+const PHASES = ["menstrual", "follicular", "ovulation", "luteal"];
+
+type InsightTab = "overview" | "training" | "meals" | "mood";
+
+export default function InsightsPage() {
+  const { user, loading } = useApp();
+  const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<InsightTab>("overview");
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [meals,    setMeals]    = useState<MealLog[]>([]);
+  const [moods,    setMoods]    = useState<MoodLog[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
+
+  useEffect(() => {
+    if (!user) return;
+    setDataLoading(true);
+    Promise.all([
+      supabase.from("workouts").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(100),
+      supabase.from("meal_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(60),
+      supabase.from("mood_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(90),
+    ]).then(([w, m, mo]) => {
+      setWorkouts(w.data ?? []);
+      setMeals(m.data ?? []);
+      setMoods(mo.data ?? []);
+      setDataLoading(false);
+    });
+  }, [user]);
+
+  // ── Mood insights ──
+  const moodByPhase = PHASES.map(phase => {
+    const pm = moods.filter(m => m.phase === phase);
+    if (!pm.length) return { phase, avgMood: null, avgEnergy: null, count: 0 };
+    return {
+      phase,
+      avgMood:   pm.reduce((a, m) => a + (m.mood as unknown as number), 0) / pm.length,
+      avgEnergy: pm.reduce((a, m) => a + (m.energy as unknown as number), 0) / pm.length,
+      count: pm.length,
+    };
+  });
+  const phasesWithMood = moodByPhase.filter(p => p.avgMood !== null);
+  const bestPhase  = phasesWithMood.length ? phasesWithMood.reduce((a, b) => a.avgMood! > b.avgMood! ? a : b) : null;
+  const worstPhase = phasesWithMood.length ? phasesWithMood.reduce((a, b) => a.avgMood! < b.avgMood! ? a : b) : null;
+
+  // ── Symptom patterns ──
+  const symptomsByPhase = PHASES.map(phase => {
+    const pm = moods.filter(m => m.phase === phase);
+    const freq: Record<string, number> = {};
+    pm.forEach(m => {
+      const syms = m.symptoms as unknown as string[];
+      if (syms) syms.forEach(s => { freq[s] = (freq[s] || 0) + 1; });
+    });
+    return {
+      phase,
+      total: pm.length,
+      symptoms: Object.entries(freq)
+        .sort((a, b) => b[1] - a[1]).slice(0, 5)
+        .map(([symptom, count]) => ({ symptom, pct: Math.round((count / pm.length) * 100) })),
+    };
+  });
+
+  // ── Training insights ──
+  const trainingByPhase = PHASES.map(phase => {
+    const pw = workouts.filter(w => w.phase === phase);
+    const vol = pw.reduce((acc, w) => {
+      const exs = w.exercises as unknown as { sets: { reps: string; weight: string }[] }[];
+      return acc + exs.reduce((a, e) => a + e.sets.reduce((s, r) => s + (parseFloat(r.reps)||0) * (parseFloat(r.weight)||0), 0), 0);
+    }, 0);
+    return { phase, count: pw.length, avgVolume: pw.length ? Math.round(vol / pw.length) : 0, totalVolume: Math.round(vol) };
+  });
+  const bestTrainingPhase = trainingByPhase.filter(p => p.count > 0).sort((a, b) => b.avgVolume - a.avgVolume)[0] ?? null;
+  const maxVol = Math.max(...trainingByPhase.map(p => p.avgVolume), 1);
+
+  // ── Meals insights ──
+  const mealsByPhase = PHASES.map(phase => {
+    const pm = meals.filter(m => m.phase === phase);
+    let totalCal = 0, totalProt = 0, count = 0;
+    pm.forEach(m => {
+      const entries = m.meals as unknown as { calories: string; protein: string }[];
+      const cal  = entries.reduce((a, e) => a + (parseFloat(e.calories) || 0), 0);
+      const prot = entries.reduce((a, e) => a + (parseFloat(e.protein)  || 0), 0);
+      if (cal > 0) { totalCal += cal; totalProt += prot; count++; }
+    });
+    return { phase, count: pm.length, avgCal: count ? Math.round(totalCal / count) : 0, avgProtein: count ? Math.round(totalProt / count) : 0 };
+  });
+  const maxCal = Math.max(...mealsByPhase.map(p => p.avgCal), 1);
+
+  const hasEnoughData = moods.length >= 1 || workouts.length >= 1 || meals.length >= 1;
+
+  if (loading || !user) return (
+    <PageSkeleton />
+  );
+
+  return (
+    <div className="min-h-dvh bg-background">
+      <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.18) 0%, transparent 70%)" }} />
+
+      <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-12">
+
+        {/* Header */}
+        <header className="mb-5">
+          <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Insights</p>
+          <h1 className="font-display text-2xl font-semibold text-dark">Cycle Insights</h1>
+        </header>
+
+        {/* Tab bar */}
+        <div className="flex rounded-2xl bg-white p-1 shadow-card mb-4 gap-1">
+          {([
+            { id: "overview", label: "Overview", emoji: "🌸" },
+            { id: "training", label: "Training", emoji: "🏋️‍♀️" },
+            { id: "meals",    label: "Meals",    emoji: "🥗" },
+            { id: "mood",     label: "Mood",     emoji: "💭" },
+          ] as { id: InsightTab; label: string; emoji: string }[]).map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)}
+              className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
+              style={{
+                background: activeTab === t.id ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
+                color: activeTab === t.id ? "white" : "#9CA3AF",
+              }}>
+              <span style={{ fontSize: 12 }}>{t.emoji}</span>{t.label}
+            </button>
+          ))}
+        </div>
+
+        {dataLoading ? (
+          <div className="text-center py-16"><p className="text-dark/40 text-sm">Loading insights…</p></div>
+        ) : !hasEnoughData ? (
+          <div className="text-center py-12">
+            <div className="text-5xl mb-4">📊</div>
+            <p className="text-dark font-semibold text-base mb-2">Building your insights</p>
+            <p className="text-dark/40 text-sm font-body mb-6 max-w-xs mx-auto">Log your mood, training, and meals for a few days and personalised insights will appear here automatically.</p>
+            {/* Progress towards first insights */}
+            <div className="bg-white rounded-2xl p-4 shadow-card text-left mb-4 max-w-xs mx-auto">
+              <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Progress to first insights</p>
+              {[
+                { label: "Mood logs", current: moods.length, target: 3, color: "#A78BFA", href: "/mood" },
+                { label: "Workouts", current: workouts.length, target: 3, color: "#C48A97", href: "/training" },
+                { label: "Meal logs", current: meals.length, target: 3, color: "#34D399", href: "/meals" },
+              ].map(item => (
+                <div key={item.label} className="mb-3 last:mb-0">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-xs font-semibold text-dark">{item.label}</span>
+                    <span className="text-xs text-dark/40">{Math.min(item.current, item.target)}/{item.target}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min((item.current / item.target) * 100, 100)}%`, background: item.color }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => router.push("/mood")}
+              className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
+              style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+              Start with mood check-in →
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* ── OVERVIEW ── */}
+            {activeTab === "overview" && (
+              <div className="space-y-4">
+                {/* Best / needs support */}
+                {phasesWithMood.length > 1 && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {bestPhase && (
+                      <div className="bg-white rounded-2xl p-4 shadow-card" style={{ borderLeft: `3px solid ${PHASE_COLORS[bestPhase.phase].dot}` }}>
+                        <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">Best phase</p>
+                        <span style={{ fontSize: 22 }}>{PHASE_EMOJIS[bestPhase.phase]}</span>
+                        <p className="text-sm font-bold text-dark capitalize mt-1">{bestPhase.phase}</p>
+                        <p className="text-xs text-dark/40 font-body">avg mood {bestPhase.avgMood!.toFixed(1)}/5</p>
+                      </div>
+                    )}
+                    {worstPhase && worstPhase.phase !== bestPhase?.phase && (
+                      <div className="bg-white rounded-2xl p-4 shadow-card" style={{ borderLeft: `3px solid ${PHASE_COLORS[worstPhase.phase].dot}` }}>
+                        <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">Needs support</p>
+                        <span style={{ fontSize: 22 }}>{PHASE_EMOJIS[worstPhase.phase]}</span>
+                        <p className="text-sm font-bold text-dark capitalize mt-1">{worstPhase.phase}</p>
+                        <p className="text-xs text-dark/40 font-body">avg mood {worstPhase.avgMood!.toFixed(1)}/5</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Summary stats */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: "Workouts", value: workouts.length, color: "#C48A97" },
+                    { label: "Mood logs", value: moods.length, color: "#A78BFA" },
+                    { label: "Meal logs", value: meals.length, color: "#34D399" },
+                  ].map(s => (
+                    <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+                      <p className="font-display font-bold text-lg" style={{ color: s.color }}>{s.value}</p>
+                      <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-0.5">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mood per phase */}
+                {phasesWithMood.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-card p-4">
+                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Mood by phase</p>
+                    <div className="space-y-3">
+                      {moodByPhase.map(p => (
+                        <div key={p.phase}>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <span style={{ fontSize: 14 }}>{PHASE_EMOJIS[p.phase]}</span>
+                              <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
+                            </div>
+                            <span className="text-xs text-dark/30">{p.count > 0 ? `${p.count} logs` : "no data"}</span>
+                          </div>
+                          {p.count > 0 ? (
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                <div className="h-full rounded-full transition-all" style={{ width: `${(p.avgMood! / 5) * 100}%`, background: PHASE_COLORS[p.phase].dot }} />
+                              </div>
+                              <span className="text-xs font-semibold text-dark/50 w-6 text-right">{p.avgMood!.toFixed(1)}</span>
+                            </div>
+                          ) : (
+                            <div className="h-2 bg-gray-50 rounded-full" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Training overview */}
+                {workouts.length > 0 && bestTrainingPhase && (
+                  <div className="bg-white rounded-2xl shadow-card p-4">
+                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">Strongest training phase</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                        style={{ background: PHASE_COLORS[bestTrainingPhase.phase].bg }}>
+                        {PHASE_EMOJIS[bestTrainingPhase.phase]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-dark capitalize">{bestTrainingPhase.phase}</p>
+                        <p className="text-xs text-dark/40 font-body">avg {bestTrainingPhase.avgVolume.toLocaleString()} kg volume · {bestTrainingPhase.count} sessions</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── TRAINING ── */}
+            {activeTab === "training" && (
+              <div className="space-y-4">
+                {workouts.length === 0 ? (
+                  <EmptyInsight emoji="🏋️‍♀️" text="No workouts logged yet" sub="Log training sessions to see phase patterns" cta="Go to Training" href="/training" router={router} />
+                ) : (
+                  <>
+                    <div className="bg-white rounded-2xl shadow-card p-4">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Workouts & avg volume by phase</p>
+                      <div className="space-y-3">
+                        {trainingByPhase.map(p => (
+                          <div key={p.phase}>
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span style={{ fontSize: 14 }}>{PHASE_EMOJIS[p.phase]}</span>
+                                <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
+                              </div>
+                              <span className="text-xs text-dark/30">
+                                {p.count > 0 ? `${p.count} sessions · ${p.avgVolume.toLocaleString()} kg avg` : "no data"}
+                              </span>
+                            </div>
+                            {p.count > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                  <div className="h-full rounded-full transition-all" style={{ width: `${(p.avgVolume / maxVol) * 100}%`, background: PHASE_COLORS[p.phase].dot }} />
+                                </div>
+                                <span className="text-xs font-semibold text-dark/50 w-16 text-right">{p.avgVolume.toLocaleString()} kg</span>
+                              </div>
+                            ) : (
+                              <div className="h-2 bg-gray-50 rounded-full" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { label: "Total sessions", value: workouts.length, color: "#C48A97" },
+                        { label: "Total volume", value: `${Math.round(trainingByPhase.reduce((a, p) => a + p.totalVolume, 0) / 1000 * 10) / 10}t`, color: "#7B6D8D" },
+                      ].map(s => (
+                        <div key={s.label} className="bg-white rounded-2xl p-4 text-center shadow-card">
+                          <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
+                          <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-1">{s.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ── MEALS ── */}
+            {activeTab === "meals" && (
+              <div className="space-y-4">
+                {meals.length === 0 ? (
+                  <EmptyInsight emoji="🥗" text="No meals logged yet" sub="Log meals to see nutrition patterns by phase" cta="Go to Meals" href="/meals" router={router} />
+                ) : (
+                  <>
+                    <div className="bg-white rounded-2xl shadow-card p-4">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Avg daily calories by phase</p>
+                      <div className="space-y-3">
+                        {mealsByPhase.map(p => (
+                          <div key={p.phase}>
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span style={{ fontSize: 14 }}>{PHASE_EMOJIS[p.phase]}</span>
+                                <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
+                              </div>
+                              <span className="text-xs text-dark/30">
+                                {p.count > 0 ? `${p.avgCal} kcal · ${p.avgProtein}g P` : "no data"}
+                              </span>
+                            </div>
+                            {p.count > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                  <div className="h-full rounded-full transition-all" style={{ width: `${(p.avgCal / maxCal) * 100}%`, background: PHASE_COLORS[p.phase].dot }} />
+                                </div>
+                                <span className="text-xs font-semibold text-dark/50 w-16 text-right">{p.avgCal} kcal</span>
+                              </div>
+                            ) : (
+                              <div className="h-2 bg-gray-50 rounded-full" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { label: "Days logged", value: meals.length, color: "#34D399" },
+                        { label: "Avg protein", value: `${Math.round(mealsByPhase.filter(p => p.count > 0).reduce((a, p) => a + p.avgProtein, 0) / Math.max(mealsByPhase.filter(p => p.count > 0).length, 1))}g`, color: "#7B6D8D" },
+                      ].map(s => (
+                        <div key={s.label} className="bg-white rounded-2xl p-4 text-center shadow-card">
+                          <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
+                          <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-1">{s.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ── MOOD ── */}
+            {activeTab === "mood" && (
+              <div className="space-y-4">
+                {moods.length === 0 ? (
+                  <EmptyInsight emoji="💭" text="No mood logs yet" sub="Log your mood daily to see patterns" cta="Go to Mood" href="/mood" router={router} />
+                ) : (
+                  <>
+                    {/* Mood + energy averages */}
+                    <div className="bg-white rounded-2xl shadow-card p-4">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Mood & energy by phase</p>
+                      <div className="space-y-4">
+                        {moodByPhase.map(p => {
+                          const color = PHASE_COLORS[p.phase].dot;
+                          return (
+                            <div key={p.phase}>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span style={{ fontSize: 14 }}>{PHASE_EMOJIS[p.phase]}</span>
+                                  <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
+                                </div>
+                                <span className="text-xs text-dark/30">{p.count > 0 ? `${p.count} logs` : "no data"}</span>
+                              </div>
+                              {p.count > 0 ? (
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-dark/40 w-10 flex-shrink-0">Mood</span>
+                                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                      <div className="h-full rounded-full" style={{ width: `${(p.avgMood! / 5) * 100}%`, background: color }} />
+                                    </div>
+                                    <span className="text-xs font-semibold text-dark/50 w-6 text-right">{p.avgMood!.toFixed(1)}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs text-dark/40 w-10 flex-shrink-0">Energy</span>
+                                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                      <div className="h-full rounded-full" style={{ width: `${(p.avgEnergy! / 5) * 100}%`, background: color, opacity: 0.5 }} />
+                                    </div>
+                                    <span className="text-xs font-semibold text-dark/50 w-6 text-right">{p.avgEnergy!.toFixed(1)}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="h-4 bg-gray-50 rounded-full" />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Symptom patterns */}
+                    <p className="text-xs font-semibold text-secondary uppercase tracking-wide px-1">Symptom patterns</p>
+                    {symptomsByPhase.filter(p => p.symptoms.length > 0).map(p => (
+                      <div key={p.phase} className="bg-white rounded-2xl shadow-card p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span style={{ fontSize: 18 }}>{PHASE_EMOJIS[p.phase]}</span>
+                          <p className="text-sm font-bold text-dark capitalize">{p.phase}</p>
+                          <span className="text-xs text-dark/30 ml-auto">{p.total} entries</span>
+                        </div>
+                        <div className="space-y-2">
+                          {p.symptoms.map(({ symptom, pct }) => (
+                            <div key={symptom} className="flex items-center gap-2">
+                              <span className="text-xs text-dark/70 font-body flex-1 truncate">{symptom}</span>
+                              <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: PHASE_COLORS[p.phase].dot }} />
+                              </div>
+                              <span className="text-xs font-semibold text-dark/40 w-8 text-right flex-shrink-0">{pct}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {symptomsByPhase.every(p => p.symptoms.length === 0) && (
+                      <div className="bg-white rounded-2xl shadow-card p-6 text-center">
+                        <p className="text-dark/40 text-sm">No symptom data yet</p>
+                        <p className="text-dark/30 text-xs font-body mt-1">Log symptoms in the Mood tab to see patterns here</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* See all logs link */}
+        {hasEnoughData && (
+          <button onClick={() => router.push("/history")}
+            className="w-full py-3 rounded-2xl text-sm font-semibold text-dark/40 flex items-center justify-center gap-2 mb-4 active:scale-95 transition-all"
+            style={{ background: "rgba(0,0,0,0.03)" }}>
+            📋 See all logs
+            <span className="text-dark/25">→</span>
+          </button>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function EmptyInsight({ emoji, text, sub, cta, href, router }: {
+  emoji: string; text: string; sub: string; cta: string; href: string;
+  router: ReturnType<typeof import("next/navigation").useRouter>;
+}) {
+  return (
+    <div className="text-center py-12">
+      <div className="text-4xl mb-3">{emoji}</div>
+      <p className="text-dark font-semibold text-sm mb-1">{text}</p>
+      <p className="text-dark/40 text-xs font-body mb-4">{sub}</p>
+      <button onClick={() => router.push(href)}
+        className="text-xs font-semibold px-4 py-2 rounded-xl text-white"
+        style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+        {cta} →
+      </button>
+    </div>
+  );
+}

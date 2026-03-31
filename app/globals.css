@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #F7F5F2;
+  --color-primary: #C48A97;
+  --color-accent: #EDD5DB;
+  --color-secondary: #7B6D8D;
+  --color-text: #2E2E2E;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100dvh;
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), serif;
+  }
+
+  .font-body {
+    font-family: var(--font-body), sans-serif;
+  }
+}
+
+/* Slider custom styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #EDD5DB;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #C48A97;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(196, 138, 151, 0.4);
+  border: 3px solid #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(196, 138, 151, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #C48A97;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(196, 138, 151, 0.4);
+  border: 3px solid #fff;
+}
+
+/* Fade-in animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s ease forwards;
+}
+
+/* Pulse ring animation for readiness */
+@keyframes pulseRing {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 2.5s ease-in-out infinite;
+}
+
+/* Subtle shimmer for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Phase color tokens ─────────────────────────────────────── */
+:root {
+  --phase-menstrual:  #F87171;
+  --phase-follicular: #34D399;
+  --phase-ovulation:  #FBBF24;
+  --phase-luteal:     #A78BFA;
+}
+
+/* ── Button hierarchy ───────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #C48A97, #7B6D8D);
+  color: white;
+  border: none;
+}
+.btn-secondary {
+  background: transparent;
+  color: #C48A97;
+  border: 1.5px solid rgba(196,138,151,0.4);
+}
+.btn-ghost {
+  background: rgba(0,0,0,0.03);
+  color: rgba(46,46,46,0.5);
+  border: none;
+}
