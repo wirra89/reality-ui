@@ -45,7 +45,7 @@ async function sendWebPush(
     new TextEncoder().encode(signingInput)
   );
 
-  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+  const sigB64 = btoa(Array.from(new Uint8Array(signature), c => String.fromCharCode(c)).join(''))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 
   const jwt = `${signingInput}.${sigB64}`;
