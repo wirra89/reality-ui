@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
+import { getPRs, type PersonalRecord } from "@/lib/supabase";
 import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
 
 const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
@@ -29,6 +30,7 @@ export default function InsightsPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [meals,    setMeals]    = useState<MealLog[]>([]);
   const [moods,    setMoods]    = useState<MoodLog[]>([]);
+  const [prs,      setPRs]      = useState<PersonalRecord[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
@@ -40,10 +42,12 @@ export default function InsightsPage() {
       supabase.from("workouts").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(100),
       supabase.from("meal_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(60),
       supabase.from("mood_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(90),
-    ]).then(([w, m, mo]) => {
+      getPRs(),
+    ]).then(([w, m, mo, prData]) => {
       setWorkouts(w.data ?? []);
       setMeals(m.data ?? []);
       setMoods(mo.data ?? []);
+      setPRs(prData);
       setDataLoading(false);
     });
   }, [user]);
@@ -218,6 +222,40 @@ export default function InsightsPage() {
                   ))}
                 </div>
 
+                {/* ── PR Pattern by phase — dark hero card ── */}
+                {prs.length > 0 && (() => {
+                  const prByPhase: Record<string, number> = { menstrual: 0, follicular: 0, ovulation: 0, luteal: 0 };
+                  prs.forEach(pr => { if (pr.phase && prByPhase[pr.phase] !== undefined) prByPhase[pr.phase]++; });
+                  const bestPRPhase = Object.entries(prByPhase).sort((a, b) => b[1] - a[1])[0];
+                  return (
+                    <div className="rounded-2xl p-4 overflow-hidden relative" style={{ background: "linear-gradient(145deg,#1E1B24,#2D2638)" }}>
+                      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-15 pointer-events-none" style={{ background: "#FBBF24", filter: "blur(20px)" }} />
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(251,191,36,0.6)" }}>Strength pattern</p>
+                          <p className="text-base font-bold text-white leading-tight">
+                            You hit PRs in {PHASE_EMOJIS[bestPRPhase[0]]} {bestPRPhase[0]} phase
+                          </p>
+                        </div>
+                        <span className="text-2xl">🏆</span>
+                      </div>
+                      <div className="grid grid-cols-4 gap-2">
+                        {PHASES.map(phase => (
+                          <div key={phase} className="rounded-xl p-2 text-center"
+                            style={{
+                              background: phase === bestPRPhase[0] ? "rgba(251,191,36,0.18)" : "rgba(255,255,255,0.05)",
+                              outline: phase === bestPRPhase[0] ? "1px solid rgba(251,191,36,0.3)" : "none",
+                            }}>
+                            <p className="text-xs mb-1">{PHASE_EMOJIS[phase]}</p>
+                            <p className="text-base font-bold text-white">{prByPhase[phase]}</p>
+                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>PRs</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Mood per phase */}
                 {phasesWithMood.length > 0 && (
                   <div className="bg-white rounded-2xl shadow-card p-4">
@@ -247,6 +285,37 @@ export default function InsightsPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Sleep by phase */}
+                {moods.filter(m => (m as any).sleep_hours).length >= 2 && (() => {
+                  const sleepByPhase = PHASES.map(phase => {
+                    const pm = moods.filter(m => m.phase === phase && (m as any).sleep_hours);
+                    if (!pm.length) return { phase, avg: null, count: 0 };
+                    const avg = pm.reduce((a, m) => a + ((m as any).sleep_hours as number), 0) / pm.length;
+                    return { phase, avg: Math.round(avg * 10) / 10, count: pm.length };
+                  });
+                  const hasData = sleepByPhase.some(p => p.avg !== null);
+                  if (!hasData) return null;
+                  const worst = sleepByPhase.filter(p => p.avg !== null).sort((a, b) => a.avg! - b.avg!)[0];
+                  return (
+                    <div className="bg-white rounded-2xl shadow-card p-4">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Avg sleep by phase</p>
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        {sleepByPhase.map(p => (
+                          <div key={p.phase} className="rounded-xl p-2 text-center" style={{ background: PHASE_COLORS[p.phase].bg }}>
+                            <p className="text-xs mb-1">{PHASE_EMOJIS[p.phase]}</p>
+                            <p className="text-sm font-bold text-dark">{p.avg ? `${p.avg}h` : "—"}</p>
+                          </div>
+                        ))}
+                      </div>
+                      {worst && worst.avg !== null && (
+                        <div className="rounded-xl px-3 py-2 text-xs font-body leading-snug" style={{ background: "rgba(196,138,151,0.06)", color: "#6B7280" }}>
+                          💡 You sleep least in {PHASE_EMOJIS[worst.phase]} {worst.phase} — this is common and hormonally driven, not a problem.
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Training overview */}
                 {workouts.length > 0 && bestTrainingPhase && (

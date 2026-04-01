@@ -148,8 +148,8 @@ export default function DashboardPage() {
         {/* ── 1. HEADER ── */}
         <header className="flex items-center justify-between mb-5">
           <div>
-            <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Today</p>
-            <h1 className="font-display text-2xl font-semibold text-dark leading-tight">Hi, {firstName}</h1>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#B8788A" }}>Good morning</p>
+            <h1 className="font-display text-2xl font-semibold text-dark leading-tight">Hi, {firstName} 👋</h1>
           </div>
           <div className="flex items-center gap-2">
             {streak > 0 && (
@@ -160,7 +160,7 @@ export default function DashboardPage() {
             )}
             <button
               className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white text-sm font-semibold shadow-soft"
-              style={{ background: profile?.avatar_url ? "transparent" : "linear-gradient(135deg, #C48A97, #7B6D8D)" }}
+              style={{ background: profile?.avatar_url ? "transparent" : "linear-gradient(135deg, #C48A97, #7B6D8D)", boxShadow: "0 2px 8px rgba(196,138,151,0.35)" }}
               onClick={() => router.push("/profile")}
             >
               {profile?.avatar_url
@@ -343,13 +343,13 @@ export default function DashboardPage() {
             <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-1">This week</p>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { label: "Workouts", value: weeklyWorkouts, emoji: "🏋️‍♀️", sub: "last 7 days", color: "#C48A97" },
-                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", emoji: "", sub: "day check-in", color: streak >= 7 ? "#FBBF24" : streak >= 3 ? "#34D399" : "#9CA3AF" },
-                { label: "Calories", value: todayCalories > 0 ? todayCalories : "—", emoji: "🍽️", sub: "today", color: "#7B6D8D" },
+                { label: "Workouts", value: weeklyWorkouts, sub: "last 7 days", color: "#C48A97", bg: "rgba(196,138,151,0.06)" },
+                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", sub: "day check-in", color: streak >= 7 ? "#B45309" : streak >= 3 ? "#059669" : "#9CA3AF", bg: streak >= 7 ? "rgba(251,191,36,0.06)" : streak >= 3 ? "rgba(52,211,153,0.06)" : "rgba(0,0,0,0.02)" },
+                { label: "Calories", value: todayCalories > 0 ? todayCalories : "—", sub: "today", color: "#7B6D8D", bg: "rgba(123,109,141,0.06)" },
               ].map(s => (
-                <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+                <div key={s.label} className="rounded-2xl p-3 text-center" style={{ background: s.bg, border: "1px solid rgba(0,0,0,0.04)" }}>
                   <p className="font-display font-bold text-lg text-dark leading-tight" style={{ color: s.color }}>
-                    {s.emoji} {s.value}
+                    {s.value}
                   </p>
                   <p className="text-xs text-dark/30 font-body">{s.sub}</p>
                   <p className="text-xs text-dark/50 font-semibold uppercase tracking-wide mt-0.5">{s.label}</p>

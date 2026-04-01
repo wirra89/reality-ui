@@ -46,6 +46,11 @@ export default function CycleBadge({
         className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-20 pointer-events-none"
         style={{ background: phaseColor, filter: "blur(32px)" }}
       />
+      {/* Second subtle glow — bottom left */}
+      <div
+        className="absolute -bottom-10 -left-6 w-32 h-32 rounded-full opacity-10 pointer-events-none"
+        style={{ background: phaseColor, filter: "blur(24px)" }}
+      />
 
       <div className="flex items-center gap-5">
         {/* SVG arc progress ring */}
@@ -79,7 +84,7 @@ export default function CycleBadge({
             <span className="text-white font-display font-semibold text-lg leading-none">
               {cycleDay}
             </span>
-            <span className="text-white/50 text-[10px] font-body leading-none mt-0.5">
+            <span className="text-white/50 text-xs font-body leading-none mt-0.5">
               day
             </span>
           </div>
@@ -106,7 +111,7 @@ export default function CycleBadge({
             {phaseData.label}
           </h2>
 
-          <p className="text-white/50 text-xs mt-1 font-body">
+          <p className="text-white/45 text-xs mt-1 font-body">
             Day {dayInPhase} of {phaseDuration} in this phase
           </p>
 
@@ -122,6 +127,44 @@ export default function CycleBadge({
               />
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Phase progress bar across full cycle — new */}
+      <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="flex gap-0.5 h-1.5 rounded-full overflow-hidden">
+          {[
+            { phase: "menstrual",  color: "#F87171", w: 18 },
+            { phase: "follicular", color: "#34D399", w: 29 },
+            { phase: "ovulation",  color: "#FBBF24", w: 11 },
+            { phase: "luteal",     color: "#A78BFA", w: 42 },
+          ].map(seg => (
+            <div
+              key={seg.phase}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: `${seg.w}%`,
+                background: seg.color,
+                opacity: seg.phase === phaseData.phase ? 1 : 0.25,
+              }}
+            />
+          ))}
+        </div>
+        <div className="flex justify-between mt-1.5">
+          {[
+            { label: "🌙", phase: "menstrual" },
+            { label: "🌱", phase: "follicular" },
+            { label: "⚡", phase: "ovulation" },
+            { label: "🍂", phase: "luteal" },
+          ].map(seg => (
+            <span
+              key={seg.phase}
+              className="text-xs transition-all duration-300"
+              style={{ opacity: seg.phase === phaseData.phase ? 1 : 0.35 }}
+            >
+              {seg.label}
+            </span>
+          ))}
         </div>
       </div>
     </div>
