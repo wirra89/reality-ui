@@ -154,7 +154,7 @@ const moodMessages: Record<string, { category: string; message: string }[]> = {
 };
 
 export default function MoodPage() {
-  const { user, cycleDay, cycleParams, loading } = useApp();
+  const { user, cycleDay, cycleParams, loading, refreshTodayState } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
 
@@ -214,6 +214,7 @@ export default function MoodPage() {
     setSaveStatus(result.success ? "success" : "error");
     if (result.success) {
       setAlreadyLogged(true);
+      refreshTodayState(); // recompute TodayState — Dashboard updates automatically
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     setTimeout(() => setSaveStatus("idle"), 2500);
