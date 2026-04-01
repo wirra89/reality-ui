@@ -1,43 +1,34 @@
 "use client";
 
 // components/ReadinessCard.tsx
-import { PhaseData } from "@/lib/cycle";
+// Refactored in Step 3 — now accepts pre-computed score + label from TodayState.
+// No longer contains inline readiness calculation (moved to lib/dailyPlan.ts).
+
+import type { ReadinessLabel } from "@/lib/dailyPlan";
 
 interface Props {
-  phaseData: PhaseData;
-  moodScore?: number | null;   // yesterday's mood (1-5)
-  energyScore?: number | null; // yesterday's energy (1-5)
+  score: number;          // 0–100, computed by dailyPlan engine
+  label: ReadinessLabel;  // "rest" | "moderate" | "good" | "peak"
+  adaptedFromCheckin?: boolean; // true = based on today's check-in
 }
 
-function scoreColor(score: number): string {
-  if (score >= 80) return "#FBBF24";
-  if (score >= 60) return "#34D399";
-  if (score >= 40) return "#A78BFA";
-  return "#F87171";
-}
+const LABEL_COLORS: Record<ReadinessLabel, string> = {
+  rest:     "#F87171",
+  moderate: "#A78BFA",
+  good:     "#34D399",
+  peak:     "#FBBF24",
+};
 
-function scoreLabel(score: number): string {
-  if (score >= 80) return "Peak";
-  if (score >= 60) return "Good";
-  if (score >= 40) return "Moderate";
-  return "Rest";
-}
+const LABEL_DISPLAY: Record<ReadinessLabel, string> = {
+  rest:     "Rest",
+  moderate: "Moderate",
+  good:     "Good",
+  peak:     "Peak",
+};
 
-// Blend phase base score with yesterday's mood + energy
-function calcReadiness(phaseBase: number, mood: number | null, energy: number | null): number {
-  if (!mood && !energy) return phaseBase;
-  const moodNorm   = mood   ? ((mood - 1) / 4) * 100 : phaseBase;
-  const energyNorm = energy ? ((energy - 1) / 4) * 100 : phaseBase;
-  const personal = (moodNorm + energyNorm) / 2;
-  // 50% phase base, 50% personal yesterday data
-  return Math.round(phaseBase * 0.5 + personal * 0.5);
-}
-
-export default function ReadinessCard({ phaseData, moodScore, energyScore }: Props) {
-  const score = calcReadiness(phaseData.readinessScore, moodScore ?? null, energyScore ?? null);
-  const color = scoreColor(score);
-  const label = scoreLabel(score);
-  const isPersonalised = moodScore !== null && moodScore !== undefined;
+export default function ReadinessCard({ score, label, adaptedFromCheckin }: Props) {
+  const color  = LABEL_COLORS[label];
+  const display = LABEL_DISPLAY[label];
 
   const radius = 28;
   const circ   = 2 * Math.PI * radius;
@@ -64,10 +55,10 @@ export default function ReadinessCard({ phaseData, moodScore, energyScore }: Pro
 
       <span className="text-xs font-semibold px-2 py-0.5 rounded-full mb-1"
         style={{ background: `${color}22`, color }}>
-        {label}
+        {display}
       </span>
-      {isPersonalised && (
-        <span className="text-[9px] text-dark/30 font-body">Based on your mood</span>
+      {adaptedFromCheckin && (
+        <span className="text-xs text-dark/30 font-body">Based on your check-in</span>
       )}
     </div>
   );

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData, formatPeriodStartDate } from "@/lib/cycle";
-import { getCheckinStreak, getYesterdayMoodLog, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
+import { getCheckinStreak, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
 import CycleBadge from "@/components/CycleBadge";
 import CycleSlider from "@/components/CycleSlider";
 import WorkoutCard from "@/components/WorkoutCard";
@@ -65,12 +65,11 @@ function MacroCard({ phaseData, profile }: {
 
 // ── DashboardPage ──────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const { user, profile, cycleDay, cycleParams, setCycleDay, setPeriodStartToday, setPeriodStartDate, loading, newCyclePrompt, dismissNewCyclePrompt } = useApp();
+  const { user, profile, cycleDay, cycleParams, setCycleDay, setPeriodStartToday, setPeriodStartDate, loading, newCyclePrompt, dismissNewCyclePrompt, todayState } = useApp();
   const router = useRouter();
 
   const [showCalendar, setShowCalendar]     = useState(false);
   const [streak, setStreak]                 = useState(0);
-  const [yesterdayMood, setYesterdayMood]   = useState<{ mood: number; energy: number } | null>(null);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [todayCalories, setTodayCalories]   = useState(0);
   const [waterGlasses, setWaterGlasses]     = useState(0);
@@ -99,9 +98,6 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user) return;
     getCheckinStreak().then(setStreak);
-    getYesterdayMoodLog().then(log => {
-      if (log) setYesterdayMood({ mood: log.mood as unknown as number, energy: log.energy as unknown as number });
-    });
     getRecentWorkouts(7).then(ws => {
       const ago = new Date(); ago.setDate(ago.getDate() - 7);
       setWeeklyWorkouts(ws.filter(w => w.created_at && new Date(w.created_at) >= ago).length);
@@ -226,10 +222,30 @@ export default function DashboardPage() {
         )}
 
         {/* ── 3. TODAY'S TRAINING ── */}
-        <WorkoutCard phaseData={phaseData} />
+        {todayState ? (
+          <WorkoutCard recommendation={todayState.workoutRecommendation} phase={phaseData.phase} />
+        ) : (
+          <WorkoutCard
+            recommendation={{
+              type: phaseData.training,
+              intensity: phaseData.energyLevel === "peak" ? "peak" : phaseData.energyLevel === "high" ? "high" : phaseData.energyLevel === "low" ? "light" : "moderate",
+              duration: 45,
+              reasoning: phaseData.trainingDetail,
+              exercises: [],
+            }}
+            phase={phaseData.phase}
+          />
+        )}
 
-        {/* ── 4. HERPHASE AI ── */}
-        <AIRecommendationCard phaseData={phaseData} goals={profile?.goals ?? []} bodyGoal={profile?.body_goal ?? null} cycleDay={cycleDay} />
+        {/* ── 4. HERPHASE INSIGHT ── */}
+        <AIRecommendationCard
+          insightTitle={todayState?.insightTitle ?? phaseData.label}
+          insightBody={todayState?.insightBody ?? phaseData.aiRecommendation}
+          adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+          phase={phaseData.phase}
+          goals={profile?.goals ?? []}
+          bodyGoal={profile?.body_goal ?? null}
+        />
 
         {/* ── 5. CYCLE DAY + PREDICTION ── */}
         <div className="bg-white rounded-2xl shadow-card mb-3">
@@ -330,7 +346,11 @@ export default function DashboardPage() {
 
         {/* ── 6. READINESS + NUTRITION ── */}
         <div className="grid grid-cols-2 gap-3 mb-3">
-          <ReadinessCard phaseData={phaseData} moodScore={yesterdayMood?.mood} energyScore={yesterdayMood?.energy} />
+          <ReadinessCard
+            score={todayState?.readinessScore ?? phaseData.readinessScore}
+            label={todayState?.readinessLabel ?? (phaseData.readinessScore >= 80 ? "peak" : phaseData.readinessScore >= 60 ? "good" : phaseData.readinessScore >= 40 ? "moderate" : "rest")}
+            adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+          />
           <NutritionCard phaseData={phaseData} />
         </div>
 
@@ -384,17 +404,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ── 8. TODAY'S TIP ── */}
-        <div className="rounded-2xl px-4 py-3.5 mb-3 flex items-center gap-3"
-          style={{ background: "rgba(196,138,151,0.07)" }}>
-          <span className="text-lg flex-shrink-0">{phaseData.emoji}</span>
-          <p className="text-xs text-dark/55 font-body leading-snug">
-            <span className="font-semibold text-dark/70">Day {cycleDay} · {phaseData.label}. </span>
-            {phaseData.training}
-          </p>
-        </div>
-
-        {/* ── 9. WATER TRACKER ── */}
+        {/* ── 8. WATER TRACKER ── */}
         {(() => {
           const waterTarget = (phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8;
           const pct = Math.min(waterGlasses / waterTarget, 1);
