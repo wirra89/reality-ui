@@ -2,12 +2,18 @@
 import PageSkeleton from "@/components/PageSkeleton";
 
 // app/insights/page.tsx
+// Refactored in Step 7 — data maturity awareness added.
+// Three stages: generic (<7 logs), early (7-27), personalized (28+).
+// All existing analytics computations are preserved unchanged.
+// Only copy/messaging and visibility logic is maturity-aware.
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { getPRs, type PersonalRecord } from "@/lib/supabase";
 import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
+import type { DataMaturityStage } from "@/lib/dailyPlan";
 
 const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   menstrual:  { bg: "#FEF2F2", text: "#B91C1C", dot: "#F87171" },
@@ -22,8 +28,42 @@ const PHASES = ["menstrual", "follicular", "ovulation", "luteal"];
 
 type InsightTab = "overview" | "training" | "meals" | "mood";
 
+// ── Data maturity banner copy ───────────────────────────────────────────────
+const MATURITY_BANNER: Record<DataMaturityStage, {
+  label: string;
+  color: string;
+  bg: string;
+  body: (logCount: number) => string;
+}> = {
+  generic: {
+    label: "Phase guidance",
+    color: "#9CA3AF",
+    bg: "rgba(156,163,175,0.08)",
+    body: (n) => `These insights are based on your cycle phase — a universal hormonal model. They'll become specific to you after ${7 - n} more check-ins.`,
+  },
+  early: {
+    label: "Patterns forming",
+    color: "#C48A97",
+    bg: "rgba(196,138,151,0.07)",
+    body: (n) => `You have ${n} mood logs. Early patterns are starting to form — trends may shift as you add more data. Keep logging daily for the clearest picture.`,
+  },
+  personalized: {
+    label: "Personalised",
+    color: "#34D399",
+    bg: "rgba(52,211,153,0.07)",
+    body: (n) => `Based on ${n} logs across your cycle. These patterns are specific to you, not just your phase.`,
+  },
+};
+
+// ── Language helpers — maturity-aware copy ─────────────────────────────────
+function phrasePattern(stage: DataMaturityStage, phrase: string): string {
+  if (stage === "personalized") return phrase;
+  if (stage === "early")        return phrase.replace("Your ", "Your mood tends to be ").replace("is", "seems");
+  return phrase; // generic — shouldn't be shown anyway
+}
+
 export default function InsightsPage() {
-  const { user, loading } = useApp();
+  const { user, loading, logCount, todayState } = useApp();
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<InsightTab>("overview");
@@ -32,6 +72,9 @@ export default function InsightsPage() {
   const [moods,    setMoods]    = useState<MoodLog[]>([]);
   const [prs,      setPRs]      = useState<PersonalRecord[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+
+  // Derive maturity from context — same source as TodayState
+  const maturity: DataMaturityStage = todayState?.dataMaturityStage ?? "generic";
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
@@ -52,7 +95,8 @@ export default function InsightsPage() {
     });
   }, [user]);
 
-  // ── Mood insights ──
+  // ── Analytics computations — unchanged ─────────────────────────────────
+
   const moodByPhase = PHASES.map(phase => {
     const pm = moods.filter(m => m.phase === phase);
     if (!pm.length) return { phase, avgMood: null, avgEnergy: null, count: 0 };
@@ -64,10 +108,11 @@ export default function InsightsPage() {
     };
   });
   const phasesWithMood = moodByPhase.filter(p => p.avgMood !== null);
-  const bestPhase  = phasesWithMood.length ? phasesWithMood.reduce((a, b) => a.avgMood! > b.avgMood! ? a : b) : null;
-  const worstPhase = phasesWithMood.length ? phasesWithMood.reduce((a, b) => a.avgMood! < b.avgMood! ? a : b) : null;
+  // Only declare best/worst if we have data across 2+ different phases
+  const canComparePhases = phasesWithMood.length >= 2;
+  const bestPhase  = canComparePhases ? phasesWithMood.reduce((a, b) => a.avgMood! > b.avgMood! ? a : b) : null;
+  const worstPhase = canComparePhases ? phasesWithMood.reduce((a, b) => a.avgMood! < b.avgMood! ? a : b) : null;
 
-  // ── Symptom patterns ──
   const symptomsByPhase = PHASES.map(phase => {
     const pm = moods.filter(m => m.phase === phase);
     const freq: Record<string, number> = {};
@@ -76,15 +121,13 @@ export default function InsightsPage() {
       if (syms) syms.forEach(s => { freq[s] = (freq[s] || 0) + 1; });
     });
     return {
-      phase,
-      total: pm.length,
+      phase, total: pm.length,
       symptoms: Object.entries(freq)
         .sort((a, b) => b[1] - a[1]).slice(0, 5)
         .map(([symptom, count]) => ({ symptom, pct: Math.round((count / pm.length) * 100) })),
     };
   });
 
-  // ── Training insights ──
   const trainingByPhase = PHASES.map(phase => {
     const pw = workouts.filter(w => w.phase === phase);
     const vol = pw.reduce((acc, w) => {
@@ -96,7 +139,6 @@ export default function InsightsPage() {
   const bestTrainingPhase = trainingByPhase.filter(p => p.count > 0).sort((a, b) => b.avgVolume - a.avgVolume)[0] ?? null;
   const maxVol = Math.max(...trainingByPhase.map(p => p.avgVolume), 1);
 
-  // ── Meals insights ──
   const mealsByPhase = PHASES.map(phase => {
     const pm = meals.filter(m => m.phase === phase);
     let totalCal = 0, totalProt = 0, count = 0;
@@ -110,11 +152,13 @@ export default function InsightsPage() {
   });
   const maxCal = Math.max(...mealsByPhase.map(p => p.avgCal), 1);
 
-  const hasEnoughData = moods.length >= 1 || workouts.length >= 1 || meals.length >= 1;
+  // ── Visibility thresholds ──────────────────────────────────────────────
+  const hasAnyData    = moods.length >= 1 || workouts.length >= 1 || meals.length >= 1;
+  const hasEnoughData = hasAnyData; // keep for compatibility — maturity handles gradation
 
-  if (loading || !user) return (
-    <PageSkeleton />
-  );
+  const bannerConfig  = MATURITY_BANNER[maturity];
+
+  if (loading || !user) return <PageSkeleton />;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -150,18 +194,21 @@ export default function InsightsPage() {
 
         {dataLoading ? (
           <div className="text-center py-16"><p className="text-dark/40 text-sm">Loading insights…</p></div>
-        ) : !hasEnoughData ? (
+
+        ) : !hasAnyData ? (
+          /* ── ZERO DATA: original progress empty state ── */
           <div className="text-center py-12">
             <div className="text-5xl mb-4">📊</div>
             <p className="text-dark font-semibold text-base mb-2">Building your insights</p>
-            <p className="text-dark/40 text-sm font-body mb-6 max-w-xs mx-auto">Log your mood, training, and meals for a few days and personalised insights will appear here automatically.</p>
-            {/* Progress towards first insights */}
+            <p className="text-dark/40 text-sm font-body mb-6 max-w-xs mx-auto">
+              Log your mood, training, and meals for a few days and personalised insights will appear here automatically.
+            </p>
             <div className="bg-white rounded-2xl p-4 shadow-card text-left mb-4 max-w-xs mx-auto">
               <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Progress to first insights</p>
               {[
-                { label: "Mood logs", current: moods.length, target: 3, color: "#A78BFA", href: "/mood" },
-                { label: "Workouts", current: workouts.length, target: 3, color: "#C48A97", href: "/training" },
-                { label: "Meal logs", current: meals.length, target: 3, color: "#34D399", href: "/meals" },
+                { label: "Mood logs", current: moods.length,    target: 3, color: "#A78BFA", href: "/mood" },
+                { label: "Workouts",  current: workouts.length, target: 3, color: "#C48A97", href: "/training" },
+                { label: "Meal logs", current: meals.length,    target: 3, color: "#34D399", href: "/meals" },
               ].map(item => (
                 <div key={item.label} className="mb-3 last:mb-0">
                   <div className="flex justify-between mb-1">
@@ -181,39 +228,97 @@ export default function InsightsPage() {
               Start with mood check-in →
             </button>
           </div>
+
         ) : (
           <>
+            {/* ── DATA MATURITY BANNER — shown on all tabs ── */}
+            <div className="rounded-2xl px-4 py-3 mb-4 flex items-start gap-3"
+              style={{ background: bannerConfig.bg }}>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-xs font-bold uppercase tracking-wide"
+                    style={{ color: bannerConfig.color }}>
+                    {bannerConfig.label}
+                  </span>
+                  {maturity === "personalized" && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold"
+                      style={{ background: "rgba(52,211,153,0.15)", color: "#059669" }}>
+                      ✓
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-dark/55 font-body leading-snug">
+                  {bannerConfig.body(logCount)}
+                </p>
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <p className="text-lg font-bold font-display" style={{ color: bannerConfig.color }}>
+                  {logCount}
+                </p>
+                <p className="text-xs text-dark/30 font-body leading-none">logs</p>
+              </div>
+            </div>
+
             {/* ── OVERVIEW ── */}
             {activeTab === "overview" && (
               <div className="space-y-4">
-                {/* Best / needs support */}
-                {phasesWithMood.length > 1 && (
+
+                {/* Best/worst phase — only shown with 2+ phases and early/personalized */}
+                {canComparePhases && maturity !== "generic" && (
                   <div className="grid grid-cols-2 gap-3">
                     {bestPhase && (
-                      <div className="bg-white rounded-2xl p-4 shadow-card" style={{ borderLeft: `3px solid ${PHASE_COLORS[bestPhase.phase].dot}` }}>
-                        <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">Best phase</p>
+                      <div className="bg-white rounded-2xl p-4 shadow-card"
+                        style={{ borderLeft: `3px solid ${PHASE_COLORS[bestPhase.phase].dot}` }}>
+                        <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">
+                          {maturity === "personalized" ? "Best phase" : "Highest mood"}
+                        </p>
                         <span style={{ fontSize: 22 }}>{PHASE_EMOJIS[bestPhase.phase]}</span>
                         <p className="text-sm font-bold text-dark capitalize mt-1">{bestPhase.phase}</p>
-                        <p className="text-xs text-dark/40 font-body">avg mood {bestPhase.avgMood!.toFixed(1)}/5</p>
+                        <p className="text-xs text-dark/40 font-body">
+                          {maturity === "personalized"
+                            ? `avg mood ${bestPhase.avgMood!.toFixed(1)}/5`
+                            : `mood ${bestPhase.avgMood!.toFixed(1)}/5 so far`}
+                        </p>
                       </div>
                     )}
                     {worstPhase && worstPhase.phase !== bestPhase?.phase && (
-                      <div className="bg-white rounded-2xl p-4 shadow-card" style={{ borderLeft: `3px solid ${PHASE_COLORS[worstPhase.phase].dot}` }}>
-                        <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">Needs support</p>
+                      <div className="bg-white rounded-2xl p-4 shadow-card"
+                        style={{ borderLeft: `3px solid ${PHASE_COLORS[worstPhase.phase].dot}` }}>
+                        <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">
+                          {maturity === "personalized" ? "Needs support" : "Lower mood"}
+                        </p>
                         <span style={{ fontSize: 22 }}>{PHASE_EMOJIS[worstPhase.phase]}</span>
                         <p className="text-sm font-bold text-dark capitalize mt-1">{worstPhase.phase}</p>
-                        <p className="text-xs text-dark/40 font-body">avg mood {worstPhase.avgMood!.toFixed(1)}/5</p>
+                        <p className="text-xs text-dark/40 font-body">
+                          {maturity === "personalized"
+                            ? `avg mood ${worstPhase.avgMood!.toFixed(1)}/5`
+                            : `mood ${worstPhase.avgMood!.toFixed(1)}/5 so far`}
+                        </p>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Summary stats */}
+                {/* If generic and we have phase data but can't compare, show gentle nudge */}
+                {maturity === "generic" && (
+                  <div className="rounded-2xl px-4 py-3 flex items-center gap-3"
+                    style={{ background: "rgba(196,138,151,0.06)", border: "1px solid rgba(196,138,151,0.12)" }}>
+                    <span className="text-xl flex-shrink-0">🌸</span>
+                    <div>
+                      <p className="text-xs font-semibold text-dark">Building your phase profile</p>
+                      <p className="text-xs text-dark/45 font-body leading-snug mt-0.5">
+                        Log daily across different phases and you'll see which ones feel best for you personally.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Summary stats — always shown */}
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { label: "Workouts", value: workouts.length, color: "#C48A97" },
-                    { label: "Mood logs", value: moods.length, color: "#A78BFA" },
-                    { label: "Meal logs", value: meals.length, color: "#34D399" },
+                    { label: "Workouts",  value: workouts.length, color: "#C48A97" },
+                    { label: "Mood logs", value: moods.length,    color: "#A78BFA" },
+                    { label: "Meal logs", value: meals.length,    color: "#34D399" },
                   ].map(s => (
                     <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
                       <p className="font-display font-bold text-lg" style={{ color: s.color }}>{s.value}</p>
@@ -222,7 +327,7 @@ export default function InsightsPage() {
                   ))}
                 </div>
 
-                {/* ── PR Pattern by phase — dark hero card ── */}
+                {/* PR pattern card — unchanged, data-driven so always valid */}
                 {prs.length > 0 && (() => {
                   const prByPhase: Record<string, number> = { menstrual: 0, follicular: 0, ovulation: 0, luteal: 0 };
                   prs.forEach(pr => { if (pr.phase && prByPhase[pr.phase] !== undefined) prByPhase[pr.phase]++; });
@@ -232,9 +337,13 @@ export default function InsightsPage() {
                       <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-15 pointer-events-none" style={{ background: "#FBBF24", filter: "blur(20px)" }} />
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(251,191,36,0.6)" }}>Strength pattern</p>
+                          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(251,191,36,0.6)" }}>
+                            Strength pattern
+                          </p>
                           <p className="text-base font-bold text-white leading-tight">
-                            You hit PRs in {PHASE_EMOJIS[bestPRPhase[0]]} {bestPRPhase[0]} phase
+                            {maturity === "personalized"
+                              ? `You hit PRs in ${PHASE_EMOJIS[bestPRPhase[0]]} ${bestPRPhase[0]}`
+                              : `Most PRs so far: ${PHASE_EMOJIS[bestPRPhase[0]]} ${bestPRPhase[0]}`}
                           </p>
                         </div>
                         <span className="text-2xl">🏆</span>
@@ -256,10 +365,19 @@ export default function InsightsPage() {
                   );
                 })()}
 
-                {/* Mood per phase */}
+                {/* Mood by phase bars — always shown when data exists */}
                 {phasesWithMood.length > 0 && (
                   <div className="bg-white rounded-2xl shadow-card p-4">
-                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Mood by phase</p>
+                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">Mood by phase</p>
+                    {maturity === "generic" && (
+                      <p className="text-xs text-dark/35 font-body mb-3">Based on limited data — patterns will sharpen with more logs.</p>
+                    )}
+                    {maturity === "early" && (
+                      <p className="text-xs text-dark/35 font-body mb-3">Early trends — keep logging to confirm these patterns.</p>
+                    )}
+                    {maturity === "personalized" && (
+                      <p className="text-xs text-dark/35 font-body mb-3">Your personalised mood profile across your cycle.</p>
+                    )}
                     <div className="space-y-3">
                       {moodByPhase.map(p => (
                         <div key={p.phase}>
@@ -268,7 +386,7 @@ export default function InsightsPage() {
                               <span style={{ fontSize: 14 }}>{PHASE_EMOJIS[p.phase]}</span>
                               <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
                             </div>
-                            <span className="text-xs text-dark/30">{p.count > 0 ? `${p.count} logs` : "no data"}</span>
+                            <span className="text-xs text-dark/30">{p.count > 0 ? `${p.count} logs` : "no data yet"}</span>
                           </div>
                           {p.count > 0 ? (
                             <div className="flex items-center gap-2">
@@ -286,7 +404,7 @@ export default function InsightsPage() {
                   </div>
                 )}
 
-                {/* Sleep by phase */}
+                {/* Sleep by phase — unchanged */}
                 {moods.filter(m => (m as any).sleep_hours).length >= 2 && (() => {
                   const sleepByPhase = PHASES.map(phase => {
                     const pm = moods.filter(m => m.phase === phase && (m as any).sleep_hours);
@@ -310,7 +428,9 @@ export default function InsightsPage() {
                       </div>
                       {worst && worst.avg !== null && (
                         <div className="rounded-xl px-3 py-2 text-xs font-body leading-snug" style={{ background: "rgba(196,138,151,0.06)", color: "#6B7280" }}>
-                          💡 You sleep least in {PHASE_EMOJIS[worst.phase]} {worst.phase} — this is common and hormonally driven, not a problem.
+                          {maturity === "personalized"
+                            ? `💡 You sleep least in ${PHASE_EMOJIS[worst.phase]} ${worst.phase} — this is your established pattern, hormonally driven.`
+                            : `💡 Lowest sleep so far: ${PHASE_EMOJIS[worst.phase]} ${worst.phase}. This is common in this phase — log more to confirm your personal pattern.`}
                         </div>
                       )}
                     </div>
@@ -320,7 +440,9 @@ export default function InsightsPage() {
                 {/* Training overview */}
                 {workouts.length > 0 && bestTrainingPhase && (
                   <div className="bg-white rounded-2xl shadow-card p-4">
-                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">Strongest training phase</p>
+                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
+                      {maturity === "personalized" ? "Strongest training phase" : "Most active phase so far"}
+                    </p>
                     <div className="flex items-center gap-3 mt-2">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
                         style={{ background: PHASE_COLORS[bestTrainingPhase.phase].bg }}>
@@ -328,7 +450,10 @@ export default function InsightsPage() {
                       </div>
                       <div>
                         <p className="text-sm font-bold text-dark capitalize">{bestTrainingPhase.phase}</p>
-                        <p className="text-xs text-dark/40 font-body">avg {bestTrainingPhase.avgVolume.toLocaleString()} kg volume · {bestTrainingPhase.count} sessions</p>
+                        <p className="text-xs text-dark/40 font-body">
+                          avg {bestTrainingPhase.avgVolume.toLocaleString()} kg volume · {bestTrainingPhase.count} sessions
+                          {maturity !== "personalized" && " so far"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -340,12 +465,28 @@ export default function InsightsPage() {
             {activeTab === "training" && (
               <div className="space-y-4">
                 {workouts.length === 0 ? (
-                  <EmptyInsight emoji="🏋️‍♀️" text="No workouts logged yet" sub="Log training sessions to see phase patterns" cta="Go to Training" href="/training" router={router} />
+                  <EmptyInsight
+                    emoji="🏋️‍♀️"
+                    text="No workouts logged yet"
+                    sub={maturity === "generic"
+                      ? "Log 3+ sessions across your cycle to see training patterns by phase."
+                      : "Add workouts to see how your strength and volume shift across your cycle."}
+                    cta="Go to Training" href="/training" router={router}
+                  />
                 ) : (
                   <>
                     <div className="bg-white rounded-2xl shadow-card p-4">
-                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Workouts & avg volume by phase</p>
-                      <div className="space-y-3">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
+                        Workouts & avg volume by phase
+                      </p>
+                      {maturity !== "personalized" && (
+                        <p className="text-xs text-dark/35 font-body mb-3">
+                          {maturity === "early"
+                            ? "Early trends — continue logging across phases for a clearer pattern."
+                            : "Log sessions in more phases to build your training profile."}
+                        </p>
+                      )}
+                      <div className="space-y-3 mt-3">
                         {trainingByPhase.map(p => (
                           <div key={p.phase}>
                             <div className="flex items-center justify-between mb-1">
@@ -354,7 +495,7 @@ export default function InsightsPage() {
                                 <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
                               </div>
                               <span className="text-xs text-dark/30">
-                                {p.count > 0 ? `${p.count} sessions · ${p.avgVolume.toLocaleString()} kg avg` : "no data"}
+                                {p.count > 0 ? `${p.count} sessions · ${p.avgVolume.toLocaleString()} kg avg` : "no data yet"}
                               </span>
                             </div>
                             {p.count > 0 ? (
@@ -391,12 +532,28 @@ export default function InsightsPage() {
             {activeTab === "meals" && (
               <div className="space-y-4">
                 {meals.length === 0 ? (
-                  <EmptyInsight emoji="🥗" text="No meals logged yet" sub="Log meals to see nutrition patterns by phase" cta="Go to Meals" href="/meals" router={router} />
+                  <EmptyInsight
+                    emoji="🥗"
+                    text="No meals logged yet"
+                    sub={maturity === "generic"
+                      ? "Log meals across your cycle to see how your nutrition naturally shifts by phase."
+                      : "Add meal logs to see nutrition patterns across your phases."}
+                    cta="Go to Meals" href="/meals" router={router}
+                  />
                 ) : (
                   <>
                     <div className="bg-white rounded-2xl shadow-card p-4">
-                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Avg daily calories by phase</p>
-                      <div className="space-y-3">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
+                        Avg daily calories by phase
+                      </p>
+                      {maturity !== "personalized" && (
+                        <p className="text-xs text-dark/35 font-body mb-3">
+                          {maturity === "early"
+                            ? "Early data — your calorie patterns will clarify as you log across more phases."
+                            : "Log meals in different phases to see how your intake shifts hormonally."}
+                        </p>
+                      )}
+                      <div className="space-y-3 mt-3">
                         {mealsByPhase.map(p => (
                           <div key={p.phase}>
                             <div className="flex items-center justify-between mb-1">
@@ -405,7 +562,7 @@ export default function InsightsPage() {
                                 <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
                               </div>
                               <span className="text-xs text-dark/30">
-                                {p.count > 0 ? `${p.avgCal} kcal · ${p.avgProtein}g P` : "no data"}
+                                {p.count > 0 ? `${p.avgCal} kcal · ${p.avgProtein}g P` : "no data yet"}
                               </span>
                             </div>
                             {p.count > 0 ? (
@@ -442,12 +599,34 @@ export default function InsightsPage() {
             {activeTab === "mood" && (
               <div className="space-y-4">
                 {moods.length === 0 ? (
-                  <EmptyInsight emoji="💭" text="No mood logs yet" sub="Log your mood daily to see patterns" cta="Go to Mood" href="/mood" router={router} />
+                  <EmptyInsight
+                    emoji="💭"
+                    text="No mood logs yet"
+                    sub="Log your mood and energy daily to see how your cycle affects how you feel."
+                    cta="Go to Mood" href="/mood" router={router}
+                  />
                 ) : (
                   <>
                     {/* Mood + energy averages */}
                     <div className="bg-white rounded-2xl shadow-card p-4">
-                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Mood & energy by phase</p>
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
+                        Mood & energy by phase
+                      </p>
+                      {maturity === "generic" && (
+                        <p className="text-xs text-dark/35 font-body mb-3">
+                          Phase averages based on your check-ins so far. Keep logging to see your personal patterns.
+                        </p>
+                      )}
+                      {maturity === "early" && (
+                        <p className="text-xs text-dark/35 font-body mb-3">
+                          Early patterns — {28 - logCount} more logs will unlock your full personalised cycle profile.
+                        </p>
+                      )}
+                      {maturity === "personalized" && (
+                        <p className="text-xs text-dark/35 font-body mb-3">
+                          Your personalised mood and energy profile across your cycle.
+                        </p>
+                      )}
                       <div className="space-y-4">
                         {moodByPhase.map(p => {
                           const color = PHASE_COLORS[p.phase].dot;
@@ -458,7 +637,7 @@ export default function InsightsPage() {
                                   <span style={{ fontSize: 14 }}>{PHASE_EMOJIS[p.phase]}</span>
                                   <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
                                 </div>
-                                <span className="text-xs text-dark/30">{p.count > 0 ? `${p.count} logs` : "no data"}</span>
+                                <span className="text-xs text-dark/30">{p.count > 0 ? `${p.count} logs` : "no data yet"}</span>
                               </div>
                               {p.count > 0 ? (
                                 <div className="space-y-1">
@@ -487,7 +666,9 @@ export default function InsightsPage() {
                     </div>
 
                     {/* Symptom patterns */}
-                    <p className="text-xs font-semibold text-secondary uppercase tracking-wide px-1">Symptom patterns</p>
+                    <p className="text-xs font-semibold text-secondary uppercase tracking-wide px-1">
+                      {maturity === "personalized" ? "Your symptom patterns" : "Symptom patterns so far"}
+                    </p>
                     {symptomsByPhase.filter(p => p.symptoms.length > 0).map(p => (
                       <div key={p.phase} className="bg-white rounded-2xl shadow-card p-4">
                         <div className="flex items-center gap-2 mb-3">
@@ -506,6 +687,11 @@ export default function InsightsPage() {
                             </div>
                           ))}
                         </div>
+                        {maturity !== "personalized" && (
+                          <p className="text-xs text-dark/30 font-body mt-3 leading-snug">
+                            Based on {p.total} {p.total === 1 ? "entry" : "entries"} — more logs will confirm this pattern.
+                          </p>
+                        )}
                       </div>
                     ))}
                     {symptomsByPhase.every(p => p.symptoms.length === 0) && (
