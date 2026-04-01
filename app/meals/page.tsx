@@ -14,7 +14,7 @@ import MealLogForm       from "@/components/MealLogForm";
 import MealFoodLibrary   from "@/components/MealFoodLibrary";
 
 export default function MealsPage() {
-  const { user, profile, cycleDay, cycleParams, loading } = useApp();
+  const { user, profile, cycleDay, cycleParams, loading, todayState } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
   const phase = phaseData.phase as Phase;
@@ -104,8 +104,13 @@ export default function MealsPage() {
           </div>
         </header>
 
-        {/* Phase rotating banner */}
-        <MealPhaseBanner phaseData={phaseData} cycleDay={cycleDay} />
+        {/* Phase banner — TodayState mealFocus or rotating fallback */}
+        <MealPhaseBanner
+          phaseData={phaseData}
+          cycleDay={cycleDay}
+          mealFocus={todayState?.mealFocus ?? null}
+          adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+        />
 
         {/* Daily summary + logged meals */}
         <MealDailySummary
