@@ -140,7 +140,7 @@ const newSet = (): SetRow => ({ id: crypto.randomUUID(), reps: "", weight: "" })
 const newEx  = (name = ""): ExRow => ({ id: crypto.randomUUID(), name, sets: [newSet()] });
 
 export default function TrainingPage() {
-  const { user, cycleDay, cycleParams, loading } = useApp();
+  const { user, cycleDay, cycleParams, loading, todayState } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
 
@@ -429,34 +429,68 @@ export default function TrainingPage() {
           </div>
         )}
 
-        {/* Phase banner — rotating */}
-        <div className="rounded-2xl p-4 mb-4"
-          style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)", borderLeft: `3px solid ${phaseColor}` }}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{phaseData.emoji}</span>
-              <div>
-                <p className="text-white/40 text-xs font-body uppercase tracking-widest">{phaseData.phase} phase · Day {cycleDay}</p>
-                <p className="text-white font-semibold text-sm">{todayMsg.title}</p>
+        {/* ── RECOMMENDATION CARD — TodayState or phase fallback ── */}
+        {todayState ? (
+          <div className="rounded-2xl p-4 mb-4"
+            style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)", borderLeft: `3px solid ${phaseColor}` }}>
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{phaseData.emoji}</span>
+                <div>
+                  <p className="text-white/40 text-xs font-body uppercase tracking-widest">
+                    {phaseData.phase} phase · Day {cycleDay}
+                    {todayState.adaptedFromCheckin && " · personalised"}
+                  </p>
+                  <p className="text-white font-semibold text-sm">{todayState.workoutRecommendation.type}</p>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.55)" }}>
+                  {todayState.workoutRecommendation.intensity}
+                </span>
+                {todayState.workoutRecommendation.duration > 0 && (
+                  <span className="text-xs font-body" style={{ color: "rgba(255,255,255,0.35)" }}>
+                    {todayState.workoutRecommendation.duration} min
+                  </span>
+                )}
               </div>
             </div>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-              style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)" }}>
-              {todayMsg.category}
-            </span>
+            {/* Reasoning */}
+            <p className="text-white/60 text-xs font-body leading-relaxed">
+              {todayState.workoutRecommendation.reasoning}
+            </p>
           </div>
-          <p className="text-white/60 text-xs font-body leading-relaxed mb-2">{todayMsg.detail}</p>
-          {/* Day indicator dots */}
-          <div className="flex gap-1.5">
-            {msgs.map((_, i) => (
-              <div key={i} className="h-1 rounded-full transition-all duration-300"
-                style={{
-                  width: i === msgIdx ? 16 : 6,
-                  background: i === msgIdx ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.15)",
-                }} />
-            ))}
+        ) : (
+          /* Fallback — original rotating phase banner */
+          <div className="rounded-2xl p-4 mb-4"
+            style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)", borderLeft: `3px solid ${phaseColor}` }}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{phaseData.emoji}</span>
+                <div>
+                  <p className="text-white/40 text-xs font-body uppercase tracking-widest">{phaseData.phase} phase · Day {cycleDay}</p>
+                  <p className="text-white font-semibold text-sm">{todayMsg.title}</p>
+                </div>
+              </div>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)" }}>
+                {todayMsg.category}
+              </span>
+            </div>
+            <p className="text-white/60 text-xs font-body leading-relaxed mb-2">{todayMsg.detail}</p>
+            <div className="flex gap-1.5">
+              {msgs.map((_, i) => (
+                <div key={i} className="h-1 rounded-full transition-all duration-300"
+                  style={{
+                    width: i === msgIdx ? 16 : 6,
+                    background: i === msgIdx ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.15)",
+                  }} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Workout name */}
         <div className="bg-white rounded-2xl px-4 py-3.5 shadow-card mb-3">
@@ -470,7 +504,7 @@ export default function TrainingPage() {
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2 px-1">
             <p className="text-xs font-semibold text-secondary uppercase tracking-wide">
-              Suggested for {phaseData.phase} phase
+              {todayState?.adaptedFromCheckin ? "Recommended for you" : `Suggested for ${phaseData.phase} phase`}
             </p>
             <button onClick={() => setShowLibrary(true)}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl text-white transition-all active:scale-95"
@@ -479,7 +513,10 @@ export default function TrainingPage() {
             </button>
           </div>
           <div className="flex gap-2 flex-wrap">
-            {suggestedExercises[phaseData.phase].map((s) => (
+            {(todayState?.workoutRecommendation.exercises?.length
+              ? todayState.workoutRecommendation.exercises
+              : suggestedExercises[phaseData.phase]
+            ).map((s) => (
               <button key={s} onClick={() => addSuggested(s)}
                 className="text-xs px-3 py-1.5 rounded-full font-medium border transition-all active:scale-95"
                 style={{ borderColor: "rgba(196,138,151,0.3)", color: "#C48A97", background: "rgba(196,138,151,0.07)" }}>
