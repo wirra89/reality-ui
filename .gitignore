@@ -1,4 +1,5 @@
 node_modules/
 .next/
 .env.local
-.vercel
+.vercel.claude/worktrees/ 
+.claude/skills/ui-ux-pro-max/scripts/__pycache__/ 
