@@ -198,8 +198,6 @@ export async function saveMealLog(log: MealLog): Promise<{ success: boolean; err
     cycle_day: log.cycle_day,
     phase: log.phase,
     meals: log.meals,
-    sleep_hours: (log as any).sleep_hours ?? null,
-    sleep_quality: (log as any).sleep_quality ?? null,
   }, { onConflict: "user_id,date" });
   return error ? { success: false, error: error.message } : { success: true };
 }

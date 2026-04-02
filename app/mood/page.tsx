@@ -187,8 +187,8 @@ export default function MoodPage() {
         setEnergy(log.energy);
         setSelectedSymptoms(log.symptoms ?? []);
         setNote(log.note ?? "");
-        setSleepHours((log as any).sleep_hours ?? 7);
-        setSleepQuality((log as any).sleep_quality ?? 3);
+        setSleepHours(log.sleep_hours ?? 7);
+        setSleepQuality(log.sleep_quality ?? 3);
         setSelectedCravings(log.cravings ?? []);
         setAlreadyLogged(true);
       } else {
