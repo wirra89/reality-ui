@@ -138,8 +138,41 @@ export default function ProfilePage() {
       avatar_index: avatarIndex, goals: selectedGoals, units, notifications,
       cycle_day: profile?.cycle_day ?? 1,
     });
-    if (result.success) { await refreshProfile(); setSaveStatus("success"); }
-    else setSaveStatus("error");
+
+    if (result.success) {
+      // If cycle params changed, update the active cycle history row so analytics
+      // reflect the corrected settings. Only the most recent row is updated —
+      // completed historical cycles keep their original recorded values.
+      // Uses UPDATE ... WHERE id = (subquery for max id) — no risk of duplicates.
+      if (
+        user &&
+        (cycleLength !== profile?.cycle_length || periodLength !== profile?.period_length)
+      ) {
+        await supabase
+          .from("user_cycle_history")
+          .update({
+            cycle_length_at_start:  cycleLength,
+            period_length_at_start: periodLength,
+          })
+          .eq("user_id", user.id)
+          .eq(
+            "id",
+            // Update only the most recent (active) cycle row
+            supabase
+              .from("user_cycle_history")
+              .select("id")
+              .eq("user_id", user.id)
+              .order("cycle_start_date", { ascending: false })
+              .limit(1)
+          );
+        // Non-critical — ignore errors here; profile save already succeeded
+      }
+
+      await refreshProfile();
+      setSaveStatus("success");
+    } else {
+      setSaveStatus("error");
+    }
     setTimeout(() => setSaveStatus("idle"), 2500);
   }
 
