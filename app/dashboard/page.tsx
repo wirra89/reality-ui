@@ -2,11 +2,11 @@
 import PageSkeleton from "@/components/PageSkeleton";
 
 // app/dashboard/page.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData, formatPeriodStartDate } from "@/lib/cycle";
-import { getCheckinStreak, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
+import { supabase, getCheckinStreak, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
 import CycleBadge from "@/components/CycleBadge";
 import CycleSlider from "@/components/CycleSlider";
 import WorkoutCard from "@/components/WorkoutCard";
@@ -73,27 +73,52 @@ export default function DashboardPage() {
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [todayCalories, setTodayCalories]   = useState(0);
   const [waterGlasses, setWaterGlasses]     = useState(0);
+  const [hydrationLoading, setHydrationLoading] = useState(true);
 
-  // Water — persists in localStorage per day
-  const WATER_KEY = `herphase_water_${new Date().toISOString().split("T")[0]}`;
-  function addWater() {
-    const next = Math.min(waterGlasses + 1, 12);
-    setWaterGlasses(next);
-    localStorage.setItem(WATER_KEY, String(next));
-  }
-  function removeWater() {
-    const next = Math.max(waterGlasses - 1, 0);
-    setWaterGlasses(next);
-    localStorage.setItem(WATER_KEY, String(next));
-  }
+  // ── Hydration — Supabase-backed, replaces localStorage ────────────────
+  // Debounce ref: we update state immediately (optimistic) but only flush
+  // to Supabase 400ms after the last tap, so rapid taps become one write.
+  const hydrationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const persistHydration = useCallback((glasses: number, waterTarget: number, phase: string, day: number) => {
+    if (!user) return;
+    const today = new Date().toISOString().split("T")[0];
+    if (hydrationDebounceRef.current) clearTimeout(hydrationDebounceRef.current);
+    hydrationDebounceRef.current = setTimeout(() => {
+      supabase.from("hydration_logs").upsert([{
+        user_id:    user.id,
+        date:       today,
+        glasses,
+        target:     waterTarget,
+        phase,
+        cycle_day:  day,
+        updated_at: new Date().toISOString(),
+      }], { onConflict: "user_id,date" }).then(() => {});
+    }, 400);
+  }, [user]);
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
+  // Load today's hydration from Supabase on mount
   useEffect(() => {
-    // Load today's water count from localStorage
-    const saved = localStorage.getItem(WATER_KEY);
-    if (saved) setWaterGlasses(parseInt(saved) || 0);
-  }, [WATER_KEY]);
+    if (!user) return;
+    const today = new Date().toISOString().split("T")[0];
+    setHydrationLoading(true);
+    supabase
+      .from("hydration_logs")
+      .select("glasses")
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .maybeSingle()
+      .then(({ data }) => {
+        setWaterGlasses(data?.glasses ?? 0);
+        setHydrationLoading(false);
+      })
+      .catch(() => {
+        setWaterGlasses(0);
+        setHydrationLoading(false);
+      });
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -414,6 +439,16 @@ export default function DashboardPage() {
             ovulation:  "Peak metabolism needs more water for performance",
             luteal:     "Higher target — water reduces PMS water retention",
           };
+          function addWater() {
+            const next = Math.min(waterGlasses + 1, 12);
+            setWaterGlasses(next);
+            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+          }
+          function removeWater() {
+            const next = Math.max(waterGlasses - 1, 0);
+            setWaterGlasses(next);
+            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+          }
           return (
             <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
               <div className="flex items-center justify-between mb-3">
@@ -422,7 +457,11 @@ export default function DashboardPage() {
                   <p className="text-xs text-dark/35 font-body mt-0.5">{phaseWaterTip[phaseData.phase]}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold font-display text-primary">{waterGlasses}</p>
+                  {hydrationLoading ? (
+                    <div className="w-8 h-6 rounded bg-gray-100 animate-pulse mb-0.5" />
+                  ) : (
+                    <p className="text-lg font-bold font-display text-primary">{waterGlasses}</p>
+                  )}
                   <p className="text-xs text-dark/30 font-body">/ {waterTarget} glasses</p>
                 </div>
               </div>
@@ -433,7 +472,7 @@ export default function DashboardPage() {
               </div>
               {/* Glass buttons */}
               <div className="flex items-center justify-between">
-                <button onClick={removeWater} disabled={waterGlasses === 0}
+                <button onClick={removeWater} disabled={waterGlasses === 0 || hydrationLoading}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-dark/40 disabled:opacity-25 active:scale-90 transition-all text-lg"
                   style={{ background: "#F9FAFB" }}>−</button>
                 <div className="flex gap-1.5 flex-wrap justify-center flex-1 px-2">
@@ -441,9 +480,10 @@ export default function DashboardPage() {
                     <button key={i} onClick={() => {
                       const next = i + 1;
                       setWaterGlasses(next);
-                      localStorage.setItem(WATER_KEY, String(next));
+                      persistHydration(next, waterTarget, phaseData.phase, cycleDay);
                     }}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all active:scale-90"
+                      disabled={hydrationLoading}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all active:scale-90 disabled:opacity-40"
                       style={{
                         background: i < waterGlasses ? "rgba(196,138,151,0.15)" : "#F9FAFB",
                         border: i < waterGlasses ? "1.5px solid rgba(196,138,151,0.4)" : "1.5px solid transparent",
@@ -452,7 +492,7 @@ export default function DashboardPage() {
                     </button>
                   ))}
                 </div>
-                <button onClick={addWater} disabled={waterGlasses >= 12}
+                <button onClick={addWater} disabled={waterGlasses >= 12 || hydrationLoading}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-white disabled:opacity-25 active:scale-90 transition-all text-lg font-bold"
                   style={{ background: "linear-gradient(135deg,#C48A97,#7B6D8D)" }}>+</button>
               </div>
