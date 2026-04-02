@@ -221,20 +221,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setManualCycleDay(null);
     setNewCyclePrompt(false);
     setProfile(prev => prev ? { ...prev, period_start_date: today, cycle_day: 1 } : prev);
+
+    // Update profile — existing behaviour
     await supabase.from("profiles").update({
       period_start_date: today, cycle_day: 1, updated_at: new Date().toISOString(),
     }).eq("id", user.id);
-  }, [user]);
+
+    // Record cycle start in history — ON CONFLICT DO NOTHING prevents duplicates
+    // if the user taps "Day 1" multiple times on the same date
+    await supabase.from("user_cycle_history").upsert([{
+      user_id:                user.id,
+      cycle_start_date:       today,
+      cycle_length_at_start:  profile?.cycle_length  ?? 28,
+      period_length_at_start: profile?.period_length ?? 5,
+      source:                 "manual_set",
+    }], { onConflict: "user_id,cycle_start_date", ignoreDuplicates: true });
+  }, [user, profile?.cycle_length, profile?.period_length]);
 
   const setPeriodStartDate = useCallback(async (date: string) => {
     if (!user) return;
     setManualCycleDay(null);
     setNewCyclePrompt(false);
     setProfile(prev => prev ? { ...prev, period_start_date: date, cycle_day: 1 } : prev);
+
+    // Update profile — existing behaviour
     await supabase.from("profiles").update({
       period_start_date: date, cycle_day: 1, updated_at: new Date().toISOString(),
     }).eq("id", user.id);
-  }, [user]);
+
+    // Record cycle start in history — ON CONFLICT DO NOTHING prevents duplicates
+    // if the user selects the same date from the calendar more than once
+    await supabase.from("user_cycle_history").upsert([{
+      user_id:                user.id,
+      cycle_start_date:       date,
+      cycle_length_at_start:  profile?.cycle_length  ?? 28,
+      period_length_at_start: profile?.period_length ?? 5,
+      source:                 "manual_set",
+    }], { onConflict: "user_id,cycle_start_date", ignoreDuplicates: true });
+  }, [user, profile?.cycle_length, profile?.period_length]);
 
   const setCycleDay = useCallback((day: number) => {
     setManualCycleDay(day);

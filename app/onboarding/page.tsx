@@ -118,6 +118,18 @@ export default function OnboardingPage() {
       }
 
       await supabase.from("profiles").update(updates).eq("id", user.id);
+
+      // If period start date was set during onboarding, seed cycle history
+      // ON CONFLICT DO NOTHING = safe to run even if backfill already inserted this date
+      if (periodStartDate) {
+        await supabase.from("user_cycle_history").upsert([{
+          user_id:                user.id,
+          cycle_start_date:       periodStartDate,
+          cycle_length_at_start:  cycleLength,
+          period_length_at_start: periodLength,
+          source:                 "manual_set",
+        }], { onConflict: "user_id,cycle_start_date", ignoreDuplicates: true });
+      }
       localStorage.setItem(`herphase_onboarded_${user.id}`, "true");
       await refreshProfile();
       router.replace("/dashboard");
