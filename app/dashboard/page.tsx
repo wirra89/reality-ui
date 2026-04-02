@@ -104,20 +104,21 @@ export default function DashboardPage() {
     if (!user) return;
     const today = new Date().toISOString().split("T")[0];
     setHydrationLoading(true);
-    supabase
-      .from("hydration_logs")
-      .select("glasses")
-      .eq("user_id", user.id)
-      .eq("date", today)
-      .maybeSingle()
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("hydration_logs")
+          .select("glasses")
+          .eq("user_id", user.id)
+          .eq("date", today)
+          .maybeSingle();
         setWaterGlasses(data?.glasses ?? 0);
-        setHydrationLoading(false);
-      })
-      .catch(() => {
+      } catch {
         setWaterGlasses(0);
+      } finally {
         setHydrationLoading(false);
-      });
+      }
+    })();
   }, [user]);
 
   useEffect(() => {
