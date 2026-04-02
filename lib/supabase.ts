@@ -206,20 +206,19 @@ export async function getTodayMealLog(cycleDay?: number): Promise<MealLog | null
   const user = await getUser();
   if (!user) return null;
 
-  let query = supabase
+  // Always fetch by today's date — matches the upsert onConflict: "user_id,date".
+  // Previously filtered by cycle_day, which returned stale rows from previous cycles
+  // that share the same cycle_day number. Date is the correct unique key.
+  // cycleDay parameter kept for API compatibility but not used in the query.
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data } = await supabase
     .from("meal_logs")
     .select("*")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .eq("date", today)
+    .limit(1);
 
-  // If cycleDay provided, fetch by cycle_day; otherwise fetch today's date
-  if (cycleDay !== undefined) {
-    query = query.eq("cycle_day", cycleDay);
-  } else {
-    const today = new Date().toISOString().split("T")[0];
-    query = query.eq("date", today);
-  }
-
-  const { data } = await query.order("created_at", { ascending: false }).limit(1);
   return data?.[0] ?? null;
 }
 

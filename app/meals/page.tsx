@@ -23,8 +23,13 @@ export default function MealsPage() {
   const [showForm, setShowForm]       = useState(false);
   const [saveStatus, setSaveStatus]   = useState<"idle" | "loading" | "success" | "error">("idle");
   const [dataLoading, setDataLoading] = useState(true);
-  const [lastLoadedDay, setLastLoadedDay] = useState<number | null>(null);
   const [toast, setToast]             = useState<string | null>(null);
+
+  // Use today's date as the load guard — not cycleDay.
+  // meal_logs rows are keyed by (user_id, date), so re-fetching on the same day
+  // is safe and correct. Previously used cycleDay which caused stale data from
+  // previous cycles with the same cycle_day number to be loaded.
+  const today = new Date().toISOString().split("T")[0];
 
   function showToast(msg: string) {
     setToast(msg);
@@ -35,15 +40,13 @@ export default function MealsPage() {
 
   useEffect(() => {
     if (!user) return;
-    if (lastLoadedDay === cycleDay) return;
     setDataLoading(true);
     setMeals([]);
-    setLastLoadedDay(cycleDay);
-    getTodayMealLog(cycleDay).then((log) => {
-      if (log?.meals && log.cycle_day === cycleDay) setMeals(log.meals as MealEntry[]);
+    getTodayMealLog().then((log) => {
+      if (log?.meals) setMeals(log.meals as MealEntry[]);
       setDataLoading(false);
     });
-  }, [user, cycleDay, lastLoadedDay]);
+  }, [user, today]); // re-fetch if date changes (midnight rollover)
 
   async function persistMeals(updated: MealEntry[]) {
     setSaveStatus("loading");
