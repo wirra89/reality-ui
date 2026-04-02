@@ -170,7 +170,10 @@ export default function MoodPage() {
   const [note, setNote] = useState("");
   const [saveStatus, setSaveStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [alreadyLogged, setAlreadyLogged] = useState(false);
-  const [activeCraving, setActiveCraving] = useState<string | null>(null);
+  // selectedCravings: persisted to DB — which cravings the user has today
+  const [selectedCravings, setSelectedCravings] = useState<string[]>([]);
+  // expandedCraving: display-only — which craving science card is open
+  const [expandedCraving, setExpandedCraving] = useState<string | null>(null);
   const [sleepHours, setSleepHours] = useState<number>(7);
   const [sleepQuality, setSleepQuality] = useState<number>(3);
 
@@ -186,6 +189,7 @@ export default function MoodPage() {
         setNote(log.note ?? "");
         setSleepHours((log as any).sleep_hours ?? 7);
         setSleepQuality((log as any).sleep_quality ?? 3);
+        setSelectedCravings(log.cravings ?? []);
         setAlreadyLogged(true);
       } else {
         setSelectedMood(null);
@@ -194,6 +198,7 @@ export default function MoodPage() {
         setNote("");
         setSleepHours(7);
         setSleepQuality(3);
+        setSelectedCravings([]);
         setAlreadyLogged(false);
       }
     });
@@ -210,7 +215,8 @@ export default function MoodPage() {
       cycle_day: cycleDay, phase: phaseData.phase,
       mood: selectedMood, energy, symptoms: selectedSymptoms, note,
       sleep_hours: sleepHours, sleep_quality: sleepQuality,
-    } as any);
+      cravings: selectedCravings,
+    });
     setSaveStatus(result.success ? "success" : "error");
     if (result.success) {
       setAlreadyLogged(true);
@@ -360,29 +366,38 @@ export default function MoodPage() {
         {/* Cravings */}
         <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">Any cravings today?</p>
-          <p className="text-xs text-dark/30 font-body mb-3">Tap a craving to find out what your body really needs.</p>
+          <p className="text-xs text-dark/30 font-body mb-3">Select all that apply. Tap to see what your body actually needs.</p>
           <div className="flex flex-wrap gap-2">
             {cravings.map((c) => {
-              const active = activeCraving === c.id;
+              const isSelected = selectedCravings.includes(c.id);
+              const isExpanded = expandedCraving === c.id;
               return (
                 <button key={c.id}
-                  onClick={() => setActiveCraving(active ? null : c.id)}
+                  onClick={() => {
+                    // Toggle selection (saved to DB)
+                    setSelectedCravings(prev =>
+                      prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id]
+                    );
+                    // Toggle expand (display only)
+                    setExpandedCraving(isExpanded ? null : c.id);
+                  }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
                   style={{
-                    background: active ? "rgba(196,138,151,0.15)" : "#F9FAFB",
-                    color: active ? "#C48A97" : "#6B7280",
-                    border: `1px solid ${active ? "rgba(196,138,151,0.4)" : "transparent"}`,
+                    background: isSelected ? "rgba(196,138,151,0.15)" : "#F9FAFB",
+                    color: isSelected ? "#C48A97" : "#6B7280",
+                    border: `1px solid ${isSelected ? "rgba(196,138,151,0.4)" : "transparent"}`,
                   }}>
                   <span style={{ fontSize: 14 }}>{c.emoji}</span>
+                  {isSelected && <span className="text-xs">✓</span>}
                   {c.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Expanded craving card */}
-          {activeCraving && (() => {
-            const c = cravings.find(x => x.id === activeCraving)!;
+          {/* Expanded craving card — science explanation */}
+          {expandedCraving && (() => {
+            const c = cravings.find(x => x.id === expandedCraving)!;
             const phaseData_ = c.phases[phaseData.phase] ?? c.phases.luteal;
             return (
               <div className="mt-4 rounded-2xl overflow-hidden"

@@ -71,7 +71,7 @@ function moodLogToCheckin(log: MoodLog): CheckInSnapshot {
     symptoms:      log.symptoms ?? [],
     sleep_hours:   log.sleep_hours,
     sleep_quality: log.sleep_quality,
-    cravings:      (log as any).cravings ?? [], // Tier 1 migration will add this column
+    cravings:      log.cravings ?? [],
   };
 }
 

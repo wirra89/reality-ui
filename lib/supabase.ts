@@ -76,6 +76,7 @@ export interface MoodLog {
   note: string;
   sleep_hours?: number;
   sleep_quality?: number;
+  cravings?: string[];   // added in migration add_cravings_to_mood_logs
 }
 
 // ── Auth ───────────────────────────────────────────────────────────────────
@@ -249,6 +250,7 @@ export async function saveMoodLog(log: MoodLog): Promise<{ success: boolean; err
     note: log.note,
     sleep_hours: log.sleep_hours ?? null,
     sleep_quality: log.sleep_quality ?? null,
+    cravings: log.cravings ?? [],
   }]);
   return error ? { success: false, error: error.message } : { success: true };
 }
