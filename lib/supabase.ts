@@ -232,26 +232,25 @@ export async function saveMoodLog(log: MoodLog): Promise<{ success: boolean; err
   if (!user) return { success: false, error: "Not logged in" };
   const today = new Date().toISOString().split("T")[0];
 
-  // Delete existing log for this specific cycle_day
-  await supabase
-    .from("mood_logs")
-    .delete()
-    .eq("user_id", user.id)
-    .eq("cycle_day", log.cycle_day);
-
-  const { error } = await supabase.from("mood_logs").insert([{
-    user_id: user.id,
-    date: today,
-    cycle_day: log.cycle_day,
-    phase: log.phase,
-    mood: log.mood,
-    energy: log.energy,
-    symptoms: log.symptoms,
-    note: log.note,
-    sleep_hours: log.sleep_hours ?? null,
+  // Upsert on (user_id, date) — safe single-operation write.
+  // If no row exists for today: INSERT. If one exists: UPDATE all fields.
+  // No DELETE step — eliminates the partial-failure data loss risk of delete+insert.
+  // Requires UNIQUE constraint on (user_id, date) — added in migration
+  // mood_logs_unique_user_date_and_deduplicate.
+  const { error } = await supabase.from("mood_logs").upsert([{
+    user_id:       user.id,
+    date:          today,
+    cycle_day:     log.cycle_day,
+    phase:         log.phase,
+    mood:          log.mood,
+    energy:        log.energy,
+    symptoms:      log.symptoms,
+    note:          log.note,
+    sleep_hours:   log.sleep_hours  ?? null,
     sleep_quality: log.sleep_quality ?? null,
-    cravings: log.cravings ?? [],
-  }]);
+    cravings:      log.cravings     ?? [],
+  }], { onConflict: "user_id,date" });
+
   return error ? { success: false, error: error.message } : { success: true };
 }
 
