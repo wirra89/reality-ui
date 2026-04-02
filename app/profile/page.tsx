@@ -658,34 +658,6 @@ export default function ProfilePage() {
               ))}
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-dark">Daily reminders</p>
-              <p className="text-xs text-dark/40 font-body">
-                {!push.isSupported
-                  ? "Install HerPhase as PWA to enable"
-                  : push.isSubscribed
-                  ? "You'll get daily check-in reminders"
-                  : "Get reminded to log your daily check-in"}
-              </p>
-            </div>
-            {push.isSupported ? (
-              <button
-                onClick={push.isSubscribed ? push.unsubscribe : push.subscribe}
-                disabled={push.loading}
-                className="relative w-12 h-6 rounded-full transition-all duration-300 flex-shrink-0"
-                style={{ background: push.isSubscribed ? "#C48A97" : "#E5E7EB" }}>
-                <span
-                  className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all duration-300"
-                  style={{ left: push.isSubscribed ? "calc(100% - 1.375rem)" : "0.125rem" }} />
-              </button>
-            ) : (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{ background: "rgba(196,138,151,0.1)", color: "#C48A97" }}>
-                PWA only
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Save profile */}
