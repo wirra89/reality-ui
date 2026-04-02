@@ -9,7 +9,7 @@ import { supabase, type WeightLog } from "@/lib/supabase";
 import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
 import WeightChart from "@/components/WeightChart";
 
-type Tab = "workouts" | "meals" | "mood" | "weight" | "insights";
+type Tab = "workouts" | "meals" | "mood" | "weight";
 
 const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   menstrual:  { bg: "#FEF2F2", text: "#B91C1C", dot: "#F87171" },
@@ -103,36 +103,6 @@ export default function HistoryPage() {
   const filteredMeals    = phaseFilter === "all" ? meals    : meals.filter(m => m.phase === phaseFilter);
   const filteredMoods    = phaseFilter === "all" ? moods    : moods.filter(m => m.phase === phaseFilter);
 
-  // ── Cycle Insights ────────────────────────────────────────────────────────
-  // Average mood + energy per phase
-  const phaseInsights = ["menstrual", "follicular", "ovulation", "luteal"].map(phase => {
-    const phaseMoods = moods.filter(m => m.phase === phase);
-    if (phaseMoods.length === 0) return { phase, avgMood: null, avgEnergy: null, count: 0 };
-    const avgMoodVal   = phaseMoods.reduce((a, m) => a + (m.mood as unknown as number), 0) / phaseMoods.length;
-    const avgEnergyVal = phaseMoods.reduce((a, m) => a + (m.energy as unknown as number), 0) / phaseMoods.length;
-    return { phase, avgMood: avgMoodVal, avgEnergy: avgEnergyVal, count: phaseMoods.length };
-  });
-
-  // Symptom frequency — count how often each symptom appears per phase
-  const symptomsByPhase = ["menstrual", "follicular", "ovulation", "luteal"].map(phase => {
-    const phaseMoods = moods.filter(m => m.phase === phase);
-    const freq: Record<string, number> = {};
-    phaseMoods.forEach(m => {
-      const symptoms = m.symptoms as unknown as string[];
-      if (symptoms) symptoms.forEach(s => { freq[s] = (freq[s] || 0) + 1; });
-    });
-    const sorted = Object.entries(freq)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([symptom, count]) => ({ symptom, count, pct: Math.round((count / phaseMoods.length) * 100) }));
-    return { phase, symptoms: sorted, total: phaseMoods.length };
-  });
-
-  // Best and worst phase by avg mood
-  const phasesWithData = phaseInsights.filter(p => p.avgMood !== null);
-  const bestPhase  = phasesWithData.length ? phasesWithData.reduce((a, b) => (a.avgMood! > b.avgMood! ? a : b)) : null;
-  const worstPhase = phasesWithData.length ? phasesWithData.reduce((a, b) => (a.avgMood! < b.avgMood! ? a : b)) : null;
-
   if (loading || !user) return (
     <PageSkeleton />
   );
@@ -178,7 +148,6 @@ export default function HistoryPage() {
             { id: "meals",     label: "Meals",    emoji: "🥗" },
             { id: "mood",      label: "Mood",     emoji: "💭" },
             { id: "weight",    label: "Weight",   emoji: "⚖️" },
-            { id: "insights",  label: "Insights", emoji: "✦" },
           ] as { id: Tab; label: string; emoji: string }[]).map((t) => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
@@ -191,8 +160,7 @@ export default function HistoryPage() {
           ))}
         </div>
 
-        {/* Phase filter — hide on insights tab */}
-        {activeTab !== "insights" && (
+        {/* Phase filter */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 mb-4 scrollbar-none">
           {phases.map((p) => {
             const active = phaseFilter === p;
@@ -212,7 +180,6 @@ export default function HistoryPage() {
             );
           })}
         </div>
-        )}
         {dataLoading ? (
           <div className="text-center py-12">
             <p className="text-dark/40 text-sm">Loading history…</p>
@@ -504,131 +471,17 @@ export default function HistoryPage() {
             </div>
           )}
 
-          {/* ── INSIGHTS ── */}
-          {activeTab === "insights" && (
-            <div className="mb-6">
-              {moods.length < 3 ? (
-                <EmptyState emoji="✦" text="Not enough data yet" sub="Log your mood for at least 3 days to see cycle insights" cta="Go to Mood" ctaHref="/mood" />
-              ) : (
-                <>
-                  {/* Summary cards */}
-                  {phasesWithData.length > 0 && (
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                      {bestPhase && (
-                        <div className="bg-white rounded-2xl p-4 shadow-card" style={{ borderLeft: `3px solid ${PHASE_COLORS[bestPhase.phase]?.dot}` }}>
-                          <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-1">Best phase</p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">{PHASE_EMOJIS[bestPhase.phase]}</span>
-                            <div>
-                              <p className="text-sm font-bold text-dark capitalize">{bestPhase.phase}</p>
-                              <p className="text-xs text-dark/40">avg mood {bestPhase.avgMood!.toFixed(1)}/5</p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {worstPhase && worstPhase.phase !== bestPhase?.phase && (
-                        <div className="bg-white rounded-2xl p-4 shadow-card" style={{ borderLeft: `3px solid ${PHASE_COLORS[worstPhase.phase]?.dot}` }}>
-                          <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-1">Needs support</p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">{PHASE_EMOJIS[worstPhase.phase]}</span>
-                            <div>
-                              <p className="text-sm font-bold text-dark capitalize">{worstPhase.phase}</p>
-                              <p className="text-xs text-dark/40">avg mood {worstPhase.avgMood!.toFixed(1)}/5</p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Phase mood + energy averages */}
-                  <div className="bg-white rounded-2xl shadow-card p-4 mb-4">
-                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Average mood & energy by phase</p>
-                    <div className="space-y-3">
-                      {phaseInsights.map(p => {
-                        const color = PHASE_COLORS[p.phase]?.dot ?? "#9CA3AF";
-                        const moodPct   = p.avgMood   ? (p.avgMood   / 5) * 100 : 0;
-                        const energyPct = p.avgEnergy ? (p.avgEnergy / 5) * 100 : 0;
-                        return (
-                          <div key={p.phase}>
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm">{PHASE_EMOJIS[p.phase]}</span>
-                                <span className="text-xs font-semibold text-dark capitalize">{p.phase}</span>
-                              </div>
-                              {p.count > 0 ? (
-                                <span className="text-xs text-dark/30">{p.count} logs</span>
-                              ) : (
-                                <span className="text-xs text-dark/20 italic">no data yet</span>
-                              )}
-                            </div>
-                            {p.count > 0 ? (
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-dark/40 w-10 flex-shrink-0">Mood</span>
-                                  <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-                                    <div className="h-full rounded-full transition-all" style={{ width: `${moodPct}%`, background: color }} />
-                                  </div>
-                                  <span className="text-xs font-semibold text-dark/60 w-6 text-right">{p.avgMood!.toFixed(1)}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-dark/40 w-10 flex-shrink-0">Energy</span>
-                                  <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-                                    <div className="h-full rounded-full transition-all" style={{ width: `${energyPct}%`, background: color, opacity: 0.5 }} />
-                                  </div>
-                                  <span className="text-xs font-semibold text-dark/60 w-6 text-right">{p.avgEnergy!.toFixed(1)}</span>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="h-2 bg-gray-50 rounded-full" />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Symptom patterns per phase */}
-                  <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-1">Symptom patterns</p>
-                  <div className="space-y-3">
-                    {symptomsByPhase.filter(p => p.symptoms.length > 0).map(p => {
-                      const color = PHASE_COLORS[p.phase]?.dot ?? "#9CA3AF";
-                      const bg    = PHASE_COLORS[p.phase]?.bg   ?? "#F9FAFB";
-                      return (
-                        <div key={p.phase} className="bg-white rounded-2xl shadow-card p-4">
-                          <div className="flex items-center gap-2 mb-3">
-                            <span className="text-lg">{PHASE_EMOJIS[p.phase]}</span>
-                            <p className="text-sm font-bold text-dark capitalize">{p.phase}</p>
-                            <span className="text-xs text-dark/30 ml-auto">{p.total} entries</span>
-                          </div>
-                          <div className="space-y-2">
-                            {p.symptoms.map(({ symptom, count, pct }) => (
-                              <div key={symptom} className="flex items-center gap-2">
-                                <span className="text-xs text-dark/70 font-body flex-1 truncate">{symptom}</span>
-                                <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
-                                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
-                                </div>
-                                <span className="text-xs font-semibold text-dark/40 w-8 text-right flex-shrink-0">{pct}%</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {symptomsByPhase.every(p => p.symptoms.length === 0) && (
-                      <div className="text-center py-8">
-                        <p className="text-dark/40 text-sm">No symptom data yet</p>
-                        <p className="text-dark/30 text-xs font-body mt-1">Log symptoms in the Mood tab to see patterns</p>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
           </>
         )}
+
+        {/* Link to full Insights page */}
+        <button onClick={() => router.push("/insights")}
+          className="w-full py-3 rounded-2xl text-sm font-semibold text-dark/40 flex items-center justify-center gap-2 mb-4 active:scale-95 transition-all"
+          style={{ background: "rgba(0,0,0,0.03)" }}>
+          ✦ View cycle insights
+          <span className="text-dark/25">→</span>
+        </button>
+
       </main>
     </div>
   );
