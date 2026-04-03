@@ -8,10 +8,19 @@ import { useApp } from "@/context/AppContext";
 import { getPhaseData } from "@/lib/cycle";
 import { saveMealLog, getTodayMealLog, type MealEntry } from "@/lib/supabase";
 import { type Phase } from "@/lib/foods";
-import MealPhaseBanner   from "@/components/MealPhaseBanner";
-import MealDailySummary  from "@/components/MealDailySummary";
-import MealLogForm       from "@/components/MealLogForm";
-import MealFoodLibrary   from "@/components/MealFoodLibrary";
+import MealPhaseBanner    from "@/components/MealPhaseBanner";
+import MealDailySummary   from "@/components/MealDailySummary";
+import MealLogForm        from "@/components/MealLogForm";
+import MealFoodLibrary    from "@/components/MealFoodLibrary";
+// V1.1 nutrition components — coexist with legacy system during transition
+import NutritionFoodSearch from "@/components/NutritionFoodSearch";
+import NutritionEntryList  from "@/components/NutritionEntryList";
+import {
+  getTodayMealEntries,
+  getTodayNutritionSummary,
+  type MealLogEntry,
+  type NutritionSummary,
+} from "@/lib/nutrition";
 
 export default function MealsPage() {
   const { user, profile, cycleDay, cycleParams, loading, todayState } = useApp();
@@ -24,6 +33,12 @@ export default function MealsPage() {
   const [saveStatus, setSaveStatus]   = useState<"idle" | "loading" | "success" | "error">("idle");
   const [dataLoading, setDataLoading] = useState(true);
   const [toast, setToast]             = useState<string | null>(null);
+
+  // ── V1.1 nutrition state — new relational system, coexists with legacy ──
+  const [showNutritionSearch, setShowNutritionSearch] = useState(false);
+  const [nutritionEntries, setNutritionEntries]       = useState<MealLogEntry[]>([]);
+  const [nutritionSummary, setNutritionSummary]       = useState<NutritionSummary | null>(null);
+  const [nutritionLoading, setNutritionLoading]       = useState(true);
 
   // Use today's date as the load guard — not cycleDay.
   // meal_logs rows are keyed by (user_id, date), so re-fetching on the same day
@@ -47,6 +62,23 @@ export default function MealsPage() {
       setDataLoading(false);
     });
   }, [user, today]); // re-fetch if date changes (midnight rollover)
+
+  // ── V1.1: load nutrition entries + summary from new relational table ──
+  async function refreshNutrition() {
+    const [entries, summary] = await Promise.all([
+      getTodayMealEntries(),
+      getTodayNutritionSummary(),
+    ]);
+    setNutritionEntries(entries);
+    setNutritionSummary(summary);
+    setNutritionLoading(false);
+  }
+
+  useEffect(() => {
+    if (!user) return;
+    setNutritionLoading(true);
+    refreshNutrition();
+  }, [user, today]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function persistMeals(updated: MealEntry[]) {
     setSaveStatus("loading");
@@ -138,6 +170,57 @@ export default function MealsPage() {
 
         {/* Food library */}
         <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />
+
+        {/* ── V1.1 Nutrition system — additive slice, coexists with legacy ── */}
+        <div className="mt-2 mb-2">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <div>
+              <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">
+                Food log ✦
+              </p>
+              <p className="text-xs text-dark/30 font-body mt-0.5">
+                New nutrition tracker — logs to your personal food database
+              </p>
+            </div>
+          </div>
+
+          {/* Log food button or search form */}
+          {!showNutritionSearch ? (
+            <button
+              onClick={() => setShowNutritionSearch(true)}
+              className="w-full py-3 rounded-2xl font-semibold text-sm tracking-wide transition-all duration-300 active:scale-95 mb-3 flex items-center justify-center gap-2"
+              style={{
+                background: "rgba(196,138,151,0.08)",
+                color: "#C48A97",
+                border: "1.5px solid rgba(196,138,151,0.25)",
+              }}>
+              <span className="text-base">🔍</span>
+              Search & log food
+            </button>
+          ) : (
+            <NutritionFoodSearch
+              cycleDay={cycleDay}
+              phase={phase}
+              onLogged={() => {
+                setShowNutritionSearch(false);
+                showToast("✓ Food logged");
+                refreshNutrition();
+              }}
+              onCancel={() => setShowNutritionSearch(false)}
+            />
+          )}
+
+          {/* Today's nutrition entries + summary */}
+          <NutritionEntryList
+            entries={nutritionEntries}
+            summary={nutritionSummary}
+            loading={nutritionLoading}
+            onEntryDeleted={(deletedId) => {
+              setNutritionEntries(prev => prev.filter(e => e.id !== deletedId));
+              refreshNutrition(); // refresh summary too
+            }}
+          />
+        </div>
       </main>
     </div>
   );
