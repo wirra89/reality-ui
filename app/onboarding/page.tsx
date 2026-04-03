@@ -288,9 +288,17 @@ export default function OnboardingPage() {
             </div>
 
             {/* Period start date — new field */}
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-4">
-              <p className="text-sm font-semibold text-dark mb-0.5">When did your last period start?</p>
-              <p className="text-xs text-dark/40 font-body mb-3">This tells us exactly where you are in your cycle today. Without it we'll assume Day 8. You can always update this later.</p>
+            <div className="bg-white rounded-2xl p-4 shadow-card mb-4"
+              style={{ border: periodStartDate ? "1.5px solid rgba(196,138,151,0.35)" : "1.5px solid rgba(248,113,113,0.25)", background: periodStartDate ? "white" : "rgba(248,113,113,0.03)" }}>
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-sm font-semibold text-dark">When did your last period start?</p>
+                {!periodStartDate && <span className="text-xs font-bold text-rose-400 bg-rose-50 px-1.5 py-0.5 rounded-full">Important</span>}
+              </div>
+              <p className="text-xs text-dark/40 font-body mb-3">
+                {periodStartDate
+                  ? "Perfect — all recommendations will be personalised to your phase."
+                  : "Without this, your training and nutrition advice won't match your actual cycle. You can update it later but results will be generic until then."}
+              </p>
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🩸</span>
                 <input
