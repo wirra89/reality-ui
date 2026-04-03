@@ -168,32 +168,13 @@ export default function MealsPage() {
           }
         />
 
-        {/* Food library */}
-        <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />
-
-        {/* ── V1.1 Nutrition system — additive slice, coexists with legacy ── */}
-        <div className="mt-2 mb-2">
-          <div className="flex items-center justify-between mb-3 px-1">
-            <div>
-              <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">
-                Food log ✦
-              </p>
-              <p className="text-xs text-dark/30 font-body mt-0.5">
-                New nutrition tracker — logs to your personal food database
-              </p>
-            </div>
-          </div>
-
-          {/* Log food button or search form */}
+        {/* ── V1.1: Search & log food — visible immediately ── */}
+        <div className="mb-3">
           {!showNutritionSearch ? (
             <button
               onClick={() => setShowNutritionSearch(true)}
-              className="w-full py-3 rounded-2xl font-semibold text-sm tracking-wide transition-all duration-300 active:scale-95 mb-3 flex items-center justify-center gap-2"
-              style={{
-                background: "rgba(196,138,151,0.08)",
-                color: "#C48A97",
-                border: "1.5px solid rgba(196,138,151,0.25)",
-              }}>
+              className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 mb-3 flex items-center justify-center gap-2 shadow-soft"
+              style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
               <span className="text-base">🔍</span>
               Search & log food
             </button>
@@ -210,17 +191,19 @@ export default function MealsPage() {
             />
           )}
 
-          {/* Today's nutrition entries + summary */}
           <NutritionEntryList
             entries={nutritionEntries}
             summary={nutritionSummary}
             loading={nutritionLoading}
             onEntryDeleted={(deletedId) => {
               setNutritionEntries(prev => prev.filter(e => e.id !== deletedId));
-              refreshNutrition(); // refresh summary too
+              refreshNutrition();
             }}
           />
         </div>
+
+        {/* Food library — phase recommendations */}
+        <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />
       </main>
     </div>
   );
