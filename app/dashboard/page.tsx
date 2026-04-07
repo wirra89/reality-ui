@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData, formatPeriodStartDate } from "@/lib/cycle";
 import { supabase, getCheckinStreak, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
+import { getTodayNutritionSummary, type NutritionSummary } from "@/lib/nutrition";
 import CycleBadge from "@/components/CycleBadge";
 import CycleSlider from "@/components/CycleSlider";
 import WorkoutCard from "@/components/WorkoutCard";
@@ -72,6 +73,7 @@ export default function DashboardPage() {
   const [streak, setStreak]                 = useState(0);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [todayCalories, setTodayCalories]   = useState(0);
+  const [nutritionSummary, setNutritionSummary] = useState<NutritionSummary | null>(null);
   const [waterGlasses, setWaterGlasses]     = useState(0);
   const [hydrationLoading, setHydrationLoading] = useState(true);
 
@@ -128,10 +130,17 @@ export default function DashboardPage() {
       const ago = new Date(); ago.setDate(ago.getDate() - 7);
       setWeeklyWorkouts(ws.filter(w => w.created_at && new Date(w.created_at) >= ago).length);
     });
-    getTodayMealLog().then(log => {
-      if (log?.meals) {
-        setTodayCalories((log.meals as unknown as { calories: string }[])
-          .reduce((a, m) => a + (parseFloat(m.calories) || 0), 0));
+    Promise.all([
+      getTodayMealLog(),
+      getTodayNutritionSummary(),
+    ]).then(([log, summary]) => {
+      setNutritionSummary(summary);
+      if (summary.entryCount > 0) {
+        setTodayCalories(Math.round(summary.kcal));
+      } else if (log?.meals) {
+        const legacyKcal = (log.meals as unknown as { calories: string }[])
+          .reduce((a, m) => a + (parseFloat(m.calories) || 0), 0);
+        setTodayCalories(legacyKcal);
       }
     });
   }, [user]);
