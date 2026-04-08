@@ -147,14 +147,23 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
                 key={food.id}
                 onClick={() => handleSelectFood(food)}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-gray-100 border-b border-gray-50 last:border-0">
-                <span className="text-sm font-semibold text-dark">{food.name}</span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  {food.emoji && <span className="text-base flex-shrink-0">{food.emoji}</span>}
+                  <span className="text-sm font-semibold text-dark truncate">{food.name}</span>
+                </div>
                 <div className="text-right flex-shrink-0 ml-2">
                   {food.brand && (
                     <p className="text-xs text-dark/30 font-body">{food.brand}</p>
                   )}
-                  <p className="text-xs text-dark/40">
-                    {food.kcalPer100g} kcal · {food.proteinPer100g}g P / 100g
-                  </p>
+                  {food.category === "meal" && food.servingSizeG ? (
+                    <p className="text-xs text-dark/40">
+                      {Math.round(food.kcalPer100g * food.servingSizeG / 100)} kcal · {food.servingSizeG}g serving
+                    </p>
+                  ) : (
+                    <p className="text-xs text-dark/40">
+                      {food.kcalPer100g} kcal · {food.proteinPer100g}g P / 100g
+                    </p>
+                  )}
                 </div>
               </button>
             ))
@@ -171,10 +180,17 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
               {selected.brand && (
                 <p className="text-xs text-dark/40 font-body">{selected.brand}</p>
               )}
-              <p className="text-xs text-dark/40 font-body mt-0.5">
-                Per 100g: {selected.kcalPer100g} kcal · {selected.proteinPer100g}g P ·{" "}
-                {selected.carbsPer100g}g C · {selected.fatsPer100g}g F
-              </p>
+              {selected.category === "meal" && selected.servingSizeG ? (
+                <p className="text-xs text-dark/40 font-body mt-0.5">
+                  Serving: {selected.servingSizeG}g · {Math.round(selected.kcalPer100g * selected.servingSizeG / 100)} kcal ·{" "}
+                  {Math.round(selected.proteinPer100g * selected.servingSizeG / 100 * 10) / 10}g P
+                </p>
+              ) : (
+                <p className="text-xs text-dark/40 font-body mt-0.5">
+                  Per 100g: {selected.kcalPer100g} kcal · {selected.proteinPer100g}g P ·{" "}
+                  {selected.carbsPer100g}g C · {selected.fatsPer100g}g F
+                </p>
+              )}
             </div>
             <button
               onClick={handleClearSelection}
