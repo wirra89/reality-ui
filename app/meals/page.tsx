@@ -175,17 +175,7 @@ export default function MealsPage() {
           />
         )}
 
-        {/* ── V1.1: Phase-aware meal recommendation cards ── */}
-        <MealRecommendationCards
-          phase={phase}
-          cycleDay={cycleDay}
-          onLogged={() => {
-            showToast("✓ Food logged");
-            refreshNutrition();
-          }}
-        />
-
-        {/* ── V1.1: Search & log food — visible immediately ── */}
+        {/* ── V1.1: Search & log food — above recommendations ── */}
         <div className="mb-3">
           {!showNutritionSearch ? (
             <button
@@ -218,6 +208,16 @@ export default function MealsPage() {
             }}
           />
         </div>
+
+        {/* ── V1.1: Phase-aware meal recommendation cards — below logged entries ── */}
+        <MealRecommendationCards
+          phase={phase}
+          cycleDay={cycleDay}
+          onLogged={() => {
+            showToast("✓ Food logged");
+            refreshNutrition();
+          }}
+        />
 
         {/* Food library — phase recommendations, legacy system, hidden from testers */}
         {SHOW_LEGACY_MEALS && <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />}
