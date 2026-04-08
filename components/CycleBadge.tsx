@@ -1,11 +1,12 @@
 "use client";
 
 // components/CycleBadge.tsx
-import { PhaseData } from "@/lib/cycle";
+import { PhaseData, CycleParams, Phase, getDayInPhase, getPhaseDuration } from "@/lib/cycle";
 
 interface Props {
   cycleDay: number;
   phaseData: PhaseData;
+  cycleParams?: CycleParams;
   dayInPhase?: number;
   phaseDuration?: number;
 }
@@ -20,14 +21,12 @@ const phaseColors: Record<string, string> = {
 export default function CycleBadge({
   cycleDay,
   phaseData,
+  cycleParams = {},
   dayInPhase: dayInPhaseProp,
   phaseDuration: phaseDurationProp,
 }: Props) {
-  // Compute defaults if not passed
-  const phaseStarts: Record<string, number> = { menstrual: 1, follicular: 6, ovulation: 14, luteal: 17 };
-  const phaseDurations: Record<string, number> = { menstrual: 5, follicular: 8, ovulation: 3, luteal: 12 };
-  const dayInPhase = dayInPhaseProp ?? (cycleDay - (phaseStarts[phaseData.phase] ?? 1) + 1);
-  const phaseDuration = phaseDurationProp ?? (phaseDurations[phaseData.phase] ?? 5);
+  const dayInPhase    = dayInPhaseProp    ?? getDayInPhase(cycleDay, cycleParams);
+  const phaseDuration = phaseDurationProp ?? getPhaseDuration(phaseData.phase as Phase, cycleParams);
   const progress = dayInPhase / phaseDuration;
   const radius = 38;
   const circumference = 2 * Math.PI * radius;

@@ -226,7 +226,7 @@ export default function DashboardPage() {
         )}
 
         {/* ── 2. PHASE CARD ── */}
-        <CycleBadge cycleDay={cycleDay} phaseData={phaseData} />
+        <CycleBadge cycleDay={cycleDay} phaseData={phaseData} cycleParams={cycleParams} />
 
         {/* ── PERIOD DATE NUDGE — show if not set ── */}
         {!profile?.period_start_date && !newCyclePrompt && (
