@@ -581,8 +581,8 @@ export default function TrainingPage() {
           ))}
         </div>
 
-        {/* Add exercise */}
-        <button onClick={addEx}
+        {/* Add exercise — opens library for search/browse */}
+        <button onClick={() => setShowLibrary(true)}
           className="w-full mb-4 py-3.5 rounded-2xl text-sm font-semibold border-2 border-dashed transition-all active:scale-95"
           style={{ borderColor: "rgba(196,138,151,0.3)", color: "#C48A97" }}>
           + Add exercise
