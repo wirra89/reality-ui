@@ -256,6 +256,17 @@ export default function DashboardPage() {
           </button>
         )}
 
+        {/* ── MOOD PERSONALISATION BANNER — visible when check-in influenced today's plan ── */}
+        {todayState?.adaptedFromCheckin && (
+          <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl mb-3"
+            style={{ background: "rgba(123,109,141,0.07)", border: "1px solid rgba(123,109,141,0.15)" }}>
+            <span className="text-base flex-shrink-0">💜</span>
+            <p className="text-xs text-dark/60 font-body leading-snug">
+              Today&apos;s workout and nutrition were <strong className="text-dark/80 font-semibold">adjusted based on your mood check-in</strong>.
+            </p>
+          </div>
+        )}
+
         {/* ── 3. TODAY'S TRAINING ── */}
         {todayState ? (
           <WorkoutCard recommendation={todayState.workoutRecommendation} phase={phaseData.phase} />
@@ -282,7 +293,141 @@ export default function DashboardPage() {
           bodyGoal={profile?.body_goal ?? null}
         />
 
-        {/* ── 5. CYCLE DAY + PREDICTION ── */}
+        {/* ── 5. READINESS + NUTRITION ── */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <ReadinessCard
+            score={todayState?.readinessScore ?? phaseData.readinessScore}
+            label={todayState?.readinessLabel ?? (phaseData.readinessScore >= 80 ? "peak" : phaseData.readinessScore >= 60 ? "good" : phaseData.readinessScore >= 40 ? "moderate" : "rest")}
+            adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+          />
+          <NutritionCard phaseData={phaseData} />
+        </div>
+
+        {/* ── 6. MACROS ── */}
+        <MacroCard phaseData={phaseData} profile={profile} />
+
+        {/* ── 7. WATER TRACKER ── */}
+        {(() => {
+          const waterTarget = (phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8;
+          const pct = Math.min(waterGlasses / waterTarget, 1);
+          const phaseWaterTip: Record<string, string> = {
+            menstrual:  "Higher target — water reduces bloating and cramps",
+            follicular: "Stay hydrated as energy and metabolism rise",
+            ovulation:  "Peak metabolism needs more water for performance",
+            luteal:     "Higher target — water reduces PMS water retention",
+          };
+          function addWater() {
+            const next = Math.min(waterGlasses + 1, 12);
+            setWaterGlasses(next);
+            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+          }
+          function removeWater() {
+            const next = Math.max(waterGlasses - 1, 0);
+            setWaterGlasses(next);
+            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+          }
+          return (
+            <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">Water intake 💧</p>
+                  <p className="text-xs text-dark/35 font-body mt-0.5">{phaseWaterTip[phaseData.phase]}</p>
+                </div>
+                <div className="text-right">
+                  {hydrationLoading ? (
+                    <div className="w-8 h-6 rounded bg-gray-100 animate-pulse mb-0.5" />
+                  ) : (
+                    <p className="text-lg font-bold font-display text-primary">{waterGlasses}</p>
+                  )}
+                  <p className="text-xs text-dark/30 font-body">/ {waterTarget} glasses</p>
+                </div>
+              </div>
+              {/* Progress bar */}
+              <div className="h-2 rounded-full mb-3 overflow-hidden" style={{ background: "rgba(196,138,151,0.12)" }}>
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct * 100}%`, background: pct >= 1 ? "linear-gradient(90deg,#34D399,#10B981)" : "linear-gradient(90deg,#C48A97,#7B6D8D)" }} />
+              </div>
+              {/* Glass buttons */}
+              <div className="flex items-center justify-between">
+                <button onClick={removeWater} disabled={waterGlasses === 0 || hydrationLoading}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center text-dark/40 disabled:opacity-25 active:scale-90 transition-all text-lg"
+                  style={{ background: "#F9FAFB" }}>−</button>
+                <div className="flex gap-1.5 flex-wrap justify-center flex-1 px-2">
+                  {Array.from({ length: Math.min(waterTarget, 9) }).map((_, i) => (
+                    <button key={i} onClick={() => {
+                      const next = i + 1;
+                      setWaterGlasses(next);
+                      persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+                    }}
+                      disabled={hydrationLoading}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all active:scale-90 disabled:opacity-40"
+                      style={{
+                        background: i < waterGlasses ? "rgba(196,138,151,0.15)" : "#F9FAFB",
+                        border: i < waterGlasses ? "1.5px solid rgba(196,138,151,0.4)" : "1.5px solid transparent",
+                      }}>
+                      💧
+                    </button>
+                  ))}
+                </div>
+                <button onClick={addWater} disabled={waterGlasses >= 12 || hydrationLoading}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center text-white disabled:opacity-25 active:scale-90 transition-all text-lg font-bold"
+                  style={{ background: "linear-gradient(135deg,#C48A97,#7B6D8D)" }}>+</button>
+              </div>
+              {waterGlasses >= waterTarget && (
+                <p className="text-center text-xs text-emerald-500 font-semibold mt-2">✓ Daily goal reached!</p>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* ── 8. WEEKLY STATS / WELCOME ── */}
+        {(weeklyWorkouts > 0 || streak > 0 || todayCalories > 0) ? (
+          <div className="mb-3">
+            <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-1">This week</p>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: "Workouts", value: weeklyWorkouts, sub: "last 7 days", color: "#C48A97", bg: "rgba(196,138,151,0.06)" },
+                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", sub: "day check-in", color: streak >= 7 ? "#B45309" : streak >= 3 ? "#059669" : "#9CA3AF", bg: streak >= 7 ? "rgba(251,191,36,0.06)" : streak >= 3 ? "rgba(52,211,153,0.06)" : "rgba(0,0,0,0.02)" },
+                { label: "Calories", value: todayCalories > 0 ? todayCalories : "—", sub: "today", color: "#7B6D8D", bg: "rgba(123,109,141,0.06)" },
+              ].map(s => (
+                <div key={s.label} className="rounded-2xl p-3 text-center" style={{ background: s.bg, border: "1px solid rgba(0,0,0,0.04)" }}>
+                  <p className="font-display font-bold text-lg text-dark leading-tight" style={{ color: s.color }}>
+                    {s.value}
+                  </p>
+                  <p className="text-xs text-dark/30 font-body">{s.sub}</p>
+                  <p className="text-xs text-dark/50 font-semibold uppercase tracking-wide mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-2xl flex-shrink-0">🌸</span>
+              <div>
+                <p className="text-sm font-semibold text-dark">Welcome to HerPhase!</p>
+                <p className="text-xs text-dark/40 font-body leading-snug">Start logging to unlock your weekly stats and insights.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: "Log workout", emoji: "🏋️‍♀️", href: "/training" },
+                { label: "Log meal",    emoji: "🥗",     href: "/meals" },
+                { label: "Log mood",    emoji: "💭",     href: "/mood" },
+              ].map(item => (
+                <button key={item.href}
+                  onClick={() => router.push(item.href)}
+                  className="flex flex-col items-center gap-1 py-2.5 rounded-xl text-xs font-semibold text-dark/60 active:scale-95 transition-all"
+                  style={{ background: "rgba(196,138,151,0.07)" }}>
+                  <span style={{ fontSize: 20 }}>{item.emoji}</span>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── 9. CYCLE DAY + PREDICTION ── */}
         <div className="bg-white rounded-2xl shadow-card mb-3">
 
           {/* Period date row */}
@@ -378,140 +523,6 @@ export default function DashboardPage() {
             onClose={() => setShowCalendar(false)}
           />
         )}
-
-        {/* ── 6. READINESS + NUTRITION ── */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <ReadinessCard
-            score={todayState?.readinessScore ?? phaseData.readinessScore}
-            label={todayState?.readinessLabel ?? (phaseData.readinessScore >= 80 ? "peak" : phaseData.readinessScore >= 60 ? "good" : phaseData.readinessScore >= 40 ? "moderate" : "rest")}
-            adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
-          />
-          <NutritionCard phaseData={phaseData} />
-        </div>
-
-        {/* ── 7. MACROS + WEEKLY STATS ── */}
-        <MacroCard phaseData={phaseData} profile={profile} />
-
-        {/* Weekly stats — hide if all zero, show encouragement instead */}
-        {(weeklyWorkouts > 0 || streak > 0 || todayCalories > 0) ? (
-          <div className="mb-3">
-            <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-1">This week</p>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: "Workouts", value: weeklyWorkouts, sub: "last 7 days", color: "#C48A97", bg: "rgba(196,138,151,0.06)" },
-                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", sub: "day check-in", color: streak >= 7 ? "#B45309" : streak >= 3 ? "#059669" : "#9CA3AF", bg: streak >= 7 ? "rgba(251,191,36,0.06)" : streak >= 3 ? "rgba(52,211,153,0.06)" : "rgba(0,0,0,0.02)" },
-                { label: "Calories", value: todayCalories > 0 ? todayCalories : "—", sub: "today", color: "#7B6D8D", bg: "rgba(123,109,141,0.06)" },
-              ].map(s => (
-                <div key={s.label} className="rounded-2xl p-3 text-center" style={{ background: s.bg, border: "1px solid rgba(0,0,0,0.04)" }}>
-                  <p className="font-display font-bold text-lg text-dark leading-tight" style={{ color: s.color }}>
-                    {s.value}
-                  </p>
-                  <p className="text-xs text-dark/30 font-body">{s.sub}</p>
-                  <p className="text-xs text-dark/50 font-semibold uppercase tracking-wide mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl flex-shrink-0">🌸</span>
-              <div>
-                <p className="text-sm font-semibold text-dark">Welcome to HerPhase!</p>
-                <p className="text-xs text-dark/40 font-body leading-snug">Start logging to unlock your weekly stats and insights.</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: "Log workout", emoji: "🏋️‍♀️", href: "/training" },
-                { label: "Log meal",    emoji: "🥗",     href: "/meals" },
-                { label: "Log mood",    emoji: "💭",     href: "/mood" },
-              ].map(item => (
-                <button key={item.href}
-                  onClick={() => router.push(item.href)}
-                  className="flex flex-col items-center gap-1 py-2.5 rounded-xl text-xs font-semibold text-dark/60 active:scale-95 transition-all"
-                  style={{ background: "rgba(196,138,151,0.07)" }}>
-                  <span style={{ fontSize: 20 }}>{item.emoji}</span>
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── 8. WATER TRACKER ── */}
-        {(() => {
-          const waterTarget = (phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8;
-          const pct = Math.min(waterGlasses / waterTarget, 1);
-          const phaseWaterTip: Record<string, string> = {
-            menstrual:  "Higher target — water reduces bloating and cramps",
-            follicular: "Stay hydrated as energy and metabolism rise",
-            ovulation:  "Peak metabolism needs more water for performance",
-            luteal:     "Higher target — water reduces PMS water retention",
-          };
-          function addWater() {
-            const next = Math.min(waterGlasses + 1, 12);
-            setWaterGlasses(next);
-            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
-          }
-          function removeWater() {
-            const next = Math.max(waterGlasses - 1, 0);
-            setWaterGlasses(next);
-            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
-          }
-          return (
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">Water intake 💧</p>
-                  <p className="text-xs text-dark/35 font-body mt-0.5">{phaseWaterTip[phaseData.phase]}</p>
-                </div>
-                <div className="text-right">
-                  {hydrationLoading ? (
-                    <div className="w-8 h-6 rounded bg-gray-100 animate-pulse mb-0.5" />
-                  ) : (
-                    <p className="text-lg font-bold font-display text-primary">{waterGlasses}</p>
-                  )}
-                  <p className="text-xs text-dark/30 font-body">/ {waterTarget} glasses</p>
-                </div>
-              </div>
-              {/* Progress bar */}
-              <div className="h-2 rounded-full mb-3 overflow-hidden" style={{ background: "rgba(196,138,151,0.12)" }}>
-                <div className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${pct * 100}%`, background: pct >= 1 ? "linear-gradient(90deg,#34D399,#10B981)" : "linear-gradient(90deg,#C48A97,#7B6D8D)" }} />
-              </div>
-              {/* Glass buttons */}
-              <div className="flex items-center justify-between">
-                <button onClick={removeWater} disabled={waterGlasses === 0 || hydrationLoading}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-dark/40 disabled:opacity-25 active:scale-90 transition-all text-lg"
-                  style={{ background: "#F9FAFB" }}>−</button>
-                <div className="flex gap-1.5 flex-wrap justify-center flex-1 px-2">
-                  {Array.from({ length: Math.min(waterTarget, 9) }).map((_, i) => (
-                    <button key={i} onClick={() => {
-                      const next = i + 1;
-                      setWaterGlasses(next);
-                      persistHydration(next, waterTarget, phaseData.phase, cycleDay);
-                    }}
-                      disabled={hydrationLoading}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all active:scale-90 disabled:opacity-40"
-                      style={{
-                        background: i < waterGlasses ? "rgba(196,138,151,0.15)" : "#F9FAFB",
-                        border: i < waterGlasses ? "1.5px solid rgba(196,138,151,0.4)" : "1.5px solid transparent",
-                      }}>
-                      💧
-                    </button>
-                  ))}
-                </div>
-                <button onClick={addWater} disabled={waterGlasses >= 12 || hydrationLoading}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-white disabled:opacity-25 active:scale-90 transition-all text-lg font-bold"
-                  style={{ background: "linear-gradient(135deg,#C48A97,#7B6D8D)" }}>+</button>
-              </div>
-              {waterGlasses >= waterTarget && (
-                <p className="text-center text-xs text-emerald-500 font-semibold mt-2">✓ Daily goal reached!</p>
-              )}
-            </div>
-          );
-        })()}
 
         {/* ── 10. QUICK ACTIONS ── */}
         <div className="grid grid-cols-3 gap-2 mt-3">

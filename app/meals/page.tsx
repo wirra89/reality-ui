@@ -22,6 +22,10 @@ import {
   type NutritionSummary,
 } from "@/lib/nutrition";
 
+// Set to true to re-enable legacy meal UI (MealDailySummary, MealFoodLibrary, Log Custom Meal button).
+// Legacy code is preserved intact — this flag only controls visibility.
+const SHOW_LEGACY_MEALS = false;
+
 export default function MealsPage() {
   const { user, profile, cycleDay, cycleParams, loading, todayState } = useApp();
   const router = useRouter();
@@ -147,26 +151,28 @@ export default function MealsPage() {
           adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
         />
 
-        {/* Daily summary + logged meals */}
-        <MealDailySummary
-          meals={meals}
-          phaseData={phaseData}
-          profile={profile}
-          onRemove={handleRemove}
-          dataLoading={dataLoading}
-          logButton={
-            showForm ? (
-              <MealLogForm onAdd={handleAdd} onCancel={() => setShowForm(false)} />
-            ) : (
-              <button onClick={() => setShowForm(true)}
-                className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 shadow-soft mb-4 flex items-center justify-center gap-2"
-                style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-                <span className="text-base">✏️</span>
-                Log Custom Meal
-              </button>
-            )
-          }
-        />
+        {/* Daily summary + logged meals — legacy system, hidden from testers */}
+        {SHOW_LEGACY_MEALS && (
+          <MealDailySummary
+            meals={meals}
+            phaseData={phaseData}
+            profile={profile}
+            onRemove={handleRemove}
+            dataLoading={dataLoading}
+            logButton={
+              showForm ? (
+                <MealLogForm onAdd={handleAdd} onCancel={() => setShowForm(false)} />
+              ) : (
+                <button onClick={() => setShowForm(true)}
+                  className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 shadow-soft mb-4 flex items-center justify-center gap-2"
+                  style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+                  <span className="text-base">✏️</span>
+                  Log Custom Meal
+                </button>
+              )
+            }
+          />
+        )}
 
         {/* ── V1.1: Search & log food — visible immediately ── */}
         <div className="mb-3">
@@ -202,8 +208,8 @@ export default function MealsPage() {
           />
         </div>
 
-        {/* Food library — phase recommendations */}
-        <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />
+        {/* Food library — phase recommendations, legacy system, hidden from testers */}
+        {SHOW_LEGACY_MEALS && <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />}
       </main>
     </div>
   );
