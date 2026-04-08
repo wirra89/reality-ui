@@ -174,42 +174,60 @@ export default function TrainingPage() {
     if (user) getWorkoutTemplates().then(setTemplates);
   }, [user]);
 
-  // On mount — load today's logged workout OR draft from localStorage
+  // On mount — load today's logged workout OR draft from localStorage.
+  // Depends on user.id (stable string) NOT the user object — the user object reference
+  // changes on every Supabase token refresh, which would re-run this effect and wipe
+  // unsaved in-progress edits. user.id only changes on actual sign-in/out.
+  const userId = user?.id;
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
     getTodayWorkout(cycleDay).then((logged) => {
+      // Always check for a draft first — it may contain more recent edits than the DB
+      let draft: { name?: string; exs?: ExRow[]; loggedWorkoutId?: number | null } | null = null;
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (raw) draft = JSON.parse(raw);
+      } catch { /* ignore bad draft */ }
+
       if (logged) {
-        // Already logged today — load it for editing
         setLoggedWorkoutId(logged.id);
-        setWorkoutName(logged.name ?? "");
-        const exs = logged.exercises as unknown as { name: string; sets: { reps: string; weight: string }[] }[];
-        setExercises(exs.map(e => ({
-          id: crypto.randomUUID(),
-          name: e.name,
-          sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps, weight: s.weight })),
-        })));
-        // Clear draft since we loaded from DB
-        localStorage.removeItem(DRAFT_KEY);
+        // If the draft belongs to THIS logged workout, it's more recent than the DB row
+        // (user added sets after the last explicit save) — prefer the draft.
+        if (draft?.loggedWorkoutId === logged.id && draft.exs?.length) {
+          if (draft.name) setWorkoutName(draft.name);
+          setExercises(draft.exs);
+        } else {
+          // No matching draft — load from DB
+          setWorkoutName(logged.name ?? "");
+          const exs = logged.exercises as unknown as { name: string; sets: { reps: string; weight: string }[] }[];
+          setExercises(exs.map(e => ({
+            id: crypto.randomUUID(),
+            name: e.name,
+            sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps, weight: s.weight })),
+          })));
+        }
       } else {
-        // No logged workout — restore draft if exists
-        try {
-          const draft = localStorage.getItem(DRAFT_KEY);
-          if (draft) {
-            const { name, exs } = JSON.parse(draft);
-            if (name) setWorkoutName(name);
-            if (exs?.length) setExercises(exs);
-          }
-        } catch { /* ignore bad draft */ }
+        // No logged workout — restore un-logged draft if exists
+        if (draft && !draft.loggedWorkoutId && draft.exs?.length) {
+          if (draft.name) setWorkoutName(draft.name);
+          setExercises(draft.exs);
+        }
       }
     });
-  }, [user, cycleDay]);
+  }, [userId, cycleDay]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-save draft to localStorage whenever exercises change (only if not yet logged)
+  // Auto-save draft to localStorage on every change — including after the workout is
+  // logged. The draft stores loggedWorkoutId so the mount logic can detect that these
+  // edits belong to an already-persisted workout and prefer them over the DB row.
+  // This protects against: token refresh, screen lock/wake, browser background eviction.
   useEffect(() => {
-    if (loggedWorkoutId) return; // don't overwrite logged workout with draft
     const hasContent = exercises.some(e => e.name.trim() || e.sets.some(s => s.reps || s.weight));
     if (hasContent) {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ name: workoutName, exs: exercises }));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        name: workoutName,
+        exs: exercises,
+        loggedWorkoutId: loggedWorkoutId ?? null,
+      }));
     }
   }, [exercises, workoutName, loggedWorkoutId]);
 
@@ -276,7 +294,12 @@ export default function TrainingPage() {
       result = await saveWorkout(payload);
       if (result.success && result.id) {
         setLoggedWorkoutId(result.id);
-        localStorage.removeItem(DRAFT_KEY);
+        // Update draft to reference this workout ID so subsequent edits are protected
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          name: smartName,
+          exs: exercises,
+          loggedWorkoutId: result.id,
+        }));
       }
     }
 
