@@ -138,12 +138,6 @@ export async function saveProfile(updates: Partial<Profile>, userId?: string): P
   return error ? { success: false, error: error.message } : { success: true };
 }
 
-// ── Cycle log (existing table) ─────────────────────────────────────────────
-
-export async function saveCycleLog(cycleDay: number, phase: string) {
-  const { error } = await supabase.from("cycle_logs").insert([{ cycle_day: cycleDay, phase }]);
-  return error ? { success: false, error: error.message } : { success: true };
-}
 
 // ── Workouts ───────────────────────────────────────────────────────────────
 
@@ -251,23 +245,18 @@ export async function saveMoodLog(log: MoodLog): Promise<{ success: boolean; err
   return error ? { success: false, error: error.message } : { success: true };
 }
 
-export async function getTodayMoodLog(cycleDay?: number): Promise<MoodLog | null> {
+export async function getTodayMoodLog(): Promise<MoodLog | null> {
   const user = await getUser();
   if (!user) return null;
 
-  let query = supabase
+  const today = new Date().toISOString().split("T")[0];
+  const { data } = await supabase
     .from("mood_logs")
     .select("*")
-    .eq("user_id", user.id);
-
-  if (cycleDay !== undefined) {
-    query = query.eq("cycle_day", cycleDay);
-  } else {
-    const today = new Date().toISOString().split("T")[0];
-    query = query.eq("date", today);
-  }
-
-  const { data } = await query.order("created_at", { ascending: false }).limit(1);
+    .eq("user_id", user.id)
+    .eq("date", today)
+    .order("created_at", { ascending: false })
+    .limit(1);
   return data?.[0] ?? null;
 }
 
@@ -347,11 +336,10 @@ export async function saveWeightLog(weightKg: number, note = ""): Promise<{ succ
   const user = await getUser();
   if (!user) return { success: false, error: "Not logged in" };
   const today = new Date().toISOString().split("T")[0];
-  // Delete today's existing entry first (one per day)
-  await supabase.from("weight_logs").delete().eq("user_id", user.id).eq("date", today);
-  const { error } = await supabase.from("weight_logs").insert([{
-    user_id: user.id, date: today, weight_kg: weightKg, note,
-  }]);
+  const { error } = await supabase.from("weight_logs").upsert(
+    [{ user_id: user.id, date: today, weight_kg: weightKg, note }],
+    { onConflict: "user_id,date" }
+  );
   return error ? { success: false, error: error.message } : { success: true };
 }
 

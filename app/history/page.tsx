@@ -59,6 +59,9 @@ export default function HistoryPage() {
   const [dataLoading, setDataLoading] = useState(true);
   const [expandedId, setExpandedId]   = useState<number | null>(null);
   const [phaseFilter, setPhaseFilter] = useState<string>("all");
+  // V1.1 nutrition entries grouped by UTC date string (YYYY-MM-DD)
+  type V1Entry = { name: string; kcal: number; protein: number; carbs: number; fats: number; mealType: string };
+  const [v1ByDate, setV1ByDate] = useState<Record<string, V1Entry[]>>({});
 
   useEffect(() => {
     if (!loading && !user) router.replace("/auth");
@@ -73,11 +76,31 @@ export default function HistoryPage() {
       supabase.from("meal_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(30),
       supabase.from("mood_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(30),
       supabase.from("weight_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(90),
-    ]).then(([w, m, mo, wt]) => {
+      supabase.from("meal_log_entries")
+        .select("snapshot_name,snapshot_kcal,snapshot_protein_g,snapshot_carbs_g,snapshot_fats_g,meal_type,logged_at")
+        .eq("user_id", user.id)
+        .order("logged_at", { ascending: false })
+        .limit(300),
+    ]).then(([w, m, mo, wt, v1]) => {
       setWorkouts(w.data ?? []);
       setMeals(m.data ?? []);
       setMoods(mo.data ?? []);
       setWeights(wt.data ?? []);
+      // Group V1.1 entries by UTC date
+      const grouped: Record<string, V1Entry[]> = {};
+      for (const row of (v1.data ?? [])) {
+        const date = (row.logged_at as string).split("T")[0];
+        if (!grouped[date]) grouped[date] = [];
+        grouped[date].push({
+          name:     row.snapshot_name    as string,
+          kcal:     Number(row.snapshot_kcal)      || 0,
+          protein:  Number(row.snapshot_protein_g) || 0,
+          carbs:    Number(row.snapshot_carbs_g)   || 0,
+          fats:     Number(row.snapshot_fats_g)    || 0,
+          mealType: row.meal_type as string,
+        });
+      }
+      setV1ByDate(grouped);
       setDataLoading(false);
     });
   }, [user]);
@@ -88,10 +111,12 @@ export default function HistoryPage() {
     return acc + exs.reduce((a, e) => a + e.sets.reduce((s, r) => s + (parseFloat(r.reps) || 0) * (parseFloat(r.weight) || 0), 0), 0);
   }, 0);
 
-  const totalCalories = meals.reduce((acc, m) => {
-    const entries = m.meals as unknown as { calories: string }[];
-    return acc + entries.reduce((a, e) => a + (parseFloat(e.calories) || 0), 0);
-  }, 0);
+  const totalCalories =
+    meals.reduce((acc, m) => {
+      const entries = m.meals as unknown as { calories: string }[];
+      return acc + entries.reduce((a, e) => a + (parseFloat(e.calories) || 0), 0);
+    }, 0) +
+    Object.values(v1ByDate).flat().reduce((a, e) => a + e.kcal, 0);
 
   const avgMood = moods.length > 0
     ? (moods.reduce((a, m) => a + (m.mood as unknown as number), 0) / moods.length).toFixed(1)
@@ -286,12 +311,22 @@ export default function HistoryPage() {
             {/* ── MEALS ── */}
             {activeTab === "meals" && (
               <div className="space-y-3 mb-6">
-                {filteredMeals.length === 0 ? (
+                {filteredMeals.length === 0 && Object.keys(v1ByDate).length === 0 ? (
                   <EmptyState emoji="🥗" text="No meals logged yet" sub="Head to the Meals tab to log your food" cta="Go to Meals" ctaHref="/meals" />
                 ) : filteredMeals.map((m) => {
-                  const entries = m.meals as unknown as { name: string; calories: string; protein: string; time: string; mealType: string }[];
-                  const totalCal  = entries.reduce((a, e) => a + (parseFloat(e.calories) || 0), 0);
-                  const totalProt = entries.reduce((a, e) => a + (parseFloat(e.protein) || 0), 0);
+                  const legacyEntries = (m.meals as unknown as { name: string; calories: string; protein: string; time: string; mealType: string }[]) ?? [];
+                  // V1.1 entries for this date (shown when legacy JSONB is empty)
+                  const v1Entries = v1ByDate[m.date!] ?? [];
+                  const useV1 = legacyEntries.length === 0 && v1Entries.length > 0;
+                  const totalCal  = useV1
+                    ? v1Entries.reduce((a, e) => a + e.kcal, 0)
+                    : legacyEntries.reduce((a, e) => a + (parseFloat(e.calories) || 0), 0);
+                  const totalProt = useV1
+                    ? v1Entries.reduce((a, e) => a + e.protein, 0)
+                    : legacyEntries.reduce((a, e) => a + (parseFloat(e.protein) || 0), 0);
+                  const itemCount = useV1 ? v1Entries.length : legacyEntries.length;
+                  // Skip cards that have neither legacy nor V1.1 entries
+                  if (itemCount === 0) return null;
                   const phaseStyle = PHASE_COLORS[m.phase] ?? PHASE_COLORS.follicular;
                   const isExpanded = expandedId === m.id;
                   return (
@@ -301,35 +336,53 @@ export default function HistoryPage() {
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: phaseStyle.bg }}>{PHASE_EMOJIS[m.phase]}</div>
                         <div className="flex-1 min-w-0">
                           <p className="text-dark font-semibold text-sm">{formatDate(m.date!)}</p>
-                          <p className="text-dark/40 text-xs font-body mt-0.5">{entries.length} items · {totalCal > 0 ? `${totalCal} kcal` : "—"} · {totalProt > 0 ? `${totalProt}g protein` : "—"}</p>
+                          <p className="text-dark/40 text-xs font-body mt-0.5">{itemCount} items · {totalCal > 0 ? `${Math.round(totalCal)} kcal` : "—"} · {totalProt > 0 ? `${Math.round(totalProt)}g protein` : "—"}</p>
                         </div>
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: phaseStyle.bg, color: phaseStyle.text }}>{m.phase}</span>
                         <span className="text-dark/30 text-sm ml-1">{isExpanded ? "↑" : "↓"}</span>
                       </button>
                       <div className="flex gap-4 px-4 pb-3 border-b border-gray-50">
-                        <Stat label="Items" value={entries.length} />
-                        <Stat label="Calories" value={totalCal > 0 ? totalCal : "—"} />
-                        <Stat label="Protein" value={totalProt > 0 ? `${totalProt}g` : "—"} />
+                        <Stat label="Items" value={itemCount} />
+                        <Stat label="Calories" value={totalCal > 0 ? Math.round(totalCal) : "—"} />
+                        <Stat label="Protein" value={totalProt > 0 ? `${Math.round(totalProt)}g` : "—"} />
                         <Stat label="Day" value={`D${m.cycle_day}`} />
                       </div>
-                      {isExpanded && entries.length > 0 && (
+                      {isExpanded && (
                         <div className="px-4 py-3 space-y-2">
-                          {entries.map((e, i) => (
-                            <div key={i} className="flex items-center gap-3">
-                              <div className="flex-1 min-w-0">
-                                <p className="text-dark text-xs font-semibold truncate">{e.name}</p>
-                                <p className="text-dark/40 text-xs font-body">{e.time} · {e.mealType}</p>
-                              </div>
-                              <div className="text-right flex-shrink-0 text-xs font-semibold space-y-0.5">
-                                {e.calories && <p className="text-dark/60">{e.calories} kcal</p>}
-                                <div className="flex gap-1.5 justify-end">
-                                  {e.protein && <span className="text-[#7B6D8D]">P:{e.protein}g</span>}
-                                  {(e as { carbs?: string }).carbs && <span className="text-[#C48A97]">C:{(e as { carbs?: string }).carbs}g</span>}
-                                  {(e as { fats?: string }).fats && <span className="text-[#A78BFA]">F:{(e as { fats?: string }).fats}g</span>}
+                          {useV1
+                            ? v1Entries.map((e, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-dark text-xs font-semibold truncate">{e.name}</p>
+                                    <p className="text-dark/40 text-xs font-body capitalize">{e.mealType}</p>
+                                  </div>
+                                  <div className="text-right flex-shrink-0 text-xs font-semibold space-y-0.5">
+                                    <p className="text-dark/60">{Math.round(e.kcal)} kcal</p>
+                                    <div className="flex gap-1.5 justify-end">
+                                      {e.protein > 0 && <span className="text-[#7B6D8D]">P:{Math.round(e.protein)}g</span>}
+                                      {e.carbs > 0   && <span className="text-[#C48A97]">C:{Math.round(e.carbs)}g</span>}
+                                      {e.fats > 0    && <span className="text-[#A78BFA]">F:{Math.round(e.fats)}g</span>}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          ))}
+                              ))
+                            : legacyEntries.map((e, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-dark text-xs font-semibold truncate">{e.name}</p>
+                                    <p className="text-dark/40 text-xs font-body">{e.time} · {e.mealType}</p>
+                                  </div>
+                                  <div className="text-right flex-shrink-0 text-xs font-semibold space-y-0.5">
+                                    {e.calories && <p className="text-dark/60">{e.calories} kcal</p>}
+                                    <div className="flex gap-1.5 justify-end">
+                                      {e.protein && <span className="text-[#7B6D8D]">P:{e.protein}g</span>}
+                                      {(e as { carbs?: string }).carbs && <span className="text-[#C48A97]">C:{(e as { carbs?: string }).carbs}g</span>}
+                                      {(e as { fats?: string }).fats && <span className="text-[#A78BFA]">F:{(e as { fats?: string }).fats}g</span>}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                          }
                         </div>
                       )}
                     </div>

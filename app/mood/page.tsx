@@ -181,7 +181,7 @@ export default function MoodPage() {
 
   useEffect(() => {
     if (!user) return;
-    getTodayMoodLog(cycleDay).then((log) => {
+    getTodayMoodLog().then((log) => {
       if (log) {
         setSelectedMood(log.mood);
         setEnergy(log.energy);
@@ -202,7 +202,7 @@ export default function MoodPage() {
         setAlreadyLogged(false);
       }
     });
-  }, [user, cycleDay]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggleSymptom(s: string) {
     setSelectedSymptoms(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]);
