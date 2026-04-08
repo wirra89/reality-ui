@@ -158,6 +158,7 @@ export default function TrainingPage() {
   const [templates, setTemplates]         = useState<WorkoutTemplate[]>([]);
   const [showTemplates, setShowTemplates] = useState(false);
   const [savingTemplate, setSavingTemplate] = useState(false);
+  const [showTemplateForm, setShowTemplateForm] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [loggedWorkoutId, setLoggedWorkoutId] = useState<number | null>(null);
   const [newPRs, setNewPRs] = useState<string[]>([]);
@@ -400,11 +401,11 @@ export default function TrainingPage() {
             <div className="px-4 pt-4 pb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-dark">Saved Templates</p>
               <button
-                onClick={handleSaveTemplate}
+                onClick={() => { setShowTemplates(false); setShowTemplateForm(true); }}
                 disabled={savingTemplate}
                 className="text-xs font-semibold text-white px-3 py-1.5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
                 style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-                {savingTemplate ? "Saving…" : "Save current →"}
+                Save current →
               </button>
             </div>
 
@@ -515,14 +516,6 @@ export default function TrainingPage() {
           </div>
         )}
 
-        {/* Workout name */}
-        <div className="bg-white rounded-2xl px-4 py-3.5 shadow-card mb-3">
-          <label className="text-xs font-semibold text-dark/50 uppercase tracking-wide block mb-1.5">Workout name</label>
-          <input type="text" placeholder="e.g. Push Day A, Lower Body…" value={workoutName}
-            onChange={(e) => setWorkoutName(e.target.value)}
-            className="w-full text-dark font-body text-sm outline-none placeholder:text-dark/30 bg-transparent" />
-        </div>
-
         {/* Suggested + Library — same row, easy access right after phase context */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2 px-1">
@@ -631,12 +624,41 @@ export default function TrainingPage() {
           </div>
         )}
 
+        {/* Save for future use — name input only shown when user opts in */}
+        {showTemplateForm && (
+          <div className="bg-white rounded-2xl shadow-card px-4 py-4 mb-3">
+            <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Name this workout</p>
+            <input
+              type="text"
+              placeholder="e.g. Push Day A, Lower Body…"
+              value={workoutName}
+              onChange={(e) => setWorkoutName(e.target.value)}
+              autoFocus
+              className="w-full text-dark font-body text-sm outline-none placeholder:text-dark/30 bg-background rounded-xl px-3 py-2.5 mb-3"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowTemplateForm(false)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-gray-50 active:scale-95 transition-all">
+                Cancel
+              </button>
+              <button
+                onClick={async () => { await handleSaveTemplate(); setShowTemplateForm(false); }}
+                disabled={savingTemplate}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+                {savingTemplate ? "Saving…" : "Save for later"}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-2 mb-2">
-          <button onClick={handleSaveTemplate}
+          <button onClick={() => setShowTemplateForm(v => !v)}
             disabled={savingTemplate}
             className="py-4 px-4 rounded-2xl text-sm font-semibold border-2 transition-all active:scale-95 disabled:opacity-40"
-            style={{ borderColor: "rgba(196,138,151,0.4)", color: "#C48A97" }}>
-            {savingTemplate ? "…" : "📋 Save Workout"}
+            style={{ borderColor: "rgba(196,138,151,0.4)", color: showTemplateForm ? "#9CA3AF" : "#C48A97", background: showTemplateForm ? "#F9FAFB" : "white" }}>
+            {showTemplateForm ? "✕" : "📋 Save Workout"}
           </button>
           <button onClick={handleSave}
             disabled={saveStatus === "loading" || !exercises.some(e => e.name.trim())}
