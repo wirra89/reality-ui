@@ -222,10 +222,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setNewCyclePrompt(false);
     setProfile(prev => prev ? { ...prev, period_start_date: today, cycle_day: 1 } : prev);
 
-    // Update profile — existing behaviour
-    await supabase.from("profiles").update({
+    const { error } = await supabase.from("profiles").update({
       period_start_date: today, cycle_day: 1, updated_at: new Date().toISOString(),
     }).eq("id", user.id);
+
+    if (error) {
+      // DB write failed — re-sync from DB to undo the optimistic update
+      await loadProfile(user.id);
+      return;
+    }
 
     // Record cycle start in history — ON CONFLICT DO NOTHING prevents duplicates
     // if the user taps "Day 1" multiple times on the same date
@@ -236,7 +241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       period_length_at_start: profile?.period_length ?? 5,
       source:                 "manual_set",
     }], { onConflict: "user_id,cycle_start_date", ignoreDuplicates: true });
-  }, [user, profile?.cycle_length, profile?.period_length]);
+  }, [user, profile?.cycle_length, profile?.period_length, loadProfile]);
 
   const setPeriodStartDate = useCallback(async (date: string) => {
     if (!user) return;
@@ -244,10 +249,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setNewCyclePrompt(false);
     setProfile(prev => prev ? { ...prev, period_start_date: date, cycle_day: 1 } : prev);
 
-    // Update profile — existing behaviour
-    await supabase.from("profiles").update({
+    const { error } = await supabase.from("profiles").update({
       period_start_date: date, cycle_day: 1, updated_at: new Date().toISOString(),
     }).eq("id", user.id);
+
+    if (error) {
+      // DB write failed — re-sync from DB to undo the optimistic update
+      await loadProfile(user.id);
+      return;
+    }
 
     // Record cycle start in history — ON CONFLICT DO NOTHING prevents duplicates
     // if the user selects the same date from the calendar more than once
@@ -258,7 +268,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       period_length_at_start: profile?.period_length ?? 5,
       source:                 "manual_set",
     }], { onConflict: "user_id,cycle_start_date", ignoreDuplicates: true });
-  }, [user, profile?.cycle_length, profile?.period_length]);
+  }, [user, profile?.cycle_length, profile?.period_length, loadProfile]);
 
   const setCycleDay = useCallback((day: number) => {
     setManualCycleDay(day);

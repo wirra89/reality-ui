@@ -183,22 +183,15 @@ export function formatPeriodStartDate(dateStr: string): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-export function getDayInPhase(day: number): number {
-  const phase = getPhase(day);
-  if (phase === "menstrual") return day;
-  if (phase === "follicular") return day - 5;
-  if (phase === "ovulation") return day - 13;
-  return day - 16;
+export function getDayInPhase(day: number, params: CycleParams = {}): number {
+  const phase = getPhase(day, params);
+  const b = getPhaseBoundaries(params);
+  return day - b[phase].start + 1;
 }
 
-export function getPhaseDuration(phase: Phase): number {
-  const durations: Record<Phase, number> = {
-    menstrual: 5,
-    follicular: 8,
-    ovulation: 3,
-    luteal: 12,
-  };
-  return durations[phase];
+export function getPhaseDuration(phase: Phase, params: CycleParams = {}): number {
+  const b = getPhaseBoundaries(params);
+  return b[phase].end - b[phase].start + 1;
 }
 
 // Predict next period and days until
