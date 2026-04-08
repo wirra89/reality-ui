@@ -56,8 +56,9 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
   function getDayPhase(day: number): string | null {
     if (!periodStartDate) return null;
     const cellDate = new Date(viewYear, viewMonth, day);
-    const start = new Date(periodStartDate);
-    start.setHours(0, 0, 0, 0);
+    // Parse as local midnight — new Date("YYYY-MM-DD") is UTC and shifts in UTC+ zones
+    const [sy, sm, sd] = periodStartDate.split("-").map(Number);
+    const start = new Date(sy, sm - 1, sd);
     cellDate.setHours(0, 0, 0, 0);
     const diff = Math.floor((cellDate.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     if (diff < 0) return null;
@@ -71,8 +72,8 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
 
   function isPeriodStart(day: number): boolean {
     if (!periodStartDate) return false;
-    const d = new Date(periodStartDate);
-    return day === d.getDate() && viewMonth === d.getMonth() && viewYear === d.getFullYear();
+    const [sy, sm, sd] = periodStartDate.split("-").map(Number);
+    return day === sd && viewMonth === sm - 1 && viewYear === sy;
   }
 
   // Detect if a day is the first of a new phase (for left-border accent)
@@ -84,8 +85,13 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
   }
 
   function handleSelect(day: number) {
-    const selected = new Date(viewYear, viewMonth, day);
-    onSelectDate(selected.toISOString().split("T")[0]);
+    // Build YYYY-MM-DD directly from local values — never use toISOString() on a
+    // locally-constructed date because it converts to UTC and shifts the day
+    // by -1 in timezones east of UTC (e.g. Croatia UTC+1/+2).
+    const yyyy = String(viewYear);
+    const mm   = String(viewMonth + 1).padStart(2, "0");
+    const dd   = String(day).padStart(2, "0");
+    onSelectDate(`${yyyy}-${mm}-${dd}`);
   }
 
   const cells: (number | null)[] = [

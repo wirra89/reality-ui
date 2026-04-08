@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { calculateMacros, ACTIVITY_LABELS, GOAL_LABELS, type ActivityLevel, type BodyGoal } from "@/lib/macros";
+import { calcCycleDayFromDate } from "@/lib/cycle";
 
 const avatarColors = [
   "linear-gradient(135deg, #C48A97, #7B6D8D)",
@@ -97,11 +98,7 @@ export default function OnboardingPage() {
       // Save period start date if provided — sets accurate cycle day from day 1
       if (periodStartDate) {
         updates.period_start_date = periodStartDate;
-        // Calculate cycle day from the date
-        const start = new Date(periodStartDate);
-        const today = new Date();
-        const diff = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-        updates.cycle_day = Math.min(Math.max(1, diff + 1), cycleLength);
+        updates.cycle_day = calcCycleDayFromDate(periodStartDate, cycleLength);
       }
 
       // Save macros if calculated
@@ -309,17 +306,11 @@ export default function OnboardingPage() {
                   className="flex-1 bg-background rounded-xl px-3 py-2.5 text-sm text-dark outline-none font-body border border-transparent focus:border-primary/30 transition-colors"
                 />
               </div>
-              {periodStartDate && (() => {
-                const start = new Date(periodStartDate);
-                const today = new Date();
-                const diff = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-                const day = Math.min(Math.max(1, diff + 1), cycleLength);
-                return (
-                  <p className="text-xs text-primary font-semibold mt-2">
-                    → You're on Day {day} of your cycle 🌸
-                  </p>
-                );
-              })()}
+              {periodStartDate && (
+                <p className="text-xs text-primary font-semibold mt-2">
+                  → You're on Day {calcCycleDayFromDate(periodStartDate, cycleLength)} of your cycle 🌸
+                </p>
+              )}
             </div>
 
             <div className="bg-white rounded-2xl p-4 shadow-card mb-4">

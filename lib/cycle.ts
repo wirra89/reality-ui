@@ -143,13 +143,21 @@ export function getPhaseData(day: number, params: CycleParams = {}): PhaseData {
   return phaseMap[phase];
 }
 
+// Parse a YYYY-MM-DD string as local midnight (avoids UTC-offset day shift).
+// new Date("YYYY-MM-DD") treats the string as UTC, which in UTC+N timezones
+// resolves to the previous calendar day. Using the numeric constructor instead
+// gives local midnight with no offset.
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 // Calculate current cycle day from period start date
 export function calcCycleDayFromDate(periodStartDate: string, cycleLength = 28): number {
-  const start = new Date(periodStartDate);
+  const start = parseLocalDate(periodStartDate);
   const today = new Date();
 
   // Reset to midnight for accurate day diff
-  start.setHours(0, 0, 0, 0);
   today.setHours(0, 0, 0, 0);
 
   const diffMs = today.getTime() - start.getTime();
@@ -163,10 +171,9 @@ export function calcCycleDayFromDate(periodStartDate: string, cycleLength = 28):
 }
 
 export function formatPeriodStartDate(dateStr: string): string {
-  const d = new Date(dateStr);
+  const d = parseLocalDate(dateStr);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  d.setHours(0, 0, 0, 0);
 
   const diff = Math.floor((today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -200,8 +207,7 @@ export function getNextPeriodInfo(periodStartDate: string, cycleLength = 28): {
   daysUntil: number;
   isOverdue: boolean;
 } {
-  const start = new Date(periodStartDate);
-  start.setHours(0, 0, 0, 0);
+  const start = parseLocalDate(periodStartDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
