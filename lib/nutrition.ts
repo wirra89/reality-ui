@@ -21,7 +21,8 @@ export type EntrySource = "food" | "recipe" | "legacy_snapshot";
 /** A food ingredient from the foods table. */
 export interface Food {
   id: string;
-  createdBy: string;
+  externalId: string | null;     // human-readable slug (e.g. "apple") — null for user-created foods
+  createdBy: string | null;      // null for global system foods
   isGlobal: boolean;
   isLocked: boolean;
   name: string;
@@ -31,6 +32,11 @@ export interface Food {
   proteinPer100g: number;
   carbsPer100g: number;
   fatsPer100g: number;
+  emoji: string | null;
+  category: string | null;
+  fiberPer100g: number | null;
+  phases: Phase[] | null;
+  keyNutrient: string | null;
   createdAt: string;
 }
 
@@ -96,7 +102,8 @@ interface MealLogEntryRow {
 /** Direct mapping of foods DB columns. Not exported — use Food. */
 interface FoodRow {
   id: string;
-  created_by: string;
+  external_id: string | null;
+  created_by: string | null;
   is_global: boolean;
   is_locked: boolean;
   name: string;
@@ -106,6 +113,11 @@ interface FoodRow {
   protein_per_100g: number;
   carbs_per_100g: number;
   fats_per_100g: number;
+  emoji: string | null;
+  category: string | null;
+  fiber_per_100g: number | null;
+  phases: Phase[] | null;
+  key_nutrient: string | null;
   created_at: string;
 }
 
@@ -120,6 +132,7 @@ interface FoodRow {
 function mapRowToFood(row: FoodRow): Food {
   return {
     id:             row.id,
+    externalId:     row.external_id,
     createdBy:      row.created_by,
     isGlobal:       row.is_global,
     isLocked:       row.is_locked,
@@ -130,6 +143,11 @@ function mapRowToFood(row: FoodRow): Food {
     proteinPer100g: row.protein_per_100g,
     carbsPer100g:   row.carbs_per_100g,
     fatsPer100g:    row.fats_per_100g,
+    emoji:          row.emoji,
+    category:       row.category,
+    fiberPer100g:   row.fiber_per_100g,
+    phases:         row.phases,
+    keyNutrient:    row.key_nutrient,
     createdAt:      row.created_at,
   };
 }
@@ -508,4 +526,64 @@ export async function logFood(
   }
 
   return { success: true, entryId: data?.id as number };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEAL RECOMMENDATIONS — exported
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Returns all global foods tagged for a given phase.
+ * Used to build the daily meal recommendation cards.
+ */
+export async function getFoodsForPhase(phase: Phase): Promise<Food[]> {
+  const { data, error } = await supabase
+    .from("foods")
+    .select("*")
+    .eq("is_global", true)
+    .contains("phases", [phase]);
+
+  if (error) {
+    console.error("getFoodsForPhase error:", error.message);
+    return [];
+  }
+
+  return (data as FoodRow[]).map(mapRowToFood);
+}
+
+/** Category buckets that map meal slots to appropriate food categories. */
+const MEAL_CATEGORIES: Record<MealType, string[]> = {
+  breakfast: ["grain", "dairy", "fruit"],
+  lunch:     ["protein", "vegetable"],
+  dinner:    ["protein", "vegetable", "grain"],
+  snack:     ["fruit", "fat", "dairy", "other"],
+};
+
+/**
+ * Deterministically picks one food per meal slot from a pool of phase-filtered foods.
+ * Pure function — no async, fully testable.
+ *
+ * Selection is stable within a cycle day but varies across slots (each slot uses
+ * a different prime multiplier so breakfast ≠ lunch ≠ dinner ≠ snack).
+ * Falls back to the full pool if no foods match the preferred categories for a slot.
+ */
+export function pickMealRecommendations(
+  foods: Food[],
+  cycleDay: number,
+): Record<MealType, Food | null> {
+  const mealTypes: MealType[] = ["breakfast", "lunch", "dinner", "snack"];
+  const result = {} as Record<MealType, Food | null>;
+
+  for (let i = 0; i < mealTypes.length; i++) {
+    const mealType = mealTypes[i];
+    const preferred = foods.filter(f => MEAL_CATEGORIES[mealType].includes(f.category ?? ""));
+    const pool = preferred.length > 0 ? preferred : foods;
+    if (pool.length === 0) { result[mealType] = null; continue; }
+    // Different prime per slot so each card shows a different food on the same cycleDay
+    const primes = [7, 31, 13, 19];
+    const idx = (cycleDay * primes[i]) % pool.length;
+    result[mealType] = pool[idx];
+  }
+
+  return result;
 }

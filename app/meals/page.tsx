@@ -13,8 +13,9 @@ import MealDailySummary   from "@/components/MealDailySummary";
 import MealLogForm        from "@/components/MealLogForm";
 import MealFoodLibrary    from "@/components/MealFoodLibrary";
 // V1.1 nutrition components — coexist with legacy system during transition
-import NutritionFoodSearch from "@/components/NutritionFoodSearch";
-import NutritionEntryList  from "@/components/NutritionEntryList";
+import NutritionFoodSearch      from "@/components/NutritionFoodSearch";
+import NutritionEntryList       from "@/components/NutritionEntryList";
+import MealRecommendationCards  from "@/components/MealRecommendationCards";
 import {
   getTodayMealEntries,
   getTodayNutritionSummary,
@@ -173,6 +174,16 @@ export default function MealsPage() {
             }
           />
         )}
+
+        {/* ── V1.1: Phase-aware meal recommendation cards ── */}
+        <MealRecommendationCards
+          phase={phase}
+          cycleDay={cycleDay}
+          onLogged={() => {
+            showToast("✓ Food logged");
+            refreshNutrition();
+          }}
+        />
 
         {/* ── V1.1: Search & log food — visible immediately ── */}
         <div className="mb-3">
