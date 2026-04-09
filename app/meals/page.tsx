@@ -22,6 +22,7 @@ import {
   type MealLogEntry,
   type NutritionSummary,
 } from "@/lib/nutrition";
+import { type MacroTargets } from "@/components/NutritionEntryList";
 
 // Set to true to re-enable legacy meal UI (MealDailySummary, MealFoodLibrary, Log Custom Meal button).
 // Legacy code is preserved intact — this flag only controls visibility.
@@ -32,6 +33,16 @@ export default function MealsPage() {
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
   const phase = phaseData.phase as Phase;
+
+  // Macro targets: use user's calculated values from profile (set during onboarding)
+  // or fall back to phase-based estimates from lib/cycle.ts
+  const macroTargets: MacroTargets = {
+    calories: profile?.calculated_calories
+      ?? Math.round(phaseData.macros.protein * 4 + phaseData.macros.carbs * 4 + phaseData.macros.fats * 9),
+    protein:  profile?.calculated_protein  ?? phaseData.macros.protein,
+    carbs:    profile?.calculated_carbs    ?? phaseData.macros.carbs,
+    fats:     profile?.calculated_fats     ?? phaseData.macros.fats,
+  };
 
   const [meals, setMeals]             = useState<MealEntry[]>([]);
   const [showForm, setShowForm]       = useState(false);
@@ -202,6 +213,8 @@ export default function MealsPage() {
             entries={nutritionEntries}
             summary={nutritionSummary}
             loading={nutritionLoading}
+            macroTargets={macroTargets}
+            phase={phase}
             onEntryDeleted={(deletedId) => {
               setNutritionEntries(prev => prev.filter(e => e.id !== deletedId));
               refreshNutrition();
