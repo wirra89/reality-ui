@@ -14,6 +14,7 @@ interface Props {
   phase: Phase;
   cycleDay: number;
   onLogged: () => void;
+  foods?: Food[];   // pre-loaded pool from page; if provided, skips internal fetch
 }
 
 const PHASE_COLOR: Record<Phase, string> = {
@@ -32,30 +33,36 @@ const MEAL_SLOTS: { type: MealType; label: string; emoji: string }[] = [
 
 type SwapOffsets = Record<MealType, number>;
 
-export default function MealRecommendationCards({ phase, cycleDay, onLogged }: Props) {
-  const [foods, setFoods]       = useState<Food[]>([]);
-  const [loadingFoods, setLoadingFoods] = useState(true);
-  const [swapOffsets, setSwapOffsets]   = useState<SwapOffsets>({
+export default function MealRecommendationCards({ phase, cycleDay, onLogged, foods: foodsProp }: Props) {
+  const [fetchedFoods, setFetchedFoods]   = useState<Food[]>([]);
+  const [loadingFoods, setLoadingFoods]   = useState(!foodsProp);
+  const [swapOffsets, setSwapOffsets]     = useState<SwapOffsets>({
     breakfast: 0, lunch: 0, dinner: 0, snack: 0,
   });
   const [expanded, setExpanded] = useState<MealType | null>(null);
   const [logging, setLogging]   = useState<MealType | null>(null);
   const [loggedSlots, setLoggedSlots] = useState<Set<MealType>>(new Set());
 
+  // Use pre-loaded foods if provided; otherwise fetch internally.
+  const foods = foodsProp && foodsProp.length > 0 ? foodsProp : fetchedFoods;
+
   const color = PHASE_COLOR[phase];
 
   useEffect(() => {
+    // Skip fetch if parent already provides the food pool.
+    if (foodsProp && foodsProp.length > 0) {
+      setLoadingFoods(false);
+      return;
+    }
     setLoadingFoods(true);
     setExpanded(null);
     setSwapOffsets({ breakfast: 0, lunch: 0, dinner: 0, snack: 0 });
     getFoodsForPhase(phase).then(all => {
-      // Prefer composite meals (category = 'meal') for recipe cards.
-      // Fall back to full pool only if fewer than 4 meals are tagged.
       const meals = all.filter(f => f.category === "meal");
-      setFoods(meals.length >= 4 ? meals : all);
+      setFetchedFoods(meals.length >= 4 ? meals : all);
       setLoadingFoods(false);
     });
-  }, [phase]);
+  }, [phase, foodsProp]);
 
   // Pick food for a slot: (cycleDay + slotIndex + swapOffset) % pool.length
   // — simple, no collisions between slots on the same day,

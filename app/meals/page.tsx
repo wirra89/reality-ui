@@ -19,10 +19,13 @@ import MealRecommendationCards  from "@/components/MealRecommendationCards";
 import {
   getTodayMealEntries,
   getTodayNutritionSummary,
+  getFoodsForPhase,
+  type Food,
   type MealLogEntry,
   type NutritionSummary,
 } from "@/lib/nutrition";
 import { type MacroTargets } from "@/components/NutritionEntryList";
+import { type MacroRemaining } from "@/lib/macroMatcher";
 
 // Set to true to re-enable legacy meal UI (MealDailySummary, MealFoodLibrary, Log Custom Meal button).
 // Legacy code is preserved intact — this flag only controls visibility.
@@ -34,8 +37,7 @@ export default function MealsPage() {
   const phaseData = getPhaseData(cycleDay, cycleParams);
   const phase = phaseData.phase as Phase;
 
-  // Macro targets: use user's calculated values from profile (set during onboarding)
-  // or fall back to phase-based estimates from lib/cycle.ts
+  // Macro targets: profile calculated values or phase-based fallback
   const macroTargets: MacroTargets = {
     calories: profile?.calculated_calories
       ?? Math.round(phaseData.macros.protein * 4 + phaseData.macros.carbs * 4 + phaseData.macros.fats * 9),
@@ -55,6 +57,25 @@ export default function MealsPage() {
   const [nutritionEntries, setNutritionEntries]       = useState<MealLogEntry[]>([]);
   const [nutritionSummary, setNutritionSummary]       = useState<NutritionSummary | null>(null);
   const [nutritionLoading, setNutritionLoading]       = useState(true);
+
+  // Remaining macros — clamped to 0, recomputed whenever nutritionSummary updates
+  const macroRemaining: MacroRemaining = {
+    protein: Math.max(0, macroTargets.protein  - Math.round(nutritionSummary?.protein ?? 0)),
+    carbs:   Math.max(0, macroTargets.carbs    - Math.round(nutritionSummary?.carbs   ?? 0)),
+    fats:    Math.max(0, macroTargets.fats     - Math.round(nutritionSummary?.fats    ?? 0)),
+    kcal:    Math.max(0, macroTargets.calories - Math.round(nutritionSummary?.kcal    ?? 0)),
+  };
+
+  // ── Phase food pool — lifted here so both NutritionEntryList and
+  //    MealRecommendationCards share the same loaded data ──
+  const [phaseFoods, setPhaseFoods] = useState<Food[]>([]);
+
+  useEffect(() => {
+    getFoodsForPhase(phase).then(all => {
+      const meals = all.filter(f => f.category === "meal");
+      setPhaseFoods(meals.length >= 4 ? meals : all);
+    });
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Use today's date as the load guard — not cycleDay.
   // meal_logs rows are keyed by (user_id, date), so re-fetching on the same day
@@ -214,7 +235,13 @@ export default function MealsPage() {
             summary={nutritionSummary}
             loading={nutritionLoading}
             macroTargets={macroTargets}
+            macroRemaining={macroRemaining}
             phase={phase}
+            phaseFoods={phaseFoods}
+            userGoals={profile?.goals ?? []}
+            mealFocusHeadline={todayState?.mealFocus?.headline ?? null}
+            cycleDay={cycleDay}
+            onLogged={() => { showToast("✓ Food logged"); refreshNutrition(); }}
             onEntryDeleted={(deletedId) => {
               setNutritionEntries(prev => prev.filter(e => e.id !== deletedId));
               refreshNutrition();
@@ -226,6 +253,7 @@ export default function MealsPage() {
         <MealRecommendationCards
           phase={phase}
           cycleDay={cycleDay}
+          foods={phaseFoods}
           onLogged={() => {
             showToast("✓ Food logged");
             refreshNutrition();
