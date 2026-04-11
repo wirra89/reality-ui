@@ -13,6 +13,15 @@ export type MuscleGroup =
 
 export type PhaseTag = "menstrual" | "follicular" | "ovulation" | "luteal" | "all";
 
+// V1.1 classification fields
+export type ExerciseCategory = "strength" | "cardio" | "bodyweight" | "mobility";
+export type InputType =
+  | "weight_reps"       // barbell/dumbbell/cable/machine — weight kg + reps
+  | "reps_only"         // bodyweight exercises — reps, no weight
+  | "duration_only"     // timed holds, HIIT, yoga — duration (min) only
+  | "duration_distance" // outdoor/machine cardio — duration (min) + distance (km)
+  | "weight_distance";  // carries, sleds — weight (kg) + distance (m)
+
 export interface Exercise {
   id: string;
   name: string;
@@ -21,6 +30,9 @@ export interface Exercise {
   difficulty: "beginner" | "intermediate" | "advanced";
   phases: PhaseTag[]; // which phases this exercise is recommended for
   tips: string;       // short coaching tip
+  // V1.1 — optional; exercises without these fall back to getExerciseInputType() heuristics
+  category?: ExerciseCategory;
+  inputType?: InputType;
 }
 
 export const MUSCLE_LABELS: Record<MuscleGroup, string> = {
@@ -386,6 +398,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "bodyweight", difficulty: "beginner",
     phases: ["all"],
     tips: "Squeeze everything — glutes, abs, quads. Don't let hips sag.",
+    category: "bodyweight", inputType: "duration_only",
   },
   {
     id: "core-02", name: "Dead Bug", muscle: "core",
@@ -428,6 +441,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "bodyweight", difficulty: "beginner",
     phases: ["all"],
     tips: "Stack feet or stagger. Drive hip up — don't let it sag.",
+    category: "bodyweight", inputType: "duration_only",
   },
   {
     id: "core-09", name: "Bicycle Crunch", muscle: "core",
@@ -440,6 +454,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "dumbbell", difficulty: "intermediate",
     phases: ["all"],
     tips: "Heavy weights, stand tall, walk with purpose. Best core exercise.",
+    category: "strength", inputType: "weight_distance",
   },
 
   // ── CARDIO ────────────────────────────────────────────────────────────
@@ -448,66 +463,77 @@ export const EXERCISES: Exercise[] = [
     equipment: "cardio", difficulty: "beginner",
     phases: ["menstrual", "all"],
     tips: "Best low-impact option during menstrual phase. Aim for 6-7k steps.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-02", name: "Treadmill Intervals", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["follicular", "ovulation"],
     tips: "30s sprint / 60s walk × 10 rounds. Powerful fat burner.",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-03", name: "Cycling (Zone 2)", muscle: "cardio",
     equipment: "cardio", difficulty: "beginner",
     phases: ["luteal", "menstrual"],
     tips: "60-70% max HR. Can hold a conversation. Ideal for luteal phase.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-04", name: "Jump Rope", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["ovulation", "follicular"],
     tips: "Start with 3 sets of 2 min. Light on feet, wrists do the work.",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-05", name: "Rowing Machine", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["follicular", "ovulation", "luteal"],
     tips: "60% legs, 20% body, 20% arms. Catch, drive, finish, recover.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-06", name: "Stairmaster", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["follicular", "luteal"],
     tips: "Great glute activation + cardio combo. Don't hold the rails.",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-07", name: "HIIT (20 min)", muscle: "cardio",
     equipment: "cardio", difficulty: "advanced",
     phases: ["ovulation"],
     tips: "Best saved for ovulation peak. 40s on / 20s off. Go all out.",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-08", name: "Yoga / Stretching", muscle: "cardio",
     equipment: "bodyweight", difficulty: "beginner",
     phases: ["menstrual", "luteal"],
     tips: "Yin or restorative yoga during menstrual phase. Honour rest.",
+    category: "mobility", inputType: "duration_only",
   },
   {
     id: "car-09", name: "Elliptical (40 min)", muscle: "cardio",
     equipment: "cardio", difficulty: "beginner",
     phases: ["all"],
     tips: "Low impact, full body. Great option when energy is moderate.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-10", name: "Swimming", muscle: "cardio",
     equipment: "cardio", difficulty: "beginner",
     phases: ["menstrual", "luteal"],
     tips: "Zero impact on joints. Soothing during menstrual phase.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-11", name: "Sprint Intervals (Track)", muscle: "cardio",
     equipment: "cardio", difficulty: "advanced",
     phases: ["ovulation"],
     tips: "Peak phase only. Max effort 60-100m sprints. Full recovery between.",
+    category: "cardio", inputType: "duration_only",
   },
   // ── LEGS (new category) ───────────────────────────────────────────────
   {
@@ -611,6 +637,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "bodyweight", difficulty: "beginner",
     phases: ["menstrual", "luteal"],
     tips: "90° knee angle, back flat. Hold 30-60s. No equipment, great isometric.",
+    category: "bodyweight", inputType: "duration_only",
   },
   {
     id: "leg-18", name: "Box Jump", muscle: "legs",
@@ -827,6 +854,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "bodyweight", difficulty: "intermediate",
     phases: ["follicular", "ovulation"],
     tips: "Lower back pressed to floor. Arms and legs extended low. Hold 20-40s.",
+    category: "bodyweight", inputType: "duration_only",
   },
   {
     id: "core-12", name: "V-Up", muscle: "core",
@@ -863,6 +891,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "bodyweight", difficulty: "advanced",
     phases: ["follicular", "ovulation"],
     tips: "Elbows on Swiss ball, make circles. Anti-rotation and stability together.",
+    category: "bodyweight", inputType: "duration_only",
   },
 
   // ── MORE CARDIO ──────────────────────────────────────────────────────
@@ -871,30 +900,35 @@ export const EXERCISES: Exercise[] = [
     equipment: "cardio", difficulty: "beginner",
     phases: ["all"],
     tips: "Real stairs or machine. Great low-impact glute and leg workout.",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-13", name: "Dance / Zumba", muscle: "cardio",
     equipment: "cardio", difficulty: "beginner",
     phases: ["follicular", "ovulation"],
     tips: "High oestrogen phase — you'll feel most coordinated and energetic. Have fun!",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-14", name: "Pilates (Full Class)", muscle: "cardio",
     equipment: "bodyweight", difficulty: "beginner",
     phases: ["luteal", "menstrual"],
     tips: "Perfect for luteal/menstrual. Core stability, flexibility, low impact.",
+    category: "mobility", inputType: "duration_only",
   },
   {
     id: "car-15", name: "Battle Ropes", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["ovulation", "follicular"],
     tips: "30s on / 30s rest. Upper body cardio with core engagement.",
+    category: "cardio", inputType: "duration_only",
   },
   {
     id: "car-16", name: "Assault Bike (HIIT)", muscle: "cardio",
     equipment: "cardio", difficulty: "advanced",
     phases: ["ovulation"],
     tips: "10s all-out / 50s rest × 10. One of the most effective fat-burning tools.",
+    category: "cardio", inputType: "duration_only",
   },
 
   // ── MORE LEGS ─────────────────────────────────────────────────────────
@@ -993,6 +1027,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "cardio", difficulty: "beginner",
     phases: ["all"],
     tips: "12% incline, 3mph, 30 min — the '12-3-30' method. Low impact leg and glute work.",
+    category: "cardio", inputType: "duration_distance",
   },
 
   // ── MORE BACK ────────────────────────────────────────────────────────
@@ -1111,6 +1146,7 @@ export const EXERCISES: Exercise[] = [
     equipment: "bodyweight", difficulty: "intermediate",
     phases: ["follicular", "ovulation"],
     tips: "Lower back pressed to floor. Arms and legs extended low. Hold 20-40s.",
+    category: "bodyweight", inputType: "duration_only",
   },
   {
     id: "core-19", name: "V-Up", muscle: "core",
@@ -1175,24 +1211,28 @@ export const EXERCISES: Exercise[] = [
     equipment: "cardio", difficulty: "beginner",
     phases: ["follicular", "luteal"],
     tips: "Conversational pace. Zone 2 cardio builds aerobic base over weeks.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-18", name: "Outdoor Run (Tempo)", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["ovulation", "follicular"],
     tips: "Comfortably hard pace. 20-40 min. Builds lactate threshold and speed.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-19", name: "Hiking", muscle: "cardio",
     equipment: "cardio", difficulty: "beginner",
     phases: ["all"],
     tips: "Low impact, high benefits. Great for menstrual phase. Nature reduces cortisol.",
+    category: "cardio", inputType: "duration_distance",
   },
   {
     id: "car-20", name: "Spin Class", muscle: "cardio",
     equipment: "cardio", difficulty: "intermediate",
     phases: ["follicular", "ovulation"],
     tips: "High energy, motivating format. Great follicular/ovulation choice.",
+    category: "cardio", inputType: "duration_only",
   },
 
   // ── CHEST — additional ───────────────────────────────────────────────────
@@ -1227,13 +1267,13 @@ export const EXERCISES: Exercise[] = [
   // ── LEGS — additional ────────────────────────────────────────────────────
   { id: "leg-41", name: "Leg Press (Feet High)", muscle: "legs", equipment: "machine", difficulty: "beginner", phases: ["all"], tips: "Higher foot placement shifts load to hamstrings and glutes." },
   { id: "leg-42", name: "Leg Press (Feet Low)", muscle: "legs", equipment: "machine", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Lower foot placement targets quads more. Great quad burnout set." },
-  { id: "leg-43", name: "Copenhagen Plank", muscle: "legs", equipment: "bodyweight", difficulty: "advanced", phases: ["all"], tips: "Adductor strength. Side plank with top leg supported on bench." },
+  { id: "leg-43", name: "Copenhagen Plank", muscle: "legs", equipment: "bodyweight", difficulty: "advanced", phases: ["all"], tips: "Adductor strength. Side plank with top leg supported on bench.", category: "bodyweight", inputType: "duration_only" },
   { id: "leg-44", name: "Reverse Nordics", muscle: "legs", equipment: "bodyweight", difficulty: "advanced", phases: ["follicular", "ovulation"], tips: "Kneel, lean back slowly. Eccentric quad strength. Injury prevention." },
   { id: "leg-45", name: "Single Leg Press", muscle: "legs", equipment: "machine", difficulty: "intermediate", phases: ["all"], tips: "Corrects imbalances. Use same load each side." },
   { id: "leg-46", name: "Heel Elevated Squat", muscle: "legs", equipment: "dumbbell", difficulty: "beginner", phases: ["all"], tips: "Plates or wedge under heels. Deeper quad engagement, less ankle mobility needed." },
   { id: "leg-47", name: "Landmine Squat", muscle: "legs", equipment: "barbell", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Barbell in landmine, goblet style. Spine-friendly squat variant." },
   { id: "leg-48", name: "Leg Curl (Seated)", muscle: "legs", equipment: "machine", difficulty: "beginner", phases: ["all"], tips: "More hamstring stretch than lying version. Control the eccentric." },
-  { id: "leg-49", name: "Step Mill (Stairmaster)", muscle: "legs", equipment: "cardio", difficulty: "intermediate", phases: ["follicular", "luteal"], tips: "Great glute and leg conditioning. Zone 2 intensity for 20-30 min." },
+  { id: "leg-49", name: "Step Mill (Stairmaster)", muscle: "legs", equipment: "cardio", difficulty: "intermediate", phases: ["follicular", "luteal"], tips: "Great glute and leg conditioning. Zone 2 intensity for 20-30 min.", category: "cardio", inputType: "duration_only" },
   { id: "leg-50", name: "Calf Raise (Smith Machine)", muscle: "legs", equipment: "barbell", difficulty: "beginner", phases: ["all"], tips: "Heavier loading for calves. Pause at top and bottom." },
 
   // ── GLUTES — additional ──────────────────────────────────────────────────
@@ -1245,22 +1285,22 @@ export const EXERCISES: Exercise[] = [
   { id: "glu-27", name: "Seated Abduction (Machine)", muscle: "glutes", equipment: "machine", difficulty: "beginner", phases: ["all"], tips: "Slow and controlled. Great glute med isolation. High reps work well." },
 
   // ── CORE — additional ────────────────────────────────────────────────────
-  { id: "core-24", name: "Suitcase Carry", muscle: "core", equipment: "dumbbell", difficulty: "intermediate", phases: ["all"], tips: "Heavy dumbbell in one hand, walk 20m. Oblique anti-lateral flexion." },
-  { id: "core-25", name: "Bear Crawl", muscle: "core", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "4-point position, knees hover 2cm off ground. Full body stability." },
+  { id: "core-24", name: "Suitcase Carry", muscle: "core", equipment: "dumbbell", difficulty: "intermediate", phases: ["all"], tips: "Heavy dumbbell in one hand, walk 20m. Oblique anti-lateral flexion.", category: "strength", inputType: "weight_distance" },
+  { id: "core-25", name: "Bear Crawl", muscle: "core", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "4-point position, knees hover 2cm off ground. Full body stability.", category: "bodyweight", inputType: "duration_only" },
   { id: "core-26", name: "Hollow Body Rock", muscle: "core", equipment: "bodyweight", difficulty: "intermediate", phases: ["all"], tips: "Arms overhead, lower back pressed to floor. Rock forward and back." },
   { id: "core-27", name: "Dragon Flag (Negatives)", muscle: "core", equipment: "bodyweight", difficulty: "advanced", phases: ["follicular", "ovulation"], tips: "Lower slowly from top position. One of the best anterior chain exercises." },
   { id: "core-28", name: "Cable Oblique Crunch", muscle: "core", equipment: "cable", difficulty: "beginner", phases: ["all"], tips: "Side cable crunch. Targets obliques more directly than rotation." },
   { id: "core-29", name: "TRX Fallout", muscle: "core", equipment: "other", difficulty: "advanced", phases: ["follicular", "ovulation"], tips: "Similar to ab rollout but suspended. Longer lever = harder." },
 
   // ── CARDIO — additional ──────────────────────────────────────────────────
-  { id: "car-21", name: "Sled Push", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "10-20m sprints. Full body power. Low injury risk, high output." },
-  { id: "car-22", name: "Sled Pull", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Harness or handle. Great for hamstrings and conditioning." },
-  { id: "car-23", name: "Ski Erg", muscle: "cardio", equipment: "cardio", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Full body pulling machine. Great low-impact high-intensity option." },
-  { id: "car-24", name: "Kettlebell Swing", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Explosive hip hinge. 15-20 reps. Glutes, hamstrings, and cardio." },
-  { id: "car-25", name: "Cycling (Outdoor)", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["all"], tips: "Zone 2 for 45-90 min. One of the best aerobic base builders." },
-  { id: "car-26", name: "Water Aerobics", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["menstrual", "luteal"], tips: "Low impact, reduces cramping. Excellent menstrual phase option." },
-  { id: "car-27", name: "Yoga (Restorative)", muscle: "cardio", equipment: "other", difficulty: "beginner", phases: ["menstrual", "luteal"], tips: "Yin or restorative style. Reduces cortisol and supports recovery." },
-  { id: "car-28", name: "Barre Class", muscle: "cardio", equipment: "other", difficulty: "beginner", phases: ["all"], tips: "Ballet-inspired. Great for small muscle endurance and posture." },
+  { id: "car-21", name: "Sled Push", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "10-20m sprints. Full body power. Low injury risk, high output.", category: "strength", inputType: "weight_distance" },
+  { id: "car-22", name: "Sled Pull", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Harness or handle. Great for hamstrings and conditioning.", category: "strength", inputType: "weight_distance" },
+  { id: "car-23", name: "Ski Erg", muscle: "cardio", equipment: "cardio", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Full body pulling machine. Great low-impact high-intensity option.", category: "cardio", inputType: "duration_only" },
+  { id: "car-24", name: "Kettlebell Swing", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Explosive hip hinge. 15-20 reps. Glutes, hamstrings, and cardio.", category: "strength", inputType: "weight_reps" },
+  { id: "car-25", name: "Cycling (Outdoor)", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["all"], tips: "Zone 2 for 45-90 min. One of the best aerobic base builders.", category: "cardio", inputType: "duration_distance" },
+  { id: "car-26", name: "Water Aerobics", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["menstrual", "luteal"], tips: "Low impact, reduces cramping. Excellent menstrual phase option.", category: "cardio", inputType: "duration_only" },
+  { id: "car-27", name: "Yoga (Restorative)", muscle: "cardio", equipment: "other", difficulty: "beginner", phases: ["menstrual", "luteal"], tips: "Yin or restorative style. Reduces cortisol and supports recovery.", category: "mobility", inputType: "duration_only" },
+  { id: "car-28", name: "Barre Class", muscle: "cardio", equipment: "other", difficulty: "beginner", phases: ["all"], tips: "Ballet-inspired. Great for small muscle endurance and posture.", category: "mobility", inputType: "duration_only" },
 
   // ── CALVES (new category) ─────────────────────────────────────────────────
   { id: "cal-01", name: "Standing Calf Raise", muscle: "legs", equipment: "bodyweight", difficulty: "beginner", phases: ["all"], tips: "Slow and controlled. 3 seconds up, pause, 3 seconds down. Full range of motion." },
@@ -1290,18 +1330,18 @@ export const EXERCISES: Exercise[] = [
   { id: "cor-42", name: "Weighted Sit-Up", muscle: "core", equipment: "dumbbell", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Hold plate or dumbbell at chest or overhead. Progressive overload for abs." },
 
   // ── CARDIO — basics that were missing ─────────────────────────────────────
-  { id: "car-29", name: "Running", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Best in follicular and ovulation phase when energy is high. Avoid in luteal if fatigued." },
-  { id: "car-30", name: "Sprinting", muscle: "cardio", equipment: "cardio", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Short maximal efforts 20-60m. Peak power output. Best in ovulation phase." },
-  { id: "car-31", name: "Incline Walking", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["all"], tips: "8-12% incline, 3-4 mph. Low impact, high glute and calorie burn. Good for all phases." },
-  { id: "car-32", name: "Boxing / Kickboxing", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "High energy, stress-relieving. Excellent follicular and ovulation choice when confidence peaks." },
-  { id: "car-33", name: "Burpees", muscle: "cardio", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Full body conditioning. Scale with step-out version if needed. Rest as needed between sets." },
-  { id: "car-34", name: "Jump Lunges", muscle: "cardio", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Plyometric lower body. Builds power and coordination. Land softly to protect joints." },
-  { id: "car-35", name: "High Knees", muscle: "cardio", equipment: "bodyweight", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Drive knees to hip height. Keep core tight. Great warm-up or finisher." },
-  { id: "car-36", name: "Jumping Jacks", muscle: "cardio", equipment: "bodyweight", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Classic warm-up. Low impact version: step out instead of jump." },
-  { id: "car-37", name: "Tabata", muscle: "cardio", equipment: "bodyweight", difficulty: "advanced", phases: ["follicular", "ovulation"], tips: "20 sec on, 10 sec off, 8 rounds = 4 min. Maximally intense. Only in high energy phases." },
-  { id: "car-38", name: "Agility Ladder", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Improves coordination, footwork, and reaction time. Great warm-up for leg day." },
-  { id: "car-39", name: "Farmer Walk", muscle: "cardio", equipment: "dumbbell", difficulty: "beginner", phases: ["all"], tips: "Heavy dumbbells, walk 20-40m. Full body strength endurance. Great core and grip." },
-  { id: "car-40", name: "Shadow Boxing", muscle: "cardio", equipment: "bodyweight", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "No equipment needed. Great stress outlet. Combine with footwork for full cardio session." },
+  { id: "car-29", name: "Running", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Best in follicular and ovulation phase when energy is high. Avoid in luteal if fatigued.", category: "cardio", inputType: "duration_distance" },
+  { id: "car-30", name: "Sprinting", muscle: "cardio", equipment: "cardio", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Short maximal efforts 20-60m. Peak power output. Best in ovulation phase.", category: "cardio", inputType: "duration_only" },
+  { id: "car-31", name: "Incline Walking", muscle: "cardio", equipment: "cardio", difficulty: "beginner", phases: ["all"], tips: "8-12% incline, 3-4 mph. Low impact, high glute and calorie burn. Good for all phases.", category: "cardio", inputType: "duration_distance" },
+  { id: "car-32", name: "Boxing / Kickboxing", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "High energy, stress-relieving. Excellent follicular and ovulation choice when confidence peaks.", category: "cardio", inputType: "duration_only" },
+  { id: "car-33", name: "Burpees", muscle: "cardio", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Full body conditioning. Scale with step-out version if needed. Rest as needed between sets.", category: "bodyweight", inputType: "reps_only" },
+  { id: "car-34", name: "Jump Lunges", muscle: "cardio", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Plyometric lower body. Builds power and coordination. Land softly to protect joints.", category: "bodyweight", inputType: "reps_only" },
+  { id: "car-35", name: "High Knees", muscle: "cardio", equipment: "bodyweight", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Drive knees to hip height. Keep core tight. Great warm-up or finisher.", category: "bodyweight", inputType: "reps_only" },
+  { id: "car-36", name: "Jumping Jacks", muscle: "cardio", equipment: "bodyweight", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "Classic warm-up. Low impact version: step out instead of jump.", category: "bodyweight", inputType: "reps_only" },
+  { id: "car-37", name: "Tabata", muscle: "cardio", equipment: "bodyweight", difficulty: "advanced", phases: ["follicular", "ovulation"], tips: "20 sec on, 10 sec off, 8 rounds = 4 min. Maximally intense. Only in high energy phases.", category: "cardio", inputType: "duration_only" },
+  { id: "car-38", name: "Agility Ladder", muscle: "cardio", equipment: "other", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Improves coordination, footwork, and reaction time. Great warm-up for leg day.", category: "bodyweight", inputType: "duration_only" },
+  { id: "car-39", name: "Farmer Walk", muscle: "cardio", equipment: "dumbbell", difficulty: "beginner", phases: ["all"], tips: "Heavy dumbbells, walk 20-40m. Full body strength endurance. Great core and grip.", category: "strength", inputType: "weight_distance" },
+  { id: "car-40", name: "Shadow Boxing", muscle: "cardio", equipment: "bodyweight", difficulty: "beginner", phases: ["follicular", "ovulation"], tips: "No equipment needed. Great stress outlet. Combine with footwork for full cardio session.", category: "bodyweight", inputType: "duration_only" },
 
   // ── BACK — missing basics ─────────────────────────────────────────────────
   { id: "bck-28", name: "Chin-Up", muscle: "back", equipment: "bodyweight", difficulty: "intermediate", phases: ["follicular", "ovulation"], tips: "Supinated (underhand) grip. More bicep involvement than pull-up. Great for beginners to pull-ups." },
@@ -1384,13 +1424,31 @@ export function searchExercises(query: string): Exercise[] {
   return EXERCISES.filter((e) => e.name.toLowerCase().includes(q));
 }
 
-/** Derive exercise type: cardio muscle group → "cardio", everything else → "strength". */
-export function getExerciseType(exercise: Exercise): "strength" | "cardio" {
-  return exercise.muscle === "cardio" ? "cardio" : "strength";
+/**
+ * Resolve an exercise's InputType.
+ * Uses the explicit `inputType` field if set; otherwise falls back to a
+ * muscle-group heuristic so unclassified exercises stay backward-compatible.
+ */
+export function getExerciseInputType(exercise: Exercise): InputType {
+  if (exercise.inputType) return exercise.inputType;
+  // Fallback: cardio muscle group → duration+distance; everything else → weight+reps
+  return exercise.muscle === "cardio" ? "duration_distance" : "weight_reps";
 }
 
-/** Look up exercise type by name. Returns "strength" for unrecognised names. */
-export function getExerciseTypeByName(name: string): "strength" | "cardio" {
+/** Look up InputType by exercise name. Returns "weight_reps" for unknown names. */
+export function getExerciseInputTypeByName(name: string): InputType {
   const match = EXERCISES.find(e => e.name.toLowerCase() === name.toLowerCase().trim());
-  return match ? getExerciseType(match) : "strength";
+  return match ? getExerciseInputType(match) : "weight_reps";
+}
+
+// ── Legacy wrappers — kept for backward compat ────────────────────────────────
+/** @deprecated Use getExerciseInputType */
+export function getExerciseType(exercise: Exercise): "strength" | "cardio" {
+  const t = getExerciseInputType(exercise);
+  return (t === "weight_reps" || t === "reps_only" || t === "weight_distance") ? "strength" : "cardio";
+}
+/** @deprecated Use getExerciseInputTypeByName */
+export function getExerciseTypeByName(name: string): "strength" | "cardio" {
+  const t = getExerciseInputTypeByName(name);
+  return (t === "weight_reps" || t === "reps_only" || t === "weight_distance") ? "strength" : "cardio";
 }
