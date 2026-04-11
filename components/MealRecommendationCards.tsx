@@ -14,7 +14,8 @@ interface Props {
   phase: Phase;
   cycleDay: number;
   onLogged: () => void;
-  foods?: Food[];   // pre-loaded pool from page; if provided, skips internal fetch
+  foods?: Food[];              // pre-loaded pool from page; if provided, skips internal fetch
+  loggedMealTypes?: Set<MealType>; // meal types already logged today — drives initial ✓ state
 }
 
 const PHASE_COLOR: Record<Phase, string> = {
@@ -33,7 +34,7 @@ const MEAL_SLOTS: { type: MealType; label: string; emoji: string }[] = [
 
 type SwapOffsets = Record<MealType, number>;
 
-export default function MealRecommendationCards({ phase, cycleDay, onLogged, foods: foodsProp }: Props) {
+export default function MealRecommendationCards({ phase, cycleDay, onLogged, foods: foodsProp, loggedMealTypes }: Props) {
   const [fetchedFoods, setFetchedFoods]   = useState<Food[]>([]);
   const [loadingFoods, setLoadingFoods]   = useState(!foodsProp);
   const [swapOffsets, setSwapOffsets]     = useState<SwapOffsets>({
@@ -41,7 +42,19 @@ export default function MealRecommendationCards({ phase, cycleDay, onLogged, foo
   });
   const [expanded, setExpanded] = useState<MealType | null>(null);
   const [logging, setLogging]   = useState<MealType | null>(null);
-  const [loggedSlots, setLoggedSlots] = useState<Set<MealType>>(new Set());
+  const [loggedSlots, setLoggedSlots] = useState<Set<MealType>>(
+    () => loggedMealTypes ? new Set(loggedMealTypes) : new Set()
+  );
+
+  // Sync loggedSlots when parent refreshes after a log — merge so local optimistic adds are kept.
+  useEffect(() => {
+    if (!loggedMealTypes) return;
+    setLoggedSlots(prev => {
+      const merged = new Set(prev);
+      loggedMealTypes.forEach(t => merged.add(t));
+      return merged;
+    });
+  }, [loggedMealTypes]);
 
   // Use pre-loaded foods if provided; otherwise fetch internally.
   const foods = foodsProp && foodsProp.length > 0 ? foodsProp : fetchedFoods;
@@ -121,8 +134,11 @@ export default function MealRecommendationCards({ phase, cycleDay, onLogged, foo
           return (
             <div
               key={type}
-              className="rounded-2xl overflow-hidden"
-              style={{ background: "linear-gradient(135deg, #2A2330 0%, #3D3248 100%)" }}
+              className="rounded-2xl overflow-hidden transition-opacity duration-300"
+              style={{
+                background: "linear-gradient(135deg, #2A2330 0%, #3D3248 100%)",
+                opacity: isLogged ? 0.6 : 1,
+              }}
             >
               {/* ── Slot badge + Swap ── */}
               <div className="flex items-center justify-between px-4 pt-4 pb-2">

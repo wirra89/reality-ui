@@ -254,6 +254,7 @@ export default function MealsPage() {
           phase={phase}
           cycleDay={cycleDay}
           foods={phaseFoods}
+          loggedMealTypes={new Set(nutritionEntries.map(e => e.mealType))}
           onLogged={() => {
             showToast("✓ Food logged");
             refreshNutrition();

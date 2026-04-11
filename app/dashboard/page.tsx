@@ -17,48 +17,97 @@ import NutritionCard from "@/components/NutritionCard";
 import CycleCalendar from "@/components/CycleCalendar";
 
 // ── MacroCard ──────────────────────────────────────────────────────────────
-function MacroCard({ phaseData, profile }: {
+function MacroCard({ phaseData, profile, nutritionSummary }: {
   phaseData: ReturnType<typeof getPhaseData>;
   profile: import("@/lib/supabase").Profile | null;
+  nutritionSummary: NutritionSummary | null;
 }) {
   const hasCustom = !!(profile?.calculated_calories);
-  const macros = {
+  const targets = {
     protein: profile?.calculated_protein ?? phaseData.macros.protein,
     carbs:   profile?.calculated_carbs   ?? phaseData.macros.carbs,
     fats:    profile?.calculated_fats    ?? phaseData.macros.fats,
   };
-  const total = hasCustom && profile?.calculated_calories
+  const totalTarget = hasCustom && profile?.calculated_calories
     ? profile.calculated_calories
-    : macros.protein * 4 + macros.carbs * 4 + macros.fats * 9;
-  const proteinPct = Math.round((macros.protein * 4 / total) * 100);
-  const carbPct    = Math.round((macros.carbs   * 4 / total) * 100);
-  const fatPct     = 100 - proteinPct - carbPct;
+    : targets.protein * 4 + targets.carbs * 4 + targets.fats * 9;
+
+  const consumed = {
+    kcal:    Math.round(nutritionSummary?.kcal    ?? 0),
+    protein: Math.round(nutritionSummary?.protein ?? 0),
+    carbs:   Math.round(nutritionSummary?.carbs   ?? 0),
+    fats:    Math.round(nutritionSummary?.fats    ?? 0),
+  };
+  const hasLogged = consumed.kcal > 0;
+
+  const kcalPct = Math.min(consumed.kcal / totalTarget, 1);
+
+  const macroRows = [
+    { label: "Protein", consumed: consumed.protein, target: targets.protein, color: "#7B6D8D" },
+    { label: "Carbs",   consumed: consumed.carbs,   target: targets.carbs,   color: "#C48A97" },
+    { label: "Fats",    consumed: consumed.fats,    target: targets.fats,    color: "#EDD5DB" },
+  ];
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+      {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-dark">Daily Macros</h3>
         <div className="flex items-center gap-1.5">
           {hasCustom && <span className="text-xs font-bold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full">Custom ✓</span>}
-          <span className="text-xs text-secondary font-medium">{total} kcal</span>
+          {!hasCustom && <span className="text-xs text-dark/30 font-medium">Phase estimate</span>}
         </div>
       </div>
-      <div className="flex rounded-full overflow-hidden h-2.5 mb-3 gap-0.5">
-        <div style={{ width: `${proteinPct}%`, background: "#7B6D8D" }} className="h-full rounded-l-full transition-all duration-500" />
-        <div style={{ width: `${carbPct}%`,    background: "#C48A97" }} className="h-full transition-all duration-500" />
-        <div style={{ width: `${fatPct}%`,     background: "#EDD5DB" }} className="h-full rounded-r-full transition-all duration-500" />
+
+      {/* Kcal consumed / target */}
+      <div className="flex items-end justify-between mb-1.5">
+        <div className="flex items-baseline gap-1">
+          <span className="font-display font-bold text-xl text-dark leading-none">{consumed.kcal}</span>
+          <span className="text-xs text-dark/40 font-body">/ {totalTarget} kcal</span>
+        </div>
+        {kcalPct >= 1 && <span className="text-xs font-semibold text-emerald-500">✓ Goal reached</span>}
+        {!hasLogged && <span className="text-xs text-dark/30 font-body">Nothing logged yet</span>}
       </div>
-      <div className="flex justify-between text-xs">
-        {[
-          { label: "Protein", val: macros.protein, color: "#7B6D8D" },
-          { label: "Carbs",   val: macros.carbs,   color: "#C48A97" },
-          { label: "Fats",    val: macros.fats,    color: "#EDD5DB" },
-        ].map(m => (
-          <div key={m.label} className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: m.color }} />
-            <span className="text-dark/70">{m.label} <strong className="text-dark">{m.val}g</strong></span>
-          </div>
-        ))}
+      <div className="h-2 rounded-full overflow-hidden mb-4" style={{ background: "rgba(196,138,151,0.12)" }}>
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{
+            width: `${kcalPct * 100}%`,
+            background: kcalPct >= 1
+              ? "linear-gradient(90deg,#34D399,#10B981)"
+              : "linear-gradient(90deg,#C48A97,#7B6D8D)",
+          }}
+        />
+      </div>
+
+      {/* Per-macro rows */}
+      <div className="flex flex-col gap-2.5">
+        {macroRows.map(m => {
+          const pct = Math.min(m.consumed / m.target, 1);
+          const met = pct >= 1;
+          return (
+            <div key={m.label}>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: m.color }} />
+                  <span className="text-xs font-semibold text-dark/70">{m.label}</span>
+                </div>
+                <span className="text-xs font-body" style={{ color: met ? "#10B981" : "rgba(0,0,0,0.35)" }}>
+                  {met ? `✓ ${m.target}g` : `${m.consumed}g / ${m.target}g`}
+                </span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(0,0,0,0.06)" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pct * 100}%`,
+                    background: met ? "#10B981" : m.color,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -304,7 +353,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── 6. MACROS ── */}
-        <MacroCard phaseData={phaseData} profile={profile} />
+        <MacroCard phaseData={phaseData} profile={profile} nutritionSummary={nutritionSummary} />
 
         {/* ── 7. WATER TRACKER ── */}
         {(() => {
