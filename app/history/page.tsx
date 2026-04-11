@@ -245,7 +245,7 @@ export default function HistoryPage() {
                       );
                     })()}
                     {filteredWorkouts.map((w) => {
-                      const exs = w.exercises as unknown as { name: string; sets: { reps: string; weight: string }[] }[];
+                      const exs = w.exercises as unknown as { name: string; sets: { reps: string; weight: string; durationMin?: string; distanceKm?: string }[] }[];
                       const vol = exs.reduce((a, e) => a + e.sets.reduce((s, r) => s + (parseFloat(r.reps)||0) * (parseFloat(r.weight)||0), 0), 0);
                       const totalSets = exs.reduce((a, e) => a + e.sets.length, 0);
                       const phaseStyle = PHASE_COLORS[w.phase] ?? PHASE_COLORS.follicular;
@@ -284,14 +284,24 @@ export default function HistoryPage() {
                                 <div key={i}>
                                   <p className="text-dark font-semibold text-xs mb-1.5">{ex.name || `Exercise ${i + 1}`}</p>
                                   <div className="space-y-1">
-                                    {ex.sets.map((s, si) => (
+                                    {ex.sets.map((s: { reps: string; weight: string; durationMin?: string; distanceKm?: string }, si) => (
                                       <div key={si} className="flex items-center gap-3 text-xs text-dark/60 font-body">
                                         <span className="w-5 h-5 rounded-full bg-background flex items-center justify-center text-xs font-semibold text-dark/40 flex-shrink-0">{si + 1}</span>
-                                        <span>{s.reps || "—"} reps</span>
-                                        <span className="text-dark/30">×</span>
-                                        <span>{s.weight || "—"} kg</span>
-                                        {s.reps && s.weight && (
-                                          <span className="text-dark/30 ml-auto">= {(parseFloat(s.reps) * parseFloat(s.weight)).toFixed(0)} kg</span>
+                                        {s.durationMin || s.distanceKm ? (
+                                          <span>
+                                            {s.distanceKm ? `${s.distanceKm} km` : "—"}
+                                            <span className="text-dark/30 mx-1">·</span>
+                                            {s.durationMin ? `${s.durationMin} min` : "—"}
+                                          </span>
+                                        ) : (
+                                          <>
+                                            <span>{s.reps || "—"} reps</span>
+                                            <span className="text-dark/30">×</span>
+                                            <span>{s.weight || "—"} kg</span>
+                                            {s.reps && s.weight && (
+                                              <span className="text-dark/30 ml-auto">= {(parseFloat(s.reps) * parseFloat(s.weight)).toFixed(0)} kg</span>
+                                            )}
+                                          </>
                                         )}
                                       </div>
                                     ))}

@@ -1383,3 +1383,14 @@ export function searchExercises(query: string): Exercise[] {
   const q = query.toLowerCase();
   return EXERCISES.filter((e) => e.name.toLowerCase().includes(q));
 }
+
+/** Derive exercise type: cardio muscle group → "cardio", everything else → "strength". */
+export function getExerciseType(exercise: Exercise): "strength" | "cardio" {
+  return exercise.muscle === "cardio" ? "cardio" : "strength";
+}
+
+/** Look up exercise type by name. Returns "strength" for unrecognised names. */
+export function getExerciseTypeByName(name: string): "strength" | "cardio" {
+  const match = EXERCISES.find(e => e.name.toLowerCase() === name.toLowerCase().trim());
+  return match ? getExerciseType(match) : "strength";
+}

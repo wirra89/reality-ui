@@ -12,9 +12,10 @@ import {
   type Workout, type WorkoutTemplate, type PersonalRecord,
 } from "@/lib/supabase";
 import ExerciseLibrary from "@/components/ExerciseLibrary";
+import { getExerciseTypeByName } from "@/lib/exercises";
 
-interface SetRow { id: string; reps: string; weight: string; }
-interface ExRow  { id: string; name: string; sets: SetRow[]; }
+interface SetRow { id: string; reps: string; weight: string; durationMin?: string; distanceKm?: string; }
+interface ExRow  { id: string; name: string; sets: SetRow[]; exType: "strength" | "cardio"; }
 
 const PHASE_STARTS: Record<string, number> = {
   menstrual: 1, follicular: 6, ovulation: 14, luteal: 17,
@@ -137,7 +138,8 @@ const PHASE_COLORS: Record<string, string> = {
 };
 
 const newSet = (): SetRow => ({ id: crypto.randomUUID(), reps: "", weight: "" });
-const newEx  = (name = ""): ExRow => ({ id: crypto.randomUUID(), name, sets: [newSet()] });
+const newEx  = (name = "", exType: "strength" | "cardio" = "strength"): ExRow =>
+  ({ id: crypto.randomUUID(), name, sets: [newSet()], exType });
 
 export default function TrainingPage() {
   const { user, cycleDay, cycleParams, loading, todayState } = useApp();
@@ -200,11 +202,12 @@ export default function TrainingPage() {
         } else {
           // No matching draft — load from DB
           setWorkoutName(logged.name ?? "");
-          const exs = logged.exercises as unknown as { name: string; sets: { reps: string; weight: string }[] }[];
+          const exs = logged.exercises as unknown as { name: string; sets: { reps: string; weight: string; durationMin?: string; distanceKm?: string }[] }[];
           setExercises(exs.map(e => ({
             id: crypto.randomUUID(),
             name: e.name,
-            sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps, weight: s.weight })),
+            exType: getExerciseTypeByName(e.name),
+            sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps ?? "", weight: s.weight ?? "", durationMin: s.durationMin, distanceKm: s.distanceKm })),
           })));
         }
       } else {
@@ -222,7 +225,7 @@ export default function TrainingPage() {
   // edits belong to an already-persisted workout and prefer them over the DB row.
   // This protects against: token refresh, screen lock/wake, browser background eviction.
   useEffect(() => {
-    const hasContent = exercises.some(e => e.name.trim() || e.sets.some(s => s.reps || s.weight));
+    const hasContent = exercises.some(e => e.name.trim() || e.sets.some(s => s.reps || s.weight || s.durationMin || s.distanceKm));
     if (hasContent) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify({
         name: workoutName,
@@ -237,38 +240,40 @@ export default function TrainingPage() {
 
   // If the first slot is still empty (placeholder), replace it — otherwise append
   function addNamed(name: string) {
+    const exType = getExerciseTypeByName(name);
     setExercises(p => {
-      if (p.length === 1 && !p[0].name.trim() && p[0].sets.every(s => !s.reps && !s.weight)) {
-        return [{ ...p[0], name }];
+      if (p.length === 1 && !p[0].name.trim() && p[0].sets.every(s => !s.reps && !s.weight && !s.durationMin && !s.distanceKm)) {
+        return [{ ...p[0], name, exType }];
       }
-      return [...p, newEx(name)];
+      return [...p, newEx(name, exType)];
     });
   }
 
   const addSuggested = (n: string) => addNamed(n);
   const addFromLibrary = (n: string) => { addNamed(n); setShowLibrary(false); };
   const removeEx = (id: string) => setExercises(p => p.filter(e => e.id !== id));
-  const updateExName = (id: string, name: string) => setExercises(p => p.map(e => e.id === id ? { ...e, name } : e));
+  const updateExName = (id: string, name: string) => setExercises(p => p.map(e => e.id === id ? { ...e, name, exType: getExerciseTypeByName(name) } : e));
   const addSet = (eid: string) => setExercises(p => p.map(e => {
     if (e.id !== eid) return e;
     const last = e.sets[e.sets.length - 1];
     const copied: SetRow = last
-      ? { id: crypto.randomUUID(), reps: last.reps, weight: last.weight }
+      ? { id: crypto.randomUUID(), reps: last.reps, weight: last.weight, durationMin: last.durationMin, distanceKm: last.distanceKm }
       : newSet();
     return { ...e, sets: [...e.sets, copied] };
   }));
   const removeSet = (eid: string, sid: string) => setExercises(p => p.map(e => e.id === eid ? { ...e, sets: e.sets.filter(s => s.id !== sid) } : e));
-  const updateSet = (eid: string, sid: string, f: "reps" | "weight", v: string) =>
+  const updateSet = (eid: string, sid: string, f: "reps" | "weight" | "durationMin" | "distanceKm", v: string) =>
     setExercises(p => p.map(e => e.id === eid ? { ...e, sets: e.sets.map(s => s.id === sid ? { ...s, [f]: v } : s) } : e));
 
   // Load template into current workout
   function loadTemplate(t: WorkoutTemplate) {
     setWorkoutName(t.name);
     setExercises(
-      (t.exercises as unknown as { name: string; sets: { reps: string; weight: string }[] }[]).map(e => ({
+      (t.exercises as unknown as { name: string; sets: { reps: string; weight: string; durationMin?: string; distanceKm?: string }[] }[]).map(e => ({
         id: crypto.randomUUID(),
         name: e.name,
-        sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps, weight: s.weight })),
+        exType: getExerciseTypeByName(e.name),
+        sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps ?? "", weight: s.weight ?? "", durationMin: s.durationMin, distanceKm: s.distanceKm })),
       }))
     );
     setShowTemplates(false);
@@ -283,7 +288,9 @@ export default function TrainingPage() {
       name: smartName,
       cycle_day: cycleDay,
       phase: phaseData.phase,
-      exercises: exercises.map(e => ({ name: e.name, sets: e.sets.map(s => ({ reps: s.reps, weight: s.weight })) })),
+      exercises: exercises.map(e => e.exType === "cardio"
+        ? { name: e.name, sets: e.sets.map(s => ({ reps: "", weight: "", durationMin: s.durationMin ?? "", distanceKm: s.distanceKm ?? "" })) }
+        : { name: e.name, sets: e.sets.map(s => ({ reps: s.reps, weight: s.weight })) }),
     };
 
     let result;
@@ -317,7 +324,7 @@ export default function TrainingPage() {
       }
       const detectedPRs: string[] = [];
       for (const ex of exercises) {
-        if (!ex.name.trim()) continue;
+        if (!ex.name.trim() || ex.exType === "cardio") continue;
         const key = ex.name.trim().toLowerCase();
         const bestSet = ex.sets.reduce((best, s) => {
           const w = parseFloat(s.weight) || 0;
@@ -354,7 +361,9 @@ export default function TrainingPage() {
     const t: WorkoutTemplate = {
       name: workoutName || `${phaseData.phase} template`,
       phase: phaseData.phase,
-      exercises: exercises.map(e => ({ name: e.name, sets: e.sets.map(s => ({ reps: s.reps, weight: s.weight })) })),
+      exercises: exercises.map(e => e.exType === "cardio"
+        ? { name: e.name, sets: e.sets.map(s => ({ reps: "", weight: "", durationMin: s.durationMin ?? "", distanceKm: s.distanceKm ?? "" })) }
+        : { name: e.name, sets: e.sets.map(s => ({ reps: s.reps, weight: s.weight })) }),
     };
     await saveWorkoutTemplate(t);
     const updated = await getWorkoutTemplates();
@@ -555,24 +564,49 @@ export default function TrainingPage() {
                 <button onClick={() => removeEx(exercise.id)} className="text-dark/20 hover:text-rose-400 transition-colors text-lg leading-none">×</button>
               </div>
               <div className="px-4 py-3">
-                <div className="flex gap-2 mb-2">
-                  <span className="w-7" />
-                  <span className="flex-1 text-center text-xs font-semibold text-dark/40 uppercase tracking-wide">Reps</span>
-                  <span className="flex-1 text-center text-xs font-semibold text-dark/40 uppercase tracking-wide">Weight (kg)</span>
-                  <span className="w-6" />
-                </div>
-                {exercise.sets.map((set, si) => (
-                  <div key={set.id} className="flex items-center gap-2 mb-2">
-                    <span className="w-7 text-center text-xs font-semibold text-dark/30">{si + 1}</span>
-                    <input type="number" placeholder="12" value={set.reps}
-                      onChange={(e) => updateSet(exercise.id, set.id, "reps", e.target.value)}
-                      className="flex-1 text-center bg-background rounded-xl py-2 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors font-body" min="1" />
-                    <input type="number" placeholder="50" value={set.weight}
-                      onChange={(e) => updateSet(exercise.id, set.id, "weight", e.target.value)}
-                      className="flex-1 text-center bg-background rounded-xl py-2 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors font-body" min="0" step="0.5" />
-                    <button onClick={() => removeSet(exercise.id, set.id)} className="w-6 text-dark/20 hover:text-rose-400 transition-colors text-base leading-none">×</button>
-                  </div>
-                ))}
+                {exercise.exType === "cardio" ? (
+                  <>
+                    <div className="flex gap-2 mb-2">
+                      <span className="w-7" />
+                      <span className="flex-1 text-center text-xs font-semibold text-dark/40 uppercase tracking-wide">Duration (min)</span>
+                      <span className="flex-1 text-center text-xs font-semibold text-dark/40 uppercase tracking-wide">Distance (km)</span>
+                      <span className="w-6" />
+                    </div>
+                    {exercise.sets.map((set, si) => (
+                      <div key={set.id} className="flex items-center gap-2 mb-2">
+                        <span className="w-7 text-center text-xs font-semibold text-dark/30">{si + 1}</span>
+                        <input type="number" placeholder="30" value={set.durationMin ?? ""}
+                          onChange={(e) => updateSet(exercise.id, set.id, "durationMin", e.target.value)}
+                          className="flex-1 text-center bg-background rounded-xl py-2 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors font-body" min="1" />
+                        <input type="number" placeholder="5.0" value={set.distanceKm ?? ""}
+                          onChange={(e) => updateSet(exercise.id, set.id, "distanceKm", e.target.value)}
+                          className="flex-1 text-center bg-background rounded-xl py-2 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors font-body" min="0" step="0.1" />
+                        <button onClick={() => removeSet(exercise.id, set.id)} className="w-6 text-dark/20 hover:text-rose-400 transition-colors text-base leading-none">×</button>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex gap-2 mb-2">
+                      <span className="w-7" />
+                      <span className="flex-1 text-center text-xs font-semibold text-dark/40 uppercase tracking-wide">Reps</span>
+                      <span className="flex-1 text-center text-xs font-semibold text-dark/40 uppercase tracking-wide">Weight (kg)</span>
+                      <span className="w-6" />
+                    </div>
+                    {exercise.sets.map((set, si) => (
+                      <div key={set.id} className="flex items-center gap-2 mb-2">
+                        <span className="w-7 text-center text-xs font-semibold text-dark/30">{si + 1}</span>
+                        <input type="number" placeholder="12" value={set.reps}
+                          onChange={(e) => updateSet(exercise.id, set.id, "reps", e.target.value)}
+                          className="flex-1 text-center bg-background rounded-xl py-2 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors font-body" min="1" />
+                        <input type="number" placeholder="50" value={set.weight}
+                          onChange={(e) => updateSet(exercise.id, set.id, "weight", e.target.value)}
+                          className="flex-1 text-center bg-background rounded-xl py-2 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors font-body" min="0" step="0.5" />
+                        <button onClick={() => removeSet(exercise.id, set.id)} className="w-6 text-dark/20 hover:text-rose-400 transition-colors text-base leading-none">×</button>
+                      </div>
+                    ))}
+                  </>
+                )}
                 <button onClick={() => addSet(exercise.id)}
                   className="w-full text-xs text-primary font-semibold py-1.5 rounded-xl border border-dashed transition-all active:scale-95 mt-1"
                   style={{ borderColor: "rgba(196,138,151,0.3)" }}>+ Add set</button>
