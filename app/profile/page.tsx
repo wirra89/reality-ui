@@ -52,6 +52,8 @@ export default function ProfilePage() {
   const [units, setUnits]               = useState<"kg" | "lbs">("kg");
   const [notifications, setNotifications] = useState(true);
   const [saveStatus, setSaveStatus]     = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [showPeriodModal, setShowPeriodModal] = useState(false);
+  const [toast, setToast]               = useState<string | null>(null);
 
   // ── Macro calculator state ─────────────────────────────────────────────────
   const [showCalc, setShowCalc]               = useState(false);
@@ -194,6 +196,23 @@ export default function ProfilePage() {
     router.replace("/auth");
   }
 
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  }
+
+  async function confirmPeriodStart() {
+    setShowPeriodModal(false);
+    await setPeriodStartToday();
+    showToast("Cycle reset to Day 1");
+  }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setShowPeriodModal(false); }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
   const canCalculate = !!(heightCm && weightKg && age &&
     parseFloat(heightCm) > 0 && parseFloat(weightKg) > 0 && parseInt(age) > 0);
 
@@ -225,6 +244,61 @@ export default function ProfilePage() {
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
         style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-sm font-semibold text-white shadow-lg"
+          style={{ background: "linear-gradient(135deg, #34D399, #10B981)", whiteSpace: "nowrap" }}>
+          {toast}
+        </div>
+      )}
+
+      {/* Confirmation modal — period reset */}
+      {showPeriodModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.45)" }}
+          onClick={() => setShowPeriodModal(false)}>
+          <div
+            className="w-full max-w-sm rounded-3xl p-6 shadow-2xl"
+            style={{ background: "#FFFFFF" }}
+            onClick={(e) => e.stopPropagation()}>
+
+            {/* Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center text-3xl"
+                style={{ background: "rgba(248,113,113,0.1)" }}>
+                🩸
+              </div>
+            </div>
+
+            {/* Copy */}
+            <h2 className="font-display text-xl font-semibold text-dark text-center mb-2">
+              Start new cycle?
+            </h2>
+            <p className="text-sm text-dark/55 font-body text-center leading-relaxed mb-1">
+              This will reset your cycle to Day 1 based on today.
+            </p>
+            <p className="text-xs text-dark/35 font-body text-center mb-6">
+              You can change this later in settings.
+            </p>
+
+            {/* Actions */}
+            <button
+              onClick={confirmPeriodStart}
+              className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white mb-2.5 transition-all active:scale-95"
+              style={{ background: "linear-gradient(135deg, #F87171, #C48A97)" }}>
+              Yes, start cycle
+            </button>
+            <button
+              onClick={() => setShowPeriodModal(false)}
+              className="w-full py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95"
+              style={{ background: "rgba(0,0,0,0.04)", color: "#6B7280" }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-12">
 
@@ -415,9 +489,9 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Period reset — primary cycle action, always visible */}
+        {/* Period reset — opens confirmation modal */}
         <button
-          onClick={async () => { await setPeriodStartToday(); }}
+          onClick={() => setShowPeriodModal(true)}
           className="w-full mb-3 py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-2"
           style={{ background: "rgba(248,113,113,0.08)", color: "#F87171", border: "1px solid rgba(248,113,113,0.2)" }}>
           <span>🩸</span>
