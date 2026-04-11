@@ -5,7 +5,8 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import { saveProfile, signOut, supabase } from "@/lib/supabase";
+import { saveProfile, signOut, supabase, getCheckinStreak } from "@/lib/supabase";
+import { getPhaseData } from "@/lib/cycle";
 import {
   calculateMacros, GOAL_LABELS,
   type ActivityLevel, type BodyGoal,
@@ -25,7 +26,6 @@ const GOALS = [
   "Reduce PMS symptoms", "Better sleep", "More energy",
 ];
 
-// Short labels for the activity chip selector
 const ACTIVITY_SHORT: Record<ActivityLevel, string> = {
   sedentary:   "Sedentary",
   light:       "Light",
@@ -34,39 +34,73 @@ const ACTIVITY_SHORT: Record<ActivityLevel, string> = {
   very_active: "Very Active",
 };
 
+const ACTIVITY_DESC: Record<ActivityLevel, string> = {
+  sedentary:   "Desk job, little movement",
+  light:       "1–3 workouts per week",
+  moderate:    "3–5 workouts per week",
+  active:      "6–7 workouts per week",
+  very_active: "Twice/day or physical job",
+};
+
+const PHASE_COLOR: Record<string, string> = {
+  menstrual:  "#F87171",
+  follicular: "#34D399",
+  ovulation:  "#FBBF24",
+  luteal:     "#A78BFA",
+};
+
+const PHASE_LABEL: Record<string, string> = {
+  menstrual:  "Menstrual",
+  follicular: "Follicular",
+  ovulation:  "Ovulation",
+  luteal:     "Luteal",
+};
+
 export default function ProfilePage() {
-  const { user, profile, refreshProfile, loading, setPeriodStartToday } = useApp();
+  const { user, profile, refreshProfile, loading, setPeriodStartToday, cycleDay, cycleParams } = useApp();
   const router = useRouter();
   usePushNotifications(user?.id ?? null);
 
+  const phaseData  = getPhaseData(cycleDay, cycleParams);
+  const phase      = phaseData.phase;
+  const phaseColor = PHASE_COLOR[phase] ?? "#C48A97";
+
   // ── Profile state ──────────────────────────────────────────────────────────
-  const [name, setName]                 = useState("Ana");
-  const [cycleLength, setCycleLength]   = useState(28);
-  const [periodLength, setPeriodLength] = useState(5);
+  const [name, setName]                       = useState("Ana");
+  const [cycleLength, setCycleLength]         = useState(28);
+  const [periodLength, setPeriodLength]       = useState(5);
   const [ovulationLength, setOvulationLength] = useState(3);
-  const [avatarIndex, setAvatarIndex]   = useState(0);
-  const [avatarUrl, setAvatarUrl]       = useState<string | null>(null);
+  const [avatarIndex, setAvatarIndex]         = useState(0);
+  const [avatarUrl, setAvatarUrl]             = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [units, setUnits]               = useState<"kg" | "lbs">("kg");
-  const [notifications, setNotifications] = useState(true);
-  const [saveStatus, setSaveStatus]     = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [selectedGoals, setSelectedGoals]     = useState<string[]>([]);
+  const [units, setUnits]                     = useState<"kg" | "lbs">("kg");
+  const [notifications, setNotifications]     = useState(true);
+  const [saveStatus, setSaveStatus]           = useState<"idle" | "loading" | "success" | "error">("idle");
   const [showPeriodModal, setShowPeriodModal] = useState(false);
-  const [toast, setToast]               = useState<string | null>(null);
+  const [toast, setToast]                     = useState<string | null>(null);
+  // dirty flag — set true on any field change, cleared after successful save
+  const [dirty, setDirty]                     = useState(false);
 
   // ── Macro calculator state ─────────────────────────────────────────────────
-  const [showCalc, setShowCalc]               = useState(false);
-  const [showCycleAccordion, setShowCycleAccordion] = useState(false);
+  const [showCalc, setShowCalc]                         = useState(false);
+  const [showCycleAccordion, setShowCycleAccordion]     = useState(false);
   const [showAdvancedOvulation, setShowAdvancedOvulation] = useState(false);
-  const [showMacroDetails, setShowMacroDetails] = useState(false);
-  const [heightCm, setHeightCm]           = useState("");
-  const [weightKg, setWeightKg]           = useState("");
-  const [age, setAge]                     = useState("");
-  const [activityLevel, setActivityLevel] = useState<ActivityLevel>("moderate");
-  const [bodyGoal, setBodyGoal]           = useState<BodyGoal>("recomposition");
-  const [macroResult, setMacroResult]     = useState<ReturnType<typeof calculateMacros> | null>(null);
-  const [calcSaved, setCalcSaved]         = useState(false);
+  const [showMacroDetails, setShowMacroDetails]         = useState(false);
+  const [heightCm, setHeightCm]                         = useState("");
+  const [weightKg, setWeightKg]                         = useState("");
+  const [age, setAge]                                   = useState("");
+  const [activityLevel, setActivityLevel]               = useState<ActivityLevel>("moderate");
+  const [bodyGoal, setBodyGoal]                         = useState<BodyGoal>("recomposition");
+  const [macroResult, setMacroResult]                   = useState<ReturnType<typeof calculateMacros> | null>(null);
+  const [calcSaved, setCalcSaved]                       = useState(false);
+
+  // ── Data counts for My Data section ───────────────────────────────────────
+  const [streak, setStreak]           = useState(0);
+  const [weightCount, setWeightCount] = useState<number | null>(null);
+  const [prCount, setPrCount]         = useState<number | null>(null);
+  const [workoutCount, setWorkoutCount] = useState<number | null>(null);
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
@@ -81,11 +115,11 @@ export default function ProfilePage() {
     setSelectedGoals(profile.goals ?? []);
     setUnits(profile.units ?? "kg");
     setNotifications(profile.notifications ?? true);
-    if (profile.height_cm)    setHeightCm(String(profile.height_cm));
-    if (profile.weight_kg)    setWeightKg(String(profile.weight_kg));
-    if (profile.age)          setAge(String(profile.age));
+    if (profile.height_cm)      setHeightCm(String(profile.height_cm));
+    if (profile.weight_kg)      setWeightKg(String(profile.weight_kg));
+    if (profile.age)            setAge(String(profile.age));
     if (profile.activity_level) setActivityLevel(profile.activity_level as ActivityLevel);
-    if (profile.body_goal)    setBodyGoal(profile.body_goal as BodyGoal);
+    if (profile.body_goal)      setBodyGoal(profile.body_goal as BodyGoal);
     if (profile.calculated_calories) {
       setMacroResult({
         bmr: 0, tdee: 0,
@@ -96,7 +130,20 @@ export default function ProfilePage() {
       });
       setCalcSaved(true);
     }
+    setDirty(false);
   }, [profile]);
+
+  // Fetch streak + data counts (one-time on mount)
+  useEffect(() => {
+    if (!user) return;
+    getCheckinStreak().then(setStreak);
+    supabase.from("weight_logs").select("id", { count: "exact", head: true })
+      .eq("user_id", user.id).then(({ count }) => setWeightCount(count ?? 0));
+    supabase.from("personal_records").select("id", { count: "exact", head: true })
+      .eq("user_id", user.id).then(({ count }) => setPrCount(count ?? 0));
+    supabase.from("workouts").select("id", { count: "exact", head: true })
+      .eq("user_id", user.id).then(({ count }) => setWorkoutCount(count ?? 0));
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
@@ -132,6 +179,7 @@ export default function ProfilePage() {
 
   function toggleGoal(g: string) {
     setSelectedGoals(p => p.includes(g) ? p.filter(x => x !== g) : [...p, g]);
+    setDirty(true);
   }
 
   // Single save — includes macro data if calculated and not yet saved
@@ -176,6 +224,7 @@ export default function ProfilePage() {
       }
       await refreshProfile();
       setSaveStatus("success");
+      setDirty(false);
     } else {
       setSaveStatus("error");
     }
@@ -189,6 +238,7 @@ export default function ProfilePage() {
     if (!h || !w || !a || h < 100 || h > 250 || w < 30 || w > 300 || a < 13 || a > 100) return;
     setMacroResult(calculateMacros({ heightCm: h, weightKg: w, age: a, activityLevel, bodyGoal }));
     setCalcSaved(false);
+    setDirty(true);
   }
 
   async function handleLogout() {
@@ -223,8 +273,17 @@ export default function ProfilePage() {
     { label: "Period date",  done: !!profile?.period_start_date },
     { label: "Macros",       done: calcSaved },
   ];
-  const completeCount = completenessItems.filter(i => i.done).length;
-  const isComplete    = completeCount === completenessItems.length;
+  const completeCount   = completenessItems.filter(i => i.done).length;
+  const isComplete      = completeCount === completenessItems.length;
+  const firstMissing    = completenessItems.find(i => !i.done);
+
+  // Contextual nudge copy — specific to what's missing
+  const completenessNudge: Record<string, string> = {
+    "Goals":        "Add your goals to personalise training and nutrition",
+    "Body metrics": "Add height, weight & age to unlock macro targets",
+    "Period date":  "Set your period date to enable accurate phase tracking",
+    "Macros":       "Calculate macros to get personalised daily targets",
+  };
 
   // Last updated — period start date formatted
   const periodUpdated = profile?.period_start_date
@@ -232,7 +291,12 @@ export default function ProfilePage() {
         .toLocaleDateString("en-GB", { day: "numeric", month: "short" })
     : null;
 
-  // Cycle phase preview (live, recomputed on slider change)
+  // Member since — from user created_at
+  const memberSince = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })
+    : null;
+
+  // Cycle phase preview
   const ovEnd  = Math.round(cycleLength / 2) - Math.floor(ovulationLength / 2) + ovulationLength - 1;
   const folEnd = Math.round(cycleLength / 2) - Math.floor(ovulationLength / 2) - 1;
   const folLen = Math.max(1, folEnd - periodLength);
@@ -253,7 +317,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Confirmation modal — period reset */}
+      {/* Period confirmation modal */}
       {showPeriodModal && (
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
@@ -263,35 +327,21 @@ export default function ProfilePage() {
             className="w-full max-w-sm rounded-3xl p-6 shadow-2xl"
             style={{ background: "#FFFFFF" }}
             onClick={(e) => e.stopPropagation()}>
-
-            {/* Icon */}
             <div className="flex justify-center mb-4">
               <div className="w-14 h-14 rounded-full flex items-center justify-center text-3xl"
-                style={{ background: "rgba(248,113,113,0.1)" }}>
-                🩸
-              </div>
+                style={{ background: "rgba(248,113,113,0.1)" }}>🩸</div>
             </div>
-
-            {/* Copy */}
-            <h2 className="font-display text-xl font-semibold text-dark text-center mb-2">
-              Start new cycle?
-            </h2>
+            <h2 className="font-display text-xl font-semibold text-dark text-center mb-2">Start new cycle?</h2>
             <p className="text-sm text-dark/55 font-body text-center leading-relaxed mb-1">
               This will reset your cycle to Day 1 based on today.
             </p>
-            <p className="text-xs text-dark/35 font-body text-center mb-6">
-              You can change this later in settings.
-            </p>
-
-            {/* Actions */}
-            <button
-              onClick={confirmPeriodStart}
+            <p className="text-xs text-dark/35 font-body text-center mb-6">You can change this later in settings.</p>
+            <button onClick={confirmPeriodStart}
               className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white mb-2.5 transition-all active:scale-95"
               style={{ background: "linear-gradient(135deg, #F87171, #C48A97)" }}>
               Yes, start cycle
             </button>
-            <button
-              onClick={() => setShowPeriodModal(false)}
+            <button onClick={() => setShowPeriodModal(false)}
               className="w-full py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95"
               style={{ background: "rgba(0,0,0,0.04)", color: "#6B7280" }}>
               Cancel
@@ -300,9 +350,9 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-12">
+      <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-28">
 
-        {/* Header — sign out removed from here, now in Account section */}
+        {/* Header */}
         <header className="flex items-center justify-between mb-5">
           <div>
             <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Settings</p>
@@ -314,14 +364,22 @@ export default function ProfilePage() {
             Section 1 — Identity
         ════════════════════════════════════════════════════ */}
         <div className="bg-white rounded-2xl p-5 shadow-card mb-3 flex flex-col items-center">
-          {/* Avatar */}
+
+          {/* Avatar with phase-color ring */}
           <div className="relative mb-3">
-            <div className="w-24 h-24 rounded-full overflow-hidden shadow-soft flex items-center justify-center"
-              style={{ background: avatarUrl ? "transparent" : avatarColors[avatarIndex] }}>
-              {avatarUrl
-                ? <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-                : <span className="text-white text-4xl font-display font-bold">{name.charAt(0).toUpperCase() || "?"}</span>
-              }
+            <div
+              className="w-24 h-24 rounded-full p-[3px]"
+              style={{
+                background: `conic-gradient(${phaseColor} 0deg 240deg, ${phaseColor}22 240deg 360deg)`,
+              }}
+            >
+              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center border-2 border-white"
+                style={{ background: avatarUrl ? "transparent" : avatarColors[avatarIndex] }}>
+                {avatarUrl
+                  ? <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                  : <span className="text-white text-4xl font-display font-bold">{name.charAt(0).toUpperCase() || "?"}</span>
+                }
+              </div>
             </div>
             <button
               onClick={() => fileInputRef.current?.click()}
@@ -344,44 +402,53 @@ export default function ProfilePage() {
 
           {avatarUrl ? (
             <button onClick={handleRemoveAvatar}
-              className="text-xs text-dark/30 hover:text-rose-400 font-body mb-3 transition-colors">
+              className="text-xs text-dark/30 hover:text-rose-400 font-body mb-2 transition-colors">
               Remove photo
             </button>
           ) : (
-            <div className="flex gap-2 mb-3">
+            <div className="flex gap-2 mb-2">
               {avatarColors.map((grad, i) => (
-                <button key={i} onClick={() => setAvatarIndex(i)}
+                <button key={i} onClick={() => { setAvatarIndex(i); setDirty(true); }}
                   className="w-7 h-7 rounded-full transition-all active:scale-90"
                   style={{ background: grad, border: avatarIndex === i ? "2.5px solid #2E2E2E" : "2.5px solid transparent" }} />
               ))}
             </div>
           )}
 
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+          {/* Phase badge */}
+          <div
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold mb-2"
+            style={{ background: `${phaseColor}18`, color: phaseColor, border: `1px solid ${phaseColor}33` }}>
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: phaseColor }} />
+            {PHASE_LABEL[phase]} · Day {cycleDay}
+          </div>
+
+          {/* Name */}
+          <input type="text" value={name} onChange={(e) => { setName(e.target.value); setDirty(true); }}
             className="text-center text-dark font-display font-semibold text-xl outline-none bg-transparent w-full"
             placeholder="Your name" />
-          <p className="text-dark/40 text-xs font-body mt-1">
-            {avatarUrl ? "Tap camera icon to change photo" : "Add a photo"}
+
+          {/* Sub-line: member since + streak */}
+          <p className="text-dark/35 text-xs font-body mt-1">
+            {[
+              memberSince ? `Since ${memberSince}` : null,
+              streak > 0  ? `${streak}🔥 streak`   : null,
+            ].filter(Boolean).join(" · ") || "Add a photo"}
           </p>
 
-          {/* Profile completeness — hidden when all done */}
-          {!isComplete && (
+          {/* Profile completeness — hidden when complete */}
+          {!isComplete && firstMissing && (
             <div className="w-full mt-4 pt-4 border-t border-gray-50">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-dark/50">Profile completeness</p>
-                <p className="text-xs font-bold text-primary">{completeCount} of {completenessItems.length}</p>
-              </div>
-              <div className="flex gap-1 mb-2">
+              <p className="text-xs text-dark/45 font-body text-center leading-relaxed mb-3">
+                {completenessNudge[firstMissing.label]}
+              </p>
+              <div className="flex gap-1.5">
                 {completenessItems.map((item, i) => (
                   <div key={i} className="flex-1 h-1.5 rounded-full transition-all duration-500"
-                    style={{ background: item.done ? "#C48A97" : "rgba(0,0,0,0.08)" }} />
+                    style={{ background: item.done ? phaseColor : "rgba(0,0,0,0.08)" }} />
                 ))}
               </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-1">
-                {completenessItems.filter(i => !i.done).map(item => (
-                  <p key={item.label} className="text-xs text-dark/35 font-body">· {item.label}</p>
-                ))}
-              </div>
+              <p className="text-xs text-dark/25 font-body text-center mt-2">{completeCount} of {completenessItems.length} complete</p>
             </div>
           )}
         </div>
@@ -399,9 +466,10 @@ export default function ProfilePage() {
                 style={{ background: "rgba(196,138,151,0.1)" }}>🩸</div>
               <div className="text-left">
                 <p className="text-sm font-semibold text-dark">Cycle settings</p>
-                <p className="text-xs text-dark/40 font-body mt-0.5">
-                  {cycleLength}d cycle · {periodLength}d period
-                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: phaseColor }} />
+                  <p className="text-xs text-dark/40 font-body">{cycleLength}d cycle · {periodLength}d period</p>
+                </div>
                 {periodUpdated && (
                   <p className="text-xs text-dark/25 font-body mt-0.5">Last updated {periodUpdated}</p>
                 )}
@@ -413,33 +481,26 @@ export default function ProfilePage() {
 
           {showCycleAccordion && (
             <div className="px-4 pb-4 border-t border-gray-100 space-y-5 pt-4">
-              {/* Cycle length */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-sm font-semibold text-dark">Cycle length</label>
                   <span className="text-sm font-bold text-primary">{cycleLength} days</span>
                 </div>
                 <input type="range" min={21} max={35} value={cycleLength}
-                  onChange={(e) => setCycleLength(Number(e.target.value))} className="w-full" />
-                <div className="flex justify-between text-xs text-dark/30 mt-1">
-                  <span>21</span><span>28</span><span>35</span>
-                </div>
+                  onChange={(e) => { setCycleLength(Number(e.target.value)); setDirty(true); }} className="w-full" />
+                <div className="flex justify-between text-xs text-dark/30 mt-1"><span>21</span><span>28</span><span>35</span></div>
               </div>
 
-              {/* Period length */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-sm font-semibold text-dark">Period length</label>
                   <span className="text-sm font-bold" style={{ color: "#F87171" }}>{periodLength} days</span>
                 </div>
                 <input type="range" min={2} max={8} value={periodLength}
-                  onChange={(e) => setPeriodLength(Number(e.target.value))} className="w-full" />
-                <div className="flex justify-between text-xs text-dark/30 mt-1">
-                  <span>2</span><span>5</span><span>8</span>
-                </div>
+                  onChange={(e) => { setPeriodLength(Number(e.target.value)); setDirty(true); }} className="w-full" />
+                <div className="flex justify-between text-xs text-dark/30 mt-1"><span>2</span><span>5</span><span>8</span></div>
               </div>
 
-              {/* Advanced — ovulation window (hidden by default) */}
               <div>
                 <button
                   onClick={() => setShowAdvancedOvulation(v => !v)}
@@ -457,10 +518,8 @@ export default function ProfilePage() {
                       <span className="text-sm font-bold" style={{ color: "#FBBF24" }}>{ovulationLength} days</span>
                     </div>
                     <input type="range" min={1} max={5} value={ovulationLength}
-                      onChange={(e) => setOvulationLength(Number(e.target.value))} className="w-full" />
-                    <div className="flex justify-between text-xs text-dark/30 mt-1">
-                      <span>1</span><span>3</span><span>5</span>
-                    </div>
+                      onChange={(e) => { setOvulationLength(Number(e.target.value)); setDirty(true); }} className="w-full" />
+                    <div className="flex justify-between text-xs text-dark/30 mt-1"><span>1</span><span>3</span><span>5</span></div>
                   </div>
                 )}
               </div>
@@ -489,7 +548,7 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Period reset — opens confirmation modal */}
+        {/* Period reset button */}
         <button
           onClick={() => setShowPeriodModal(true)}
           className="w-full mb-3 py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-2"
@@ -519,6 +578,10 @@ export default function ProfilePage() {
               );
             })}
           </div>
+          {/* Why goals matter */}
+          <p className="text-xs text-dark/30 font-body mt-3 text-center">
+            Affects your nutrition targets and training suggestions
+          </p>
         </div>
 
         {/* ════════════════════════════════════════════════════
@@ -565,7 +628,7 @@ export default function ProfilePage() {
                     <label className="text-xs font-semibold text-dark/40 uppercase tracking-wide block mb-1.5">{f.label}</label>
                     <div className="relative">
                       <input type="number" placeholder={f.placeholder} value={f.value}
-                        onChange={(e) => f.set(e.target.value)}
+                        onChange={(e) => { f.set(e.target.value); setDirty(true); }}
                         className="w-full bg-background rounded-xl px-3 py-2.5 text-sm text-dark outline-none font-body border border-transparent focus:border-primary/30 transition-colors pr-8"
                         min={f.min} max={f.max} />
                       <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-dark/30 font-semibold">{f.unit}</span>
@@ -574,12 +637,12 @@ export default function ProfilePage() {
                 ))}
               </div>
 
-              {/* Activity level — compact chip row */}
+              {/* Activity level chips with description for selected */}
               <div className="mb-4">
                 <label className="text-xs font-semibold text-dark/40 uppercase tracking-wide block mb-2">Activity level</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-1.5">
                   {(Object.entries(ACTIVITY_SHORT) as [ActivityLevel, string][]).map(([key, label]) => (
-                    <button key={key} onClick={() => setActivityLevel(key)}
+                    <button key={key} onClick={() => { setActivityLevel(key); setDirty(true); }}
                       className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
                       style={{
                         background: activityLevel === key ? "rgba(196,138,151,0.15)" : "#F9FAFB",
@@ -590,14 +653,16 @@ export default function ProfilePage() {
                     </button>
                   ))}
                 </div>
+                {/* Description for selected chip */}
+                <p className="text-xs text-dark/35 font-body pl-1">{ACTIVITY_DESC[activityLevel]}</p>
               </div>
 
-              {/* Body goal — compact 3-column, descriptions removed */}
+              {/* Body goal */}
               <div className="mb-4">
                 <label className="text-xs font-semibold text-dark/40 uppercase tracking-wide block mb-2">Body goal</label>
                 <div className="flex gap-2">
                   {(Object.entries(GOAL_LABELS) as [BodyGoal, typeof GOAL_LABELS[BodyGoal]][]).map(([key, g]) => (
-                    <button key={key} onClick={() => setBodyGoal(key)}
+                    <button key={key} onClick={() => { setBodyGoal(key); setDirty(true); }}
                       className="flex-1 flex flex-col items-center gap-1 px-2 py-2.5 rounded-2xl transition-all active:scale-95"
                       style={{
                         background: bodyGoal === key ? "rgba(196,138,151,0.12)" : "#F9FAFB",
@@ -610,7 +675,6 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Calculate */}
               <button
                 onClick={handleCalculate}
                 disabled={!canCalculate}
@@ -619,34 +683,50 @@ export default function ProfilePage() {
                 Calculate targets
               </button>
 
-              {/* Results — BMR/TDEE removed, only kcal + macros */}
+              {/* Results — light card, consistent with page style */}
               {macroResult && (
-                <div className="rounded-2xl overflow-hidden"
-                  style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+                <div className="rounded-2xl overflow-hidden border border-gray-100"
+                  style={{ background: "linear-gradient(135deg, rgba(196,138,151,0.07), rgba(123,109,141,0.05))" }}>
                   <div className="p-4">
-                    <div className="mb-3">
-                      <p className="text-white/50 text-xs uppercase tracking-wide font-semibold">Daily target</p>
-                      <p className="text-white font-display font-bold text-3xl">{macroResult.targetCalories}</p>
-                      <p className="text-white/40 text-xs font-body">kcal / day</p>
+                    {/* Kcal */}
+                    <div className="flex items-end justify-between mb-4">
+                      <div>
+                        <p className="text-dark/40 text-xs font-semibold uppercase tracking-wide">Daily target</p>
+                        <p className="text-dark font-display font-bold text-3xl leading-none mt-0.5">{macroResult.targetCalories}</p>
+                        <p className="text-dark/40 text-xs font-body mt-0.5">kcal / day</p>
+                      </div>
+                      {(macroResult.deficit ?? 0) > 0 && (
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full"
+                          style={{ background: "rgba(248,113,113,0.1)", color: "#F87171" }}>
+                          −{macroResult.deficit} kcal
+                        </span>
+                      )}
+                      {(macroResult.surplus ?? 0) > 0 && (
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full"
+                          style={{ background: "rgba(52,211,153,0.1)", color: "#059669" }}>
+                          +{macroResult.surplus} kcal
+                        </span>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 mb-3">
+                    {/* Macro grid */}
+                    <div className="grid grid-cols-3 gap-2 mb-3">
                       {[
                         { label: "Protein", value: macroResult.protein, color: "#C48A97" },
-                        { label: "Carbs",   value: macroResult.carbs,   color: "#EDD5DB" },
+                        { label: "Carbs",   value: macroResult.carbs,   color: "#7B6D8D" },
                         { label: "Fats",    value: macroResult.fats,    color: "#A78BFA" },
                       ].map((m) => (
-                        <div key={m.label} className="bg-white/5 rounded-xl p-2.5 text-center">
-                          <p className="font-display font-bold text-xl text-white">{m.value}g</p>
-                          <p className="text-xs font-semibold uppercase tracking-wide mt-0.5" style={{ color: m.color }}>{m.label}</p>
+                        <div key={m.label} className="bg-white rounded-xl p-2.5 text-center shadow-sm">
+                          <p className="font-display font-bold text-xl" style={{ color: m.color }}>{m.value}g</p>
+                          <p className="text-xs font-semibold uppercase tracking-wide mt-0.5 text-dark/50">{m.label}</p>
                         </div>
                       ))}
                     </div>
 
-                    {/* Details — macro ratio bar (collapsed by default) */}
+                    {/* Details — ratio bar (collapsed) */}
                     <button
                       onClick={() => setShowMacroDetails(v => !v)}
-                      className="flex items-center gap-1.5 text-xs text-white/40 font-semibold mb-2">
+                      className="flex items-center gap-1.5 text-xs text-dark/35 font-semibold mb-2">
                       <span style={{ transform: showMacroDetails ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", transition: "transform 0.2s" }}>▶</span>
                       Details
                     </button>
@@ -659,10 +739,10 @@ export default function ProfilePage() {
                         <div>
                           <div className="flex h-2.5 rounded-full overflow-hidden gap-0.5 mb-1.5">
                             <div style={{ width: `${pPct}%`, background: "#C48A97" }} className="rounded-l-full" />
-                            <div style={{ width: `${cPct}%`, background: "#EDD5DB" }} />
+                            <div style={{ width: `${cPct}%`, background: "#7B6D8D" }} />
                             <div style={{ width: `${fPct}%`, background: "#A78BFA" }} className="rounded-r-full" />
                           </div>
-                          <div className="flex justify-between text-xs text-white/40 font-semibold">
+                          <div className="flex justify-between text-xs text-dark/40 font-semibold">
                             <span>P {pPct}%</span><span>C {cPct}%</span><span>F {fPct}%</span>
                           </div>
                         </div>
@@ -672,7 +752,6 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {/* Hint to use main Save button */}
               {macroResult && !calcSaved && (
                 <p className="text-center text-xs text-dark/40 font-body mt-3">
                   Tap <strong>Save changes</strong> below to apply these targets.
@@ -686,17 +765,19 @@ export default function ProfilePage() {
             Section 5 — Preferences
         ════════════════════════════════════════════════════ */}
         <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
-          <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Preferences</p>
+          <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">How you track</p>
 
-          {/* Weight units */}
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-sm font-semibold text-dark">Weight units</p>
-              <p className="text-xs text-dark/40 font-body">Used in training log</p>
+            <div className="flex items-center gap-3">
+              <span className="text-base">⚖️</span>
+              <div>
+                <p className="text-sm font-semibold text-dark">Weight units</p>
+                <p className="text-xs text-dark/40 font-body">Used in training log</p>
+              </div>
             </div>
             <div className="flex rounded-xl overflow-hidden border border-gray-100">
               {(["kg", "lbs"] as const).map((u) => (
-                <button key={u} onClick={() => setUnits(u)}
+                <button key={u} onClick={() => { setUnits(u); setDirty(true); }}
                   className="px-4 py-1.5 text-sm font-semibold transition-all"
                   style={{ background: units === u ? "#C48A97" : "transparent", color: units === u ? "white" : "#9CA3AF" }}>
                   {u}
@@ -705,14 +786,16 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Notifications toggle — was in state but never rendered */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-dark">Notifications</p>
-              <p className="text-xs text-dark/40 font-body">Daily reminders & insights</p>
+          <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+            <div className="flex items-center gap-3">
+              <span className="text-base">🔔</span>
+              <div>
+                <p className="text-sm font-semibold text-dark">Notifications</p>
+                <p className="text-xs text-dark/40 font-body">Daily reminders & insights</p>
+              </div>
             </div>
             <button
-              onClick={() => setNotifications(v => !v)}
+              onClick={() => { setNotifications(v => !v); setDirty(true); }}
               className="relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0"
               style={{ background: notifications ? "#C48A97" : "#E5E7EB" }}>
               <span
@@ -723,47 +806,39 @@ export default function ProfilePage() {
         </div>
 
         {/* ════════════════════════════════════════════════════
-            Save — single CTA, merges profile + macro saves
-        ════════════════════════════════════════════════════ */}
-        <button onClick={handleSave} disabled={saveStatus === "loading"}
-          className="w-full py-4 rounded-2xl font-semibold text-white text-base tracking-wide transition-all duration-300 active:scale-95 shadow-soft mb-3 disabled:opacity-50"
-          style={{
-            background: saveStatus === "success" ? "linear-gradient(135deg, #34D399, #10B981)"
-              : saveStatus === "error"   ? "linear-gradient(135deg, #F87171, #EF4444)"
-              : "linear-gradient(135deg, #C48A97, #7B6D8D)",
-          }}>
-          {saveStatus === "loading" ? "Saving…"
-            : saveStatus === "success" ? "✓ Saved!"
-            : saveStatus === "error"   ? "✗ Error — Retry"
-            : "Save changes"}
-        </button>
-
-        {/* ════════════════════════════════════════════════════
             Section 6 — My Data
         ════════════════════════════════════════════════════ */}
         <div className="mb-3">
           <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2 px-1">My data</p>
-          {[
-            { label: "Weight Tracker",   sub: "Log daily weight and see your trend", emoji: "⚖️", href: "/weight",  bg: "linear-gradient(135deg, #7B6D8D, #C48A97)" },
-            { label: "Personal Records", sub: "Track your strongest lifts by phase",  emoji: "🏆", href: "/prs",     bg: "linear-gradient(135deg, #C48A97, #7B6D8D)" },
-            { label: "Training History", sub: "All your past workouts",               emoji: "📋", href: "/history", bg: "linear-gradient(135deg, #A78BFA, #7B6D8D)" },
-          ].map(item => (
-            <button key={item.href} onClick={() => router.push(item.href)}
-              className="w-full bg-white rounded-2xl px-4 py-4 shadow-card mb-2 flex items-center gap-3 transition-all active:scale-95">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
-                style={{ background: item.bg }}>{item.emoji}</div>
-              <div className="text-left flex-1">
-                <p className="text-sm font-semibold text-dark">{item.label}</p>
-                <p className="text-xs text-dark/40 font-body">{item.sub}</p>
-              </div>
-              <span className="text-dark/30 text-lg">→</span>
-            </button>
-          ))}
+          <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+            {[
+              { label: "Weight Tracker",   sub: "Log daily weight and see your trend", emoji: "⚖️", href: "/weight",  bg: "linear-gradient(135deg, #7B6D8D, #C48A97)", count: weightCount,  unit: "entries" },
+              { label: "Personal Records", sub: "Track your strongest lifts by phase",  emoji: "🏆", href: "/prs",     bg: "linear-gradient(135deg, #C48A97, #7B6D8D)", count: prCount,      unit: "PRs" },
+              { label: "Training History", sub: "All your past workouts",               emoji: "📋", href: "/history", bg: "linear-gradient(135deg, #A78BFA, #7B6D8D)", count: workoutCount, unit: "workouts" },
+            ].map((item, i, arr) => (
+              <button key={item.href} onClick={() => router.push(item.href)}
+                className="w-full flex items-center gap-3 px-4 py-4 transition-all active:scale-98"
+                style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none" }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
+                  style={{ background: item.bg }}>{item.emoji}</div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-semibold text-dark">{item.label}</p>
+                  <p className="text-xs text-dark/40 font-body">{item.sub}</p>
+                </div>
+                {item.count !== null && item.count > 0 && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                    style={{ background: "rgba(196,138,151,0.1)", color: "#C48A97" }}>
+                    {item.count} {item.unit}
+                  </span>
+                )}
+                <span className="text-dark/20 text-sm flex-shrink-0">→</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ════════════════════════════════════════════════════
             Section 7 — Account
-            Sign out moved here from header (was too easy to tap accidentally)
         ════════════════════════════════════════════════════ */}
         <div className="mb-3">
           <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2 px-1">Account</p>
@@ -778,7 +853,8 @@ export default function ProfilePage() {
               <span className="text-sm font-semibold text-dark">Send feedback</span>
             </a>
             <button onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3.5 transition-all active:scale-98">
+              className="w-full flex items-center gap-3 px-4 py-3.5 transition-all active:scale-98"
+              style={{ borderTop: "1px solid rgba(248,113,113,0.08)" }}>
               <span className="text-base text-rose-400">↪</span>
               <span className="text-sm font-semibold text-rose-400">Sign out</span>
             </button>
@@ -786,6 +862,44 @@ export default function ProfilePage() {
         </div>
 
       </main>
+
+      {/* ════════════════════════════════════════════════════
+          Sticky Save — only visible when dirty
+      ════════════════════════════════════════════════════ */}
+      {(dirty || saveStatus !== "idle") && (
+        <div className="fixed bottom-16 left-0 right-0 z-40 px-4 pb-2 pointer-events-none">
+          <button
+            onClick={handleSave}
+            disabled={saveStatus === "loading"}
+            className="w-full max-w-app mx-auto py-4 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2 pointer-events-auto"
+            style={{
+              background: saveStatus === "success" ? "linear-gradient(135deg, #34D399, #10B981)"
+                : saveStatus === "error"   ? "linear-gradient(135deg, #F87171, #EF4444)"
+                : "linear-gradient(135deg, #C48A97, #7B6D8D)",
+              boxShadow: "0 8px 24px rgba(196,138,151,0.45), 0 0 0 3px rgba(255,255,255,0.9)",
+            }}>
+            {saveStatus === "loading" ? (
+              <>
+                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
+                  <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Saving…
+              </>
+            ) : saveStatus === "success" ? (
+              "✓ Saved!"
+            ) : saveStatus === "error" ? (
+              "✗ Error — Retry"
+            ) : (
+              <>
+                <span className="w-2 h-2 rounded-full bg-yellow-300 flex-shrink-0" />
+                Save changes
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
