@@ -67,7 +67,7 @@ export default function ProfilePage() {
   const phaseColor = PHASE_COLOR[phase] ?? "#C48A97";
 
   // ── Profile state ──────────────────────────────────────────────────────────
-  const [name, setName]                       = useState("Ana");
+  const [name, setName]                       = useState("");
   const [cycleLength, setCycleLength]         = useState(28);
   const [periodLength, setPeriodLength]       = useState(5);
   const [ovulationLength, setOvulationLength] = useState(3);
@@ -212,16 +212,19 @@ export default function ProfilePage() {
 
     if (result.success) {
       if (user && (cycleLength !== profile?.cycle_length || periodLength !== profile?.period_length)) {
-        await supabase
+        const { data: latestRow } = await supabase
           .from("user_cycle_history")
-          .update({ cycle_length_at_start: cycleLength, period_length_at_start: periodLength })
+          .select("id")
           .eq("user_id", user.id)
-          .eq("id",
-            supabase.from("user_cycle_history").select("id")
-              .eq("user_id", user.id)
-              .order("cycle_start_date", { ascending: false })
-              .limit(1)
-          );
+          .order("cycle_start_date", { ascending: false })
+          .limit(1)
+          .single();
+        if (latestRow?.id) {
+          await supabase
+            .from("user_cycle_history")
+            .update({ cycle_length_at_start: cycleLength, period_length_at_start: periodLength })
+            .eq("id", latestRow.id);
+        }
       }
       await refreshProfile();
       setSaveStatus("success");

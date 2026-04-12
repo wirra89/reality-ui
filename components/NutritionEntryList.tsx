@@ -300,22 +300,28 @@ export default function NutritionEntryList({
                       {isLogging ? "Logging…" : isLogged ? "✓ Logged" : "Log this"}
                     </button>
 
-                    {recipe && (
-                      <button
-                        onClick={() => setExpandedId(isExpanded ? null : food.id)}
-                        className="px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95"
-                        style={{
-                          background: isExpanded ? `${phaseColor}22` : "rgba(255,255,255,0.06)",
-                          color: isExpanded ? phaseColor : "rgba(255,255,255,0.5)",
-                          border: `1px solid ${isExpanded ? phaseColor + "33" : "rgba(255,255,255,0.08)"}`,
-                        }}
-                      >
-                        {isExpanded ? "▲" : "▼"} Recipe
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setExpandedId(isExpanded ? null : food.id)}
+                      className="px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95"
+                      style={{
+                        background: isExpanded ? `${phaseColor}22` : "rgba(255,255,255,0.06)",
+                        color: isExpanded ? phaseColor : "rgba(255,255,255,0.5)",
+                        border: `1px solid ${isExpanded ? phaseColor + "33" : "rgba(255,255,255,0.08)"}`,
+                      }}
+                    >
+                      {isExpanded ? "▲" : "▼"} Recipe
+                    </button>
                   </div>
 
                   {/* Recipe accordion */}
+                  {isExpanded && !recipe && (
+                    <div className="mx-3 mb-3 px-3 py-2.5 rounded-lg text-center"
+                      style={{ background: "rgba(0,0,0,0.2)", borderTop: `1px solid ${phaseColor}22` }}>
+                      <p className="text-xs font-body" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        Recipe coming soon
+                      </p>
+                    </div>
+                  )}
                   {isExpanded && recipe && (
                     <div className="mx-3 mb-3 px-3 py-2.5 rounded-lg space-y-2"
                       style={{ background: "rgba(0,0,0,0.2)", borderTop: `1px solid ${phaseColor}22` }}>

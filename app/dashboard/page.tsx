@@ -172,27 +172,36 @@ export default function DashboardPage() {
     })();
   }, [user]);
 
-  useEffect(() => {
+  const fetchDashboardData = useCallback(async () => {
     if (!user) return;
     getCheckinStreak().then(setStreak);
     getRecentWorkouts(7).then(ws => {
       const ago = new Date(); ago.setDate(ago.getDate() - 7);
       setWeeklyWorkouts(ws.filter(w => w.created_at && new Date(w.created_at) >= ago).length);
     });
-    Promise.all([
+    const [log, summary] = await Promise.all([
       getTodayMealLog(),
       getTodayNutritionSummary(),
-    ]).then(([log, summary]) => {
-      setNutritionSummary(summary);
-      if (summary.entryCount > 0) {
-        setTodayCalories(Math.round(summary.kcal));
-      } else if (log?.meals) {
-        const legacyKcal = (log.meals as unknown as { calories: string }[])
-          .reduce((a, m) => a + (parseFloat(m.calories) || 0), 0);
-        setTodayCalories(legacyKcal);
-      }
-    });
+    ]);
+    setNutritionSummary(summary);
+    if (summary.entryCount > 0) {
+      setTodayCalories(Math.round(summary.kcal));
+    } else if (log?.meals) {
+      const legacyKcal = (log.meals as unknown as { calories: string }[])
+        .reduce((a, m) => a + (parseFloat(m.calories) || 0), 0);
+      setTodayCalories(legacyKcal);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === "visible") fetchDashboardData(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [fetchDashboardData]);
 
   const phaseData = getPhaseData(cycleDay, cycleParams);
 
@@ -200,7 +209,7 @@ export default function DashboardPage() {
     <PageSkeleton />
   );
 
-  const firstName   = profile?.name?.split(" ")[0] ?? "Ana";
+  const firstName   = profile?.name?.split(" ")[0] ?? "there";
   const cycleLength = profile?.cycle_length ?? 28;
 
   // Countdown calculated from cycleDay — updates live with slider

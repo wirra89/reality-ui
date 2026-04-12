@@ -104,11 +104,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return profile?.cycle_day ?? 8;
   })();
 
-  const cycleParams: CycleParams = {
+  const cycleParams = useMemo<CycleParams>(() => ({
     cycleLength:     profile?.cycle_length     ?? 28,
     periodLength:    profile?.period_length    ?? 5,
     ovulationLength: profile?.ovulation_length ?? 3,
-  };
+  }), [profile?.cycle_length, profile?.period_length, profile?.ovulation_length]);
 
   // ─────────────────────────────────────────────────────────────────────────
   // DERIVED: todayState — computed via useMemo, recomputes when deps change.

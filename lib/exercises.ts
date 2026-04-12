@@ -1431,8 +1431,10 @@ export function searchExercises(query: string): Exercise[] {
  */
 export function getExerciseInputType(exercise: Exercise): InputType {
   if (exercise.inputType) return exercise.inputType;
-  // Fallback: cardio muscle group → duration+distance; everything else → weight+reps
-  return exercise.muscle === "cardio" ? "duration_distance" : "weight_reps";
+  // Fallback: cardio muscle group → duration+distance; bodyweight → reps only; everything else → weight+reps
+  if (exercise.muscle === "cardio") return "duration_distance";
+  if (exercise.equipment === "bodyweight") return "reps_only";
+  return "weight_reps";
 }
 
 /** Look up InputType by exercise name. Returns "weight_reps" for unknown names. */
