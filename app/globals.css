@@ -2,12 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-bg: #F7F5F2;
-  --color-primary: #C48A97;
-  --color-accent: #EDD5DB;
-  --color-secondary: #7B6D8D;
-  --color-text: #2E2E2E;
+/* ── Rose Blush (default) ─────────────────────────────────────── */
+:root,
+[data-theme="rose"] {
+  --color-bg:          #FEF0F3;
+  --color-surface:     #FFFFFF;
+  --color-surface-2:   #FDE8ED;
+  --color-primary:     #C48A97;
+  --color-accent:      #EDD5DB;
+  --color-secondary:   #7B6D8D;
+  --color-text:        #2C1A1F;
+  --color-text-mid:    #7D5C65;
+  --color-text-dim:    #C4A4AD;
+  --color-border:      rgba(232,130,154,0.16);
+  --color-track:       #FDE8ED;
+  --shadow-soft:       0 4px 24px rgba(196,138,151,0.10);
+  --nav-bg:            rgba(254,240,243,0.88);
+  --nav-border:        rgba(232,130,154,0.18);
+}
+
+/* ── Midnight ─────────────────────────────────────────────────── */
+[data-theme="midnight"] {
+  --color-bg:          #0C0E1A;
+  --color-surface:     #141828;
+  --color-surface-2:   #1C2238;
+  --color-primary:     #C48A97;   /* phase colours stay locked */
+  --color-accent:      rgba(196,138,151,0.15);
+  --color-secondary:   #9892B4;
+  --color-text:        #EDE8F8;
+  --color-text-mid:    #9892B4;
+  --color-text-dim:    #4E4A66;
+  --color-border:      rgba(255,255,255,0.07);
+  --color-track:       rgba(255,255,255,0.08);
+  --shadow-soft:       0 4px 24px rgba(0,0,0,0.45);
+  --nav-bg:            rgba(12,14,26,0.90);
+  --nav-border:        rgba(255,255,255,0.09);
 }
 
 * {
@@ -23,6 +52,7 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   min-height: 100dvh;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 @layer utilities {
@@ -40,7 +70,7 @@ input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   height: 6px;
-  background: #EDD5DB;
+  background: var(--color-track);
   border-radius: 9999px;
   outline: none;
 }

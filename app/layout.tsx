@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
@@ -41,11 +42,21 @@ export const viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Anti-flash: set theme before React hydrates to prevent flicker */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('herphase-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches?'midnight':'rose';document.documentElement.setAttribute('data-theme',t||d);})();`,
+          }}
+        />
+      </head>
       <body className={`${dmSans.variable} ${playfair.variable} font-body bg-background text-dark antialiased`}>
-        <AppProvider>
-          <div className="pb-24">{children}</div>
-          <BottomNavWrapper />
-        </AppProvider>
+        <ThemeProvider>
+          <AppProvider>
+            <div className="pb-24">{children}</div>
+            <BottomNavWrapper />
+          </AppProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

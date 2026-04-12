@@ -9,13 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#F7F5F2",
-        primary: "#C48A97",
-        accent: "#EDD5DB",
-        secondary: "#7B6D8D",
-        dark: "#2E2E2E",
-        card: "#FFFFFF",
-        "card-dark": "#2A2330",
+        background: "var(--color-bg)",
+        surface:    "var(--color-surface)",
+        "surface-2":"var(--color-surface-2)",
+        primary:    "#C48A97",   // kept as hex — used in gradients
+        accent:     "#EDD5DB",
+        secondary:  "#7B6D8D",
+        dark:       "var(--color-text)",
+        "text-mid": "var(--color-text-mid)",
+        "text-dim": "var(--color-text-dim)",
+        card:       "var(--color-surface)",
+        "card-dark":"#141828",
       },
       fontFamily: {
         display: ["'Playfair Display'", "serif"],
