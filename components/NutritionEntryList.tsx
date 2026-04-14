@@ -123,14 +123,14 @@ export default function NutritionEntryList({
       <div className="mb-4">
         <div className="rounded-2xl p-4 animate-pulse"
           style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
-          <div className="h-3 bg-white/10 rounded w-1/3 mb-3" />
-          <div className="h-8 bg-white/10 rounded mb-3 w-2/3" />
+          <div className="h-3 bg-surface/10 rounded w-1/3 mb-3" />
+          <div className="h-8 bg-surface/10 rounded mb-3 w-2/3" />
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
               <div key={i} className="flex items-center gap-2">
-                <div className="h-2.5 bg-white/10 rounded w-12" />
-                <div className="flex-1 h-1.5 bg-white/10 rounded-full" />
-                <div className="h-2.5 bg-white/10 rounded w-16" />
+                <div className="h-2.5 bg-surface/10 rounded w-12" />
+                <div className="flex-1 h-1.5 bg-surface/10 rounded-full" />
+                <div className="h-2.5 bg-surface/10 rounded w-16" />
               </div>
             ))}
           </div>
@@ -294,7 +294,7 @@ export default function NutritionEntryList({
                         background: isLogged
                           ? "rgba(255,255,255,0.06)"
                           : `linear-gradient(135deg, ${phaseColor}, ${phaseColor}88)`,
-                        color: isLogged ? "rgba(255,255,255,0.4)" : "white",
+                        color: isLogged ? "rgba(255,255,255,0.4)" : "var(--color-surface)",
                       }}
                     >
                       {isLogging ? "Logging…" : isLogged ? "✓ Logged" : "Log this"}
@@ -382,7 +382,7 @@ export default function NutritionEntryList({
 
               return (
                 <div key={entry.id}
-                  className="bg-white rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
+                  className="bg-surface rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
                   <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0"
                     style={{ background: style.bg }}>
                     {style.emoji}

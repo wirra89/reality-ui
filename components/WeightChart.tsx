@@ -69,7 +69,7 @@ export default function WeightChart({ logs, compact = false }: Props) {
 
         {/* Dots — first, last, and any notable points */}
         {points.filter((_, i) => i === 0 || i === points.length - 1).map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="white" stroke="#C48A97" strokeWidth="2" />
+          <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="var(--color-surface)" stroke="#C48A97" strokeWidth="2" />
         ))}
 
         {/* X axis labels */}

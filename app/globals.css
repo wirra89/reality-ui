@@ -16,6 +16,8 @@
   --color-text-dim:    #C4A4AD;
   --color-border:      rgba(232,130,154,0.16);
   --color-track:       #FDE8ED;
+  --color-ghost:       #F5F3F4;
+  --color-text-rgb:    44, 26, 31;
   --shadow-soft:       0 4px 24px rgba(196,138,151,0.10);
   --nav-bg:            rgba(254,240,243,0.88);
   --nav-border:        rgba(232,130,154,0.18);
@@ -34,6 +36,8 @@
   --color-text-dim:    #4E4A66;
   --color-border:      rgba(255,255,255,0.07);
   --color-track:       rgba(255,255,255,0.08);
+  --color-ghost:       #1C2238;
+  --color-text-rgb:    237, 232, 248;
   --shadow-soft:       0 4px 24px rgba(0,0,0,0.45);
   --nav-bg:            rgba(12,14,26,0.90);
   --nav-border:        rgba(255,255,255,0.09);
@@ -159,4 +163,28 @@ input[type="range"]::-moz-range-thumb {
   background: rgba(0,0,0,0.03);
   color: rgba(46,46,46,0.5);
   border: none;
+}
+
+/* ── Midnight theme explicit overrides ──────────────────────────────────
+   Belt-and-suspenders: explicit CSS beats CSS-variable inheritance in case
+   the variable cascade has a specificity or timing gap in some browsers.
+   Specificity: [attr][.class] = (0,2,0) > single .class = (0,1,0) ✓
+────────────────────────────────────────────────────────────────────── */
+[data-theme="midnight"] .bg-surface {
+  background-color: #141828;
+}
+[data-theme="midnight"] .bg-background {
+  background-color: #0C0E1A;
+}
+[data-theme="midnight"] .bg-ghost {
+  background-color: #1C2238;
+}
+[data-theme="midnight"] .bg-surface-2 {
+  background-color: #1C2238;
+}
+[data-theme="midnight"] .text-dark {
+  color: #EDE8F8;
+}
+[data-theme="midnight"] .shadow-card {
+  box-shadow: 0 2px 16px rgba(0,0,0,0.40);
 }

@@ -106,7 +106,7 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
       style={{ background: "rgba(42,35,48,0.55)", backdropFilter: "blur(4px)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-app rounded-t-3xl pb-8 pt-4 px-4" style={{ background: "#F7F5F2" }}>
+      <div className="w-full max-w-app rounded-t-3xl pb-8 pt-4 px-4" style={{ background: "var(--color-surface)" }}>
         {/* Handle */}
         <div className="flex justify-center mb-3">
           <div className="w-10 h-1 rounded-full bg-dark/20" />
@@ -115,7 +115,7 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-lg font-semibold text-dark">Select Period Start</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white shadow-card flex items-center justify-center text-dark/40 text-lg">×</button>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-surface shadow-card flex items-center justify-center text-dark/40 text-lg">×</button>
         </div>
 
         {/* Phase legend */}
@@ -135,9 +135,9 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
 
         {/* Month navigation */}
         <div className="flex items-center justify-between mb-3">
-          <button onClick={prevMonth} className="w-8 h-8 rounded-xl bg-white shadow-card flex items-center justify-center text-dark/60 font-semibold">‹</button>
+          <button onClick={prevMonth} className="w-8 h-8 rounded-xl bg-surface shadow-card flex items-center justify-center text-dark/60 font-semibold">‹</button>
           <span className="font-semibold text-dark text-sm">{monthName}</span>
-          <button onClick={nextMonth} className="w-8 h-8 rounded-xl bg-white shadow-card flex items-center justify-center text-dark/60 font-semibold">›</button>
+          <button onClick={nextMonth} className="w-8 h-8 rounded-xl bg-surface shadow-card flex items-center justify-center text-dark/60 font-semibold">›</button>
         </div>
 
         {/* Day headers */}
@@ -163,7 +163,7 @@ export default function CycleCalendar({ periodStartDate, cycleLength, cycleParam
                 className="aspect-square flex items-center justify-center text-sm font-semibold transition-all active:scale-90 relative"
                 style={{
                   background: isStart ? "#C48A97" : phase ? PHASE_BG[phase] : "transparent",
-                  color: isStart ? "white" : today_ ? "#C48A97" : "#2E2E2E",
+                  color: isStart ? "var(--color-surface)" : today_ ? "#C48A97" : "var(--color-text)",
                   outline: today_ && !isStart ? "2px solid rgba(196,138,151,0.6)" : "none",
                   borderRadius: 10,
                   borderLeft: phaseStart && !isStart && phase ? `3px solid ${PHASE_COLORS[phase]}` : undefined,

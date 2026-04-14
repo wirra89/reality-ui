@@ -16,7 +16,7 @@ export default function PageSkeleton() {
       {/* Dark card placeholder */}
       <div className="h-28 rounded-2xl mb-3" style={{ background: "rgba(42,35,48,0.12)" }} />
       {/* Card 1 */}
-      <div className="bg-white rounded-2xl p-4 mb-3 space-y-3">
+      <div className="bg-surface rounded-2xl p-4 mb-3 space-y-3">
         <div className="h-3 w-24 rounded-full bg-dark/8" />
         <div className="h-5 w-40 rounded-full bg-dark/10" />
         <div className="flex gap-3">
@@ -26,13 +26,13 @@ export default function PageSkeleton() {
         </div>
       </div>
       {/* Card 2 */}
-      <div className="bg-white rounded-2xl p-4 mb-3 space-y-3">
+      <div className="bg-surface rounded-2xl p-4 mb-3 space-y-3">
         <div className="h-3 w-20 rounded-full bg-dark/8" />
         <div className="h-4 w-full rounded-full bg-dark/8" />
         <div className="h-4 w-3/4 rounded-full bg-dark/8" />
       </div>
       {/* Card 3 */}
-      <div className="bg-white rounded-2xl p-4 mb-3">
+      <div className="bg-surface rounded-2xl p-4 mb-3">
         <div className="grid grid-cols-3 gap-3">
           <div className="h-14 rounded-xl bg-dark/8" />
           <div className="h-14 rounded-xl bg-dark/8" />

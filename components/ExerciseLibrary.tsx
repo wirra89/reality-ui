@@ -21,7 +21,7 @@ const PHASE_COLORS: Record<string, string> = {
   follicular: "#34D399",
   ovulation:  "#FBBF24",
   luteal:     "#A78BFA",
-  all:        "#9CA3AF",
+  all:        "var(--color-text-dim)",
 };
 
 interface Props {
@@ -77,7 +77,7 @@ export default function ExerciseLibrary({ currentPhase, onAdd, onClose }: Props)
       <div
         className="relative flex flex-col rounded-t-3xl overflow-hidden mx-auto w-full max-w-app"
         style={{
-          background: "#F7F5F2",
+          background: "var(--color-surface)",
           maxHeight: "88dvh",
         }}
       >
@@ -98,7 +98,7 @@ export default function ExerciseLibrary({ currentPhase, onAdd, onClose }: Props)
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white shadow-card flex items-center justify-center text-dark/40 hover:text-dark transition-colors text-lg"
+            className="w-8 h-8 rounded-full bg-surface shadow-card flex items-center justify-center text-dark/40 hover:text-dark transition-colors text-lg"
           >
             ×
           </button>
@@ -106,7 +106,7 @@ export default function ExerciseLibrary({ currentPhase, onAdd, onClose }: Props)
 
         {/* Search */}
         <div className="px-4 mb-3 flex-shrink-0">
-          <div className="bg-white rounded-2xl flex items-center gap-2 px-3 py-2.5 shadow-card">
+          <div className="bg-surface rounded-2xl flex items-center gap-2 px-3 py-2.5 shadow-card">
             <svg className="w-4 h-4 text-dark/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="m21 21-4.35-4.35" />
             </svg>
@@ -125,7 +125,7 @@ export default function ExerciseLibrary({ currentPhase, onAdd, onClose }: Props)
 
         {/* Phase filter toggle */}
         <div className="px-4 mb-3 flex-shrink-0">
-          <div className="flex rounded-2xl bg-white p-1 shadow-card gap-1">
+          <div className="flex rounded-2xl bg-surface p-1 shadow-card gap-1">
             {(["recommended", "all"] as const).map((f) => (
               <button
                 key={f}
@@ -133,7 +133,7 @@ export default function ExerciseLibrary({ currentPhase, onAdd, onClose }: Props)
                 className="flex-1 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all duration-200"
                 style={{
                   background: phaseFilter === f ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
-                  color: phaseFilter === f ? "white" : "#9CA3AF",
+                  color: phaseFilter === f ? "var(--color-surface)" : "var(--color-text-dim)",
                 }}
               >
                 {f === "recommended" ? `✦ For ${currentPhase}` : "All exercises"}
@@ -210,9 +210,9 @@ function MuscleChip({ label, emoji, active, onClick }: {
       onClick={onClick}
       className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
       style={{
-        background: active ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "white",
-        color: active ? "white" : "#6B7280",
-        boxShadow: active ? "0 2px 8px rgba(196,138,151,0.3)" : "0 1px 4px rgba(0,0,0,0.06)",
+        background: active ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "var(--color-surface)",
+        color: active ? "var(--color-surface)" : "var(--color-text-mid)",
+        boxShadow: active ? "0 2px 8px rgba(196,138,151,0.3)" : "0 1px 4px rgba(var(--color-text-rgb),0.06)",
       }}
     >
       <span>{emoji}</span>
@@ -232,7 +232,7 @@ function ExerciseCard({ exercise, currentPhase, onAdd }: {
 
   return (
     <div
-      className="bg-white rounded-2xl px-4 py-3 shadow-card"
+      className="bg-surface rounded-2xl px-4 py-3 shadow-card"
       style={{
         border: isRecommended ? "1.5px solid rgba(196,138,151,0.25)" : "1.5px solid transparent",
       }}
@@ -266,7 +266,7 @@ function ExerciseCard({ exercise, currentPhase, onAdd }: {
             </span>
             {/* Equipment */}
             <span className="text-xs font-medium px-2 py-0.5 rounded-full capitalize"
-              style={{ background: "#F3F4F6", color: "#6B7280" }}>
+              style={{ background: "var(--color-ghost)", color: "var(--color-text-mid)" }}>
               {exercise.equipment}
             </span>
             {/* Phase dots */}

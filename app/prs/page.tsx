@@ -121,7 +121,7 @@ export default function PRsPage() {
         <header className="flex items-center gap-3 mb-5">
           <button onClick={() => router.back()}
             className="w-9 h-9 rounded-xl flex items-center justify-center text-dark/40 transition-all active:scale-90"
-            style={{ background: "white" }}>
+            style={{ background: "var(--color-surface)" }}>
             ←
           </button>
           <div className="flex-1">
@@ -140,9 +140,9 @@ export default function PRsPage() {
             <button key={t} onClick={() => setTab(t)}
               className="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
               style={{
-                background: tab === t ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "white",
-                color: tab === t ? "white" : "#9CA3AF",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                background: tab === t ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "var(--color-surface)",
+                color: tab === t ? "var(--color-surface)" : "var(--color-text-dim)",
+                boxShadow: "0 1px 4px rgba(var(--color-text-rgb),0.06)",
               }}>
               {t === "bests" ? "🏆 Bests" : t === "log" ? "➕ Log PR" : "📋 History"}
             </button>
@@ -172,7 +172,7 @@ export default function PRsPage() {
                 {bests.map((pr, i) => {
                   const ps = pr.phase ? PHASE_STYLES[pr.phase] : null;
                   return (
-                    <div key={i} className="bg-white rounded-2xl px-4 py-3.5 shadow-card">
+                    <div key={i} className="bg-surface rounded-2xl px-4 py-3.5 shadow-card">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-bold text-white flex-shrink-0"
                           style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
@@ -223,7 +223,7 @@ export default function PRsPage() {
             </div>
 
             {/* Exercise */}
-            <div className="bg-white rounded-2xl p-4 shadow-card relative">
+            <div className="bg-surface rounded-2xl p-4 shadow-card relative">
               <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Exercise</p>
               <input type="text"
                 placeholder="e.g. Bench Press, Squat, Deadlift…"
@@ -232,10 +232,10 @@ export default function PRsPage() {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 className="w-full text-sm text-dark bg-background rounded-xl px-3 py-2.5 outline-none font-body" />
               {showSuggestions && exerciseSuggestions.length > 0 && (
-                <div className="absolute left-4 right-4 top-20 bg-white rounded-xl shadow-lg z-20 overflow-hidden border border-gray-100">
+                <div className="absolute left-4 right-4 top-20 bg-surface rounded-xl shadow-lg z-20 overflow-hidden border border-[var(--color-border)]">
                   {exerciseSuggestions.map(e => (
                     <button key={e.id} onMouseDown={() => { setExercise(e.name); setShowSuggestions(false); }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-dark hover:bg-background transition-colors border-b border-gray-50 last:border-0">
+                      className="w-full text-left px-4 py-2.5 text-sm text-dark hover:bg-background transition-colors border-b border-[var(--color-border)] last:border-0">
                       {e.name}
                       <span className="text-xs text-dark/30 ml-2">{e.muscle}</span>
                     </button>
@@ -246,13 +246,13 @@ export default function PRsPage() {
 
             {/* Reps + Weight */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded-2xl p-4 shadow-card">
+              <div className="bg-surface rounded-2xl p-4 shadow-card">
                 <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Reps</p>
                 <input type="number" placeholder="8" value={reps}
                   onChange={(e) => setReps(e.target.value)} min="1" max="200"
                   className="w-full text-xl font-bold text-dark text-center bg-background rounded-xl px-3 py-2 outline-none" />
               </div>
-              <div className="bg-white rounded-2xl p-4 shadow-card">
+              <div className="bg-surface rounded-2xl p-4 shadow-card">
                 <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Weight (kg)</p>
                 <input type="number" placeholder="80" value={weight}
                   onChange={(e) => setWeight(e.target.value)} min="0" step="0.5"
@@ -261,7 +261,7 @@ export default function PRsPage() {
             </div>
 
             {/* Notes */}
-            <div className="bg-white rounded-2xl p-4 shadow-card">
+            <div className="bg-surface rounded-2xl p-4 shadow-card">
               <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Notes (optional)</p>
               <input type="text" placeholder="e.g. Paused reps, competition style…"
                 value={notes} onChange={(e) => setNotes(e.target.value)}
@@ -303,7 +303,7 @@ export default function PRsPage() {
                 {prs.map((pr) => {
                   const ps = pr.phase ? PHASE_STYLES[pr.phase] : null;
                   return (
-                    <div key={pr.id} className="bg-white rounded-2xl px-4 py-3.5 shadow-card">
+                    <div key={pr.id} className="bg-surface rounded-2xl px-4 py-3.5 shadow-card">
                       <div className="flex items-center gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -322,7 +322,7 @@ export default function PRsPage() {
                         </div>
                         <button onClick={() => pr.id && handleDelete(pr.id)}
                           className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/20 hover:text-rose-400 transition-colors flex-shrink-0"
-                          style={{ background: "#F9FAFB" }}>
+                          style={{ background: "var(--color-ghost)" }}>
                           ×
                         </button>
                       </div>

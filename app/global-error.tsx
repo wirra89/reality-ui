@@ -23,7 +23,7 @@ export default function GlobalError({
         <div
           style={{
             minHeight: "100dvh",
-            background: "#F7F5F2",
+            background: "var(--color-surface)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -37,7 +37,7 @@ export default function GlobalError({
             style={{
               fontSize: 18,
               fontWeight: 700,
-              color: "#2E2E2E",
+              color: "var(--color-text)",
               marginBottom: 8,
               textAlign: "center",
             }}
@@ -47,7 +47,7 @@ export default function GlobalError({
           <p
             style={{
               fontSize: 14,
-              color: "#9CA3AF",
+              color: "var(--color-text-dim)",
               marginBottom: 24,
               textAlign: "center",
               maxWidth: 280,
@@ -59,7 +59,7 @@ export default function GlobalError({
             onClick={() => window.location.reload()}
             style={{
               background: "linear-gradient(135deg, #C48A97, #7B6D8D)",
-              color: "white",
+              color: "var(--color-surface)",
               border: "none",
               borderRadius: 16,
               padding: "12px 28px",

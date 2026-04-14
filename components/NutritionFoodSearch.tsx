@@ -90,7 +90,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-card p-4 mb-4">
+    <div className="bg-surface rounded-2xl shadow-card p-4 mb-4">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
@@ -134,7 +134,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
 
       {/* Search results dropdown */}
       {!selected && query.trim() && (
-        <div className="rounded-xl overflow-hidden border border-gray-100 mb-3 max-h-48 overflow-y-auto">
+        <div className="rounded-xl overflow-hidden border border-[var(--color-border)] mb-3 max-h-48 overflow-y-auto">
           {searching ? (
             <div className="px-3 py-3 text-xs text-dark/30 font-body">Searching…</div>
           ) : results.length === 0 ? (
@@ -146,7 +146,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
               <button
                 key={food.id}
                 onClick={() => handleSelectFood(food)}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-gray-100 border-b border-gray-50 last:border-0">
+                className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-ghost border-b border-[var(--color-border)] last:border-0">
                 <div className="flex items-center gap-1.5 min-w-0">
                   {food.emoji && <span className="text-base flex-shrink-0">{food.emoji}</span>}
                   <span className="text-sm font-semibold text-dark truncate">{food.name}</span>
@@ -209,7 +209,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
               min="1"
               max="2000"
               step="5"
-              className="flex-1 bg-white rounded-xl px-3 py-2 text-sm text-dark outline-none font-body text-center border border-transparent focus:border-primary/30 transition-colors"
+              className="flex-1 bg-surface rounded-xl px-3 py-2 text-sm text-dark outline-none font-body text-center border border-transparent focus:border-primary/30 transition-colors"
             />
             <span className="text-sm font-semibold text-dark/40 flex-shrink-0">g</span>
           </div>
@@ -223,7 +223,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
                 { label: "C",     value: `${preview.carbs}g`,   color: "#F59E0B" },
                 { label: "F",     value: `${preview.fats}g`,    color: "#34D399"  },
               ].map(m => (
-                <div key={m.label} className="bg-white rounded-xl p-2 text-center">
+                <div key={m.label} className="bg-surface rounded-xl p-2 text-center">
                   <p className="text-sm font-bold" style={{ color: m.color }}>{m.value}</p>
                   <p className="text-xs text-dark/30 font-semibold uppercase">{m.label}</p>
                 </div>
@@ -242,7 +242,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
       <div className="flex gap-2">
         <button
           onClick={onCancel}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-gray-50 active:scale-95 transition-all">
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
           Cancel
         </button>
         <button

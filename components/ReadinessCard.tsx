@@ -35,14 +35,14 @@ export default function ReadinessCard({ score, label, adaptedFromCheckin }: Prop
   const filled = circ * (score / 100);
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-card flex flex-col items-center">
+    <div className="bg-surface rounded-2xl p-4 shadow-card flex flex-col items-center">
       <p className="text-xs font-semibold text-dark/60 uppercase tracking-wide mb-2">
         Readiness
       </p>
 
       <div className="relative w-16 h-16 mb-2 animate-pulse-ring">
         <svg className="w-16 h-16 -rotate-90" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r={radius} fill="none" stroke="#F3F4F6" strokeWidth="5" />
+          <circle cx="36" cy="36" r={radius} fill="none" stroke="var(--color-ghost)" strokeWidth="5" />
           <circle cx="36" cy="36" r={radius} fill="none"
             stroke={color} strokeWidth="5" strokeLinecap="round"
             strokeDasharray={`${filled} ${circ}`}

@@ -12,10 +12,10 @@ import WeightChart from "@/components/WeightChart";
 type Tab = "workouts" | "meals" | "mood" | "weight";
 
 const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  menstrual:  { bg: "#FEF2F2", text: "#B91C1C", dot: "#F87171" },
-  follicular: { bg: "#F0FDF4", text: "#166534", dot: "#34D399" },
-  ovulation:  { bg: "#FFFBEB", text: "#92400E", dot: "#FBBF24" },
-  luteal:     { bg: "#F5F3FF", text: "#5B21B6", dot: "#A78BFA" },
+  menstrual:  { bg: "rgba(248,113,113,0.12)",  text: "#F87171",  dot: "#F87171" },
+  follicular: { bg: "rgba(52,211,153,0.12)",   text: "#34D399",  dot: "#34D399" },
+  ovulation:  { bg: "rgba(251,191,36,0.12)",   text: "#FBBF24",  dot: "#FBBF24" },
+  luteal:     { bg: "rgba(167,139,250,0.12)",  text: "#A78BFA",  dot: "#A78BFA" },
 };
 
 const phaseSymptoms: Record<string, { positive: string[] }> = {
@@ -142,7 +142,7 @@ export default function HistoryPage() {
         {/* Header */}
         <header className="flex items-center gap-3 mb-5">
           <button onClick={() => router.back()}
-            className="w-9 h-9 rounded-xl bg-white shadow-card flex items-center justify-center text-dark/40 hover:text-dark transition-colors">
+            className="w-9 h-9 rounded-xl bg-surface shadow-card flex items-center justify-center text-dark/40 hover:text-dark transition-colors">
             ←
           </button>
           <div>
@@ -158,7 +158,7 @@ export default function HistoryPage() {
             { label: "Volume kg", value: totalVolume > 0 ? `${(totalVolume/1000).toFixed(1)}t` : "—", emoji: "⚡" },
             { label: "Avg Mood", value: avgMood, emoji: "😊" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+            <div key={s.label} className="bg-surface rounded-2xl p-3 text-center shadow-card">
               <div className="text-xl mb-0.5">{s.emoji}</div>
               <p className="font-display font-bold text-lg text-dark">{s.value}</p>
               <p className="text-xs text-dark/40 font-semibold uppercase tracking-wide">{s.label}</p>
@@ -167,7 +167,7 @@ export default function HistoryPage() {
         </div>
 
         {/* Tab selector */}
-        <div className="flex rounded-2xl bg-white p-1 shadow-card mb-3 gap-1 overflow-x-auto">
+        <div className="flex rounded-2xl bg-surface p-1 shadow-card mb-3 gap-1 overflow-x-auto">
           {([
             { id: "workouts",  label: "Training", emoji: "🏋️‍♀️" },
             { id: "meals",     label: "Meals",    emoji: "🥗" },
@@ -178,7 +178,7 @@ export default function HistoryPage() {
               className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
               style={{
                 background: activeTab === t.id ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
-                color: activeTab === t.id ? "white" : "#9CA3AF",
+                color: activeTab === t.id ? "var(--color-surface)" : "var(--color-text-dim)",
               }}>
               <span>{t.emoji}</span>{t.label}
             </button>
@@ -189,15 +189,15 @@ export default function HistoryPage() {
         <div className="flex gap-1.5 overflow-x-auto pb-1 mb-4 scrollbar-none">
           {phases.map((p) => {
             const active = phaseFilter === p;
-            const color = p !== "all" ? PHASE_COLORS[p]?.dot : "#9CA3AF";
+            const color = p !== "all" ? PHASE_COLORS[p]?.dot : "var(--color-text-dim)";
             return (
               <button key={p} onClick={() => setPhaseFilter(p)}
                 className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
                 style={{
-                  background: active ? (p !== "all" ? PHASE_COLORS[p]?.bg : "#F3F4F6") : "white",
-                  color: active ? (p !== "all" ? PHASE_COLORS[p]?.text : "#374151") : "#9CA3AF",
+                  background: active ? (p !== "all" ? PHASE_COLORS[p]?.bg : "var(--color-ghost)") : "var(--color-surface)",
+                  color: active ? (p !== "all" ? PHASE_COLORS[p]?.text : "var(--color-text)") : "var(--color-text-dim)",
                   border: `1px solid ${active ? color + "44" : "transparent"}`,
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                  boxShadow: "0 1px 4px rgba(var(--color-text-rgb),0.06)",
                 }}>
                 {p !== "all" && <span className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />}
                 {p === "all" ? "All phases" : p.charAt(0).toUpperCase() + p.slice(1)}
@@ -229,7 +229,7 @@ export default function HistoryPage() {
                       const pct = Math.abs(Math.round((diff / vol1) * 100));
                       const up = diff >= 0;
                       return (
-                        <div className="bg-white rounded-2xl px-4 py-3 shadow-card flex items-center gap-3 mb-1">
+                        <div className="bg-surface rounded-2xl px-4 py-3 shadow-card flex items-center gap-3 mb-1">
                           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
                             style={{ background: up ? "rgba(52,211,153,0.1)" : "rgba(248,113,113,0.1)" }}>
                             {up ? "📈" : "📉"}
@@ -251,7 +251,7 @@ export default function HistoryPage() {
                       const phaseStyle = PHASE_COLORS[w.phase] ?? PHASE_COLORS.follicular;
                       const isExpanded = expandedId === w.id;
                       return (
-                        <div key={w.id} className="bg-white rounded-2xl shadow-card overflow-hidden">
+                        <div key={w.id} className="bg-surface rounded-2xl shadow-card overflow-hidden">
                           <button onClick={() => setExpandedId(isExpanded ? null : w.id!)}
                             className="w-full px-4 py-3.5 flex items-center gap-3 text-left">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
@@ -272,7 +272,7 @@ export default function HistoryPage() {
                             </div>
                             <span className="text-dark/30 text-sm ml-1">{isExpanded ? "↑" : "↓"}</span>
                           </button>
-                          <div className="flex gap-4 px-4 pb-3 border-b border-gray-50">
+                          <div className="flex gap-4 px-4 pb-3 border-b border-[var(--color-border)]">
                             <Stat label="Exercises" value={exs.length} />
                             <Stat label="Sets" value={totalSets} />
                             <Stat label="Volume" value={vol > 0 ? `${vol.toFixed(0)}kg` : "—"} />
@@ -340,7 +340,7 @@ export default function HistoryPage() {
                   const phaseStyle = PHASE_COLORS[m.phase] ?? PHASE_COLORS.follicular;
                   const isExpanded = expandedId === m.id;
                   return (
-                    <div key={m.id} className="bg-white rounded-2xl shadow-card overflow-hidden">
+                    <div key={m.id} className="bg-surface rounded-2xl shadow-card overflow-hidden">
                       <button onClick={() => setExpandedId(isExpanded ? null : m.id!)}
                         className="w-full px-4 py-3.5 flex items-center gap-3 text-left">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: phaseStyle.bg }}>{PHASE_EMOJIS[m.phase]}</div>
@@ -351,7 +351,7 @@ export default function HistoryPage() {
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: phaseStyle.bg, color: phaseStyle.text }}>{m.phase}</span>
                         <span className="text-dark/30 text-sm ml-1">{isExpanded ? "↑" : "↓"}</span>
                       </button>
-                      <div className="flex gap-4 px-4 pb-3 border-b border-gray-50">
+                      <div className="flex gap-4 px-4 pb-3 border-b border-[var(--color-border)]">
                         <Stat label="Items" value={itemCount} />
                         <Stat label="Calories" value={totalCal > 0 ? Math.round(totalCal) : "—"} />
                         <Stat label="Protein" value={totalProt > 0 ? `${Math.round(totalProt)}g` : "—"} />
@@ -410,13 +410,13 @@ export default function HistoryPage() {
                   <>
                     {/* Mood trend chart — last 14 days */}
                     {moods.length >= 3 && (
-                      <div className="bg-white rounded-2xl shadow-card p-4 mb-1">
+                      <div className="bg-surface rounded-2xl shadow-card p-4 mb-1">
                         <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Mood & energy trend</p>
                         <div className="flex items-end gap-1 h-16">
                           {[...moods].reverse().slice(-14).map((m, i) => {
                             const moodVal   = (m.mood as unknown as number) ?? 0;
                             const energyVal = (m.energy as unknown as number) ?? 0;
-                            const phaseColor = PHASE_COLORS[m.phase]?.dot ?? "#9CA3AF";
+                            const phaseColor = PHASE_COLORS[m.phase]?.dot ?? "var(--color-text-dim)";
                             return (
                               <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
                                 <div className="w-full rounded-t-sm transition-all" style={{ height: `${(moodVal / 5) * 100}%`, background: phaseColor, opacity: 0.85, minHeight: 4 }} />
@@ -442,7 +442,7 @@ export default function HistoryPage() {
                       const note     = m.note as unknown as string;
                       const phaseStyle = PHASE_COLORS[m.phase] ?? PHASE_COLORS.follicular;
                       return (
-                        <div key={m.id} className="bg-white rounded-2xl shadow-card px-4 py-3.5">
+                        <div key={m.id} className="bg-surface rounded-2xl shadow-card px-4 py-3.5">
                           <div className="flex items-center gap-3 mb-2">
                             <span className="text-3xl">{MOOD_EMOJIS[mood]}</span>
                             <div className="flex-1">
@@ -457,7 +457,7 @@ export default function HistoryPage() {
                                 const isPositive = phaseSymptoms[m.phase]?.positive?.includes(s);
                                 return (
                                   <span key={s} className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                    style={{ background: isPositive ? "rgba(52,211,153,0.12)" : "#F9FAFB", color: isPositive ? "#059669" : "#6B7280" }}>
+                                    style={{ background: isPositive ? "rgba(52,211,153,0.12)" : "var(--color-ghost)", color: isPositive ? "#059669" : "var(--color-text-mid)" }}>
                                     {isPositive ? "✦ " : ""}{s}
                                   </span>
                                 );
@@ -481,7 +481,7 @@ export default function HistoryPage() {
               ) : (
                 <>
                   {/* Weight chart */}
-                  <div className="bg-white rounded-2xl shadow-card p-4 mb-3">
+                  <div className="bg-surface rounded-2xl shadow-card p-4 mb-3">
                     <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Weight over time</p>
                     <WeightChart logs={[...weights].reverse()} compact />
                   </div>
@@ -496,7 +496,7 @@ export default function HistoryPage() {
                         { label: "Change",  value: change !== null ? (change > 0 ? `+${change.toFixed(1)}` : change.toFixed(1)) + "kg" : "—", color: change !== null ? (change < 0 ? "#34D399" : "#F87171") : undefined },
                         { label: "Entries", value: weights.length },
                       ].map(s => (
-                        <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+                        <div key={s.label} className="bg-surface rounded-2xl p-3 text-center shadow-card">
                           <p className="font-display font-bold text-base text-dark" style={{ color: (s as { color?: string }).color }}>{s.value}</p>
                           <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-0.5">{s.label}</p>
                         </div>
@@ -508,7 +508,7 @@ export default function HistoryPage() {
                       const prev = weights[i + 1];
                       const diff = prev ? w.weight_kg - prev.weight_kg : null;
                       return (
-                        <div key={i} className="bg-white rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
+                        <div key={i} className="bg-surface rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                             style={{ background: "rgba(196,138,151,0.1)" }}>
                             <span className="font-display font-bold text-xs text-primary">{w.weight_kg}</span>
@@ -540,7 +540,7 @@ export default function HistoryPage() {
         {/* Link to full Insights page */}
         <button onClick={() => router.push("/insights")}
           className="w-full py-3 rounded-2xl text-sm font-semibold text-dark/40 flex items-center justify-center gap-2 mb-4 active:scale-95 transition-all"
-          style={{ background: "rgba(0,0,0,0.03)" }}>
+          style={{ background: "rgba(var(--color-text-rgb),0.03)" }}>
           ✦ View cycle insights
           <span className="text-dark/25">→</span>
         </button>

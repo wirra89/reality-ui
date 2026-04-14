@@ -214,7 +214,7 @@ export default function MealRecommendationCards({ phase, cycleDay, onLogged, foo
                     background: isLogged
                       ? "rgba(255,255,255,0.1)"
                       : `linear-gradient(135deg, ${color}, ${color}88)`,
-                    color: isLogged ? "rgba(255,255,255,0.5)" : "white",
+                    color: isLogged ? "rgba(255,255,255,0.5)" : "var(--color-surface)",
                   }}
                 >
                   {isLogging ? (

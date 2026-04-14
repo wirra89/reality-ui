@@ -49,7 +49,7 @@ function MacroCard({ phaseData, profile, nutritionSummary }: {
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+    <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-dark">Daily Macros</h3>
@@ -92,11 +92,11 @@ function MacroCard({ phaseData, profile, nutritionSummary }: {
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: m.color }} />
                   <span className="text-xs font-semibold text-dark/70">{m.label}</span>
                 </div>
-                <span className="text-xs font-body" style={{ color: met ? "#10B981" : "rgba(0,0,0,0.35)" }}>
+                <span className="text-xs font-body" style={{ color: met ? "#10B981" : "rgba(var(--color-text-rgb),0.35)" }}>
                   {met ? `✓ ${m.target}g` : `${m.consumed}g / ${m.target}g`}
                 </span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(0,0,0,0.06)" }}>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(var(--color-text-rgb),0.06)" }}>
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
@@ -242,7 +242,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             {streak > 0 && (
-              <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white shadow-card">
+              <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface shadow-card">
                 <span className="text-base">🔥</span>
                 <span className="text-xs font-bold text-dark">{streak}</span>
               </div>
@@ -276,7 +276,7 @@ export default function DashboardPage() {
               </button>
               <button onClick={dismissNewCyclePrompt}
                 className="text-xs font-medium px-3 py-1 rounded-xl text-dark/40 transition-all active:scale-95"
-                style={{ background: "rgba(0,0,0,0.04)" }}>
+                style={{ background: "rgba(var(--color-text-rgb),0.04)" }}>
                 Not yet
               </button>
             </div>
@@ -385,7 +385,7 @@ export default function DashboardPage() {
             persistHydration(next, waterTarget, phaseData.phase, cycleDay);
           }
           return (
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">Water intake 💧</p>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-right">
                   {hydrationLoading ? (
-                    <div className="w-8 h-6 rounded bg-gray-100 animate-pulse mb-0.5" />
+                    <div className="w-8 h-6 rounded bg-ghost animate-pulse mb-0.5" />
                   ) : (
                     <p className="text-lg font-bold font-display text-primary">{waterGlasses}</p>
                   )}
@@ -409,7 +409,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <button onClick={removeWater} disabled={waterGlasses === 0 || hydrationLoading}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-dark/40 disabled:opacity-25 active:scale-90 transition-all text-lg"
-                  style={{ background: "#F9FAFB" }}>−</button>
+                  style={{ background: "var(--color-ghost)" }}>−</button>
                 <div className="flex gap-1.5 flex-wrap justify-center flex-1 px-2">
                   {Array.from({ length: Math.min(waterTarget, 9) }).map((_, i) => (
                     <button key={i} onClick={() => {
@@ -420,7 +420,7 @@ export default function DashboardPage() {
                       disabled={hydrationLoading}
                       className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all active:scale-90 disabled:opacity-40"
                       style={{
-                        background: i < waterGlasses ? "rgba(196,138,151,0.15)" : "#F9FAFB",
+                        background: i < waterGlasses ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
                         border: i < waterGlasses ? "1.5px solid rgba(196,138,151,0.4)" : "1.5px solid transparent",
                       }}>
                       💧
@@ -445,10 +445,10 @@ export default function DashboardPage() {
             <div className="grid grid-cols-3 gap-2">
               {[
                 { label: "Workouts", value: weeklyWorkouts, sub: "last 7 days", color: "#C48A97", bg: "rgba(196,138,151,0.06)" },
-                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", sub: "day check-in", color: streak >= 7 ? "#B45309" : streak >= 3 ? "#059669" : "#9CA3AF", bg: streak >= 7 ? "rgba(251,191,36,0.06)" : streak >= 3 ? "rgba(52,211,153,0.06)" : "rgba(0,0,0,0.02)" },
+                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", sub: "day check-in", color: streak >= 7 ? "#B45309" : streak >= 3 ? "#059669" : "var(--color-text-dim)", bg: streak >= 7 ? "rgba(251,191,36,0.06)" : streak >= 3 ? "rgba(52,211,153,0.06)" : "rgba(0,0,0,0.02)" },
                 { label: "Calories", value: todayCalories > 0 ? todayCalories : "—", sub: "today", color: "#7B6D8D", bg: "rgba(123,109,141,0.06)" },
               ].map(s => (
-                <div key={s.label} className="rounded-2xl p-3 text-center" style={{ background: s.bg, border: "1px solid rgba(0,0,0,0.04)" }}>
+                <div key={s.label} className="rounded-2xl p-3 text-center" style={{ background: s.bg, border: "1px solid rgba(var(--color-text-rgb),0.04)" }}>
                   <p className="font-display font-bold text-lg text-dark leading-tight" style={{ color: s.color }}>
                     {s.value}
                   </p>
@@ -459,7 +459,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+          <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl flex-shrink-0">🌸</span>
               <div>
@@ -486,10 +486,10 @@ export default function DashboardPage() {
         )}
 
         {/* ── 9. CYCLE DAY + PREDICTION ── */}
-        <div className="bg-white rounded-2xl shadow-card mb-3">
+        <div className="bg-surface rounded-2xl shadow-card mb-3">
 
           {/* Period date row */}
-          <div className="flex items-center gap-2 px-4 pt-4 pb-3 border-b border-gray-50">
+          <div className="flex items-center gap-2 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
             <div className="flex-1 min-w-0">
               <p className="text-xs text-dark/40 font-body uppercase tracking-wide">Period started</p>
               <p className="text-sm font-semibold text-dark truncate">
@@ -509,7 +509,7 @@ export default function DashboardPage() {
             )}
             <button onClick={() => setShowCalendar(true)}
               className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
-              style={{ background: "#F9FAFB" }}>
+              style={{ background: "var(--color-ghost)" }}>
               <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#7B6D8D" strokeWidth="1.8">
                 <rect x="3" y="4" width="18" height="18" rx="3" />
                 <path strokeLinecap="round" d="M16 2v4M8 2v4M3 10h18" />
@@ -526,7 +526,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Unified slider — no overflow clip so thumb is visible */}
-          <div className="px-4 py-3 border-b border-gray-50" style={{ overflow: "visible" }}>
+          <div className="px-4 py-3 border-b border-[var(--color-border)]" style={{ overflow: "visible" }}>
             <CycleSlider cycleDay={cycleDay} cycleLength={cycleLength} cycleParams={cycleParams} onChange={setCycleDay} />
           </div>
 
@@ -585,7 +585,7 @@ export default function DashboardPage() {
         {/* ── 10. QUICK ACTIONS ── */}
         <div className="grid grid-cols-3 gap-2 mt-3">
           <button onClick={() => router.push("/weight")}
-            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-white shadow-card active:scale-95 transition-all text-center">
+            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-surface shadow-card active:scale-95 transition-all text-center">
             <span className="text-xl">⚖️</span>
             <div>
               <p className="text-xs font-semibold text-dark">Weight</p>
@@ -593,7 +593,7 @@ export default function DashboardPage() {
             </div>
           </button>
           <button onClick={() => router.push("/prs")}
-            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-white shadow-card active:scale-95 transition-all text-center">
+            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-surface shadow-card active:scale-95 transition-all text-center">
             <span className="text-xl">🏆</span>
             <div>
               <p className="text-xs font-semibold text-dark">My PRs</p>
@@ -601,7 +601,7 @@ export default function DashboardPage() {
             </div>
           </button>
           <button onClick={() => router.push("/history")}
-            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-white shadow-card active:scale-95 transition-all text-center">
+            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-surface shadow-card active:scale-95 transition-all text-center">
             <span className="text-xl">📋</span>
             <div>
               <p className="text-xs font-semibold text-dark">History</p>

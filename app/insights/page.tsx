@@ -16,10 +16,10 @@ import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
 import type { DataMaturityStage } from "@/lib/dailyPlan";
 
 const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  menstrual:  { bg: "#FEF2F2", text: "#B91C1C", dot: "#F87171" },
-  follicular: { bg: "#F0FDF4", text: "#166534", dot: "#34D399" },
-  ovulation:  { bg: "#FFFBEB", text: "#92400E", dot: "#FBBF24" },
-  luteal:     { bg: "#F5F3FF", text: "#5B21B6", dot: "#A78BFA" },
+  menstrual:  { bg: "rgba(248,113,113,0.12)",  text: "#F87171",  dot: "#F87171" },
+  follicular: { bg: "rgba(52,211,153,0.12)",   text: "#34D399",  dot: "#34D399" },
+  ovulation:  { bg: "rgba(251,191,36,0.12)",   text: "#FBBF24",  dot: "#FBBF24" },
+  luteal:     { bg: "rgba(167,139,250,0.12)",  text: "#A78BFA",  dot: "#A78BFA" },
 };
 const PHASE_EMOJIS: Record<string, string> = {
   menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
@@ -37,7 +37,7 @@ const MATURITY_BANNER: Record<DataMaturityStage, {
 }> = {
   generic: {
     label: "Phase guidance",
-    color: "#9CA3AF",
+    color: "var(--color-text-dim)",
     bg: "rgba(156,163,175,0.08)",
     body: (n) => `These insights are based on your cycle phase — a universal hormonal model. They'll become specific to you after ${7 - n} more check-ins.`,
   },
@@ -174,7 +174,7 @@ export default function InsightsPage() {
         </header>
 
         {/* Tab bar */}
-        <div className="flex rounded-2xl bg-white p-1 shadow-card mb-4 gap-1">
+        <div className="flex rounded-2xl bg-surface p-1 shadow-card mb-4 gap-1">
           {([
             { id: "overview", label: "Overview", emoji: "🌸" },
             { id: "training", label: "Training", emoji: "🏋️‍♀️" },
@@ -185,7 +185,7 @@ export default function InsightsPage() {
               className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
               style={{
                 background: activeTab === t.id ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
-                color: activeTab === t.id ? "white" : "#9CA3AF",
+                color: activeTab === t.id ? "var(--color-surface)" : "var(--color-text-dim)",
               }}>
               <span style={{ fontSize: 12 }}>{t.emoji}</span>{t.label}
             </button>
@@ -203,7 +203,7 @@ export default function InsightsPage() {
             <p className="text-dark/40 text-sm font-body mb-6 max-w-xs mx-auto">
               Log your mood, training, and meals for a few days and personalised insights will appear here automatically.
             </p>
-            <div className="bg-white rounded-2xl p-4 shadow-card text-left mb-4 max-w-xs mx-auto">
+            <div className="bg-surface rounded-2xl p-4 shadow-card text-left mb-4 max-w-xs mx-auto">
               <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Progress to first insights</p>
               {[
                 { label: "Mood logs", current: moods.length,    target: 3, color: "#A78BFA", href: "/mood" },
@@ -215,7 +215,7 @@ export default function InsightsPage() {
                     <span className="text-xs font-semibold text-dark">{item.label}</span>
                     <span className="text-xs text-dark/40">{Math.min(item.current, item.target)}/{item.target}</span>
                   </div>
-                  <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div className="h-2 rounded-full bg-ghost overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${Math.min((item.current / item.target) * 100, 100)}%`, background: item.color }} />
                   </div>
@@ -267,7 +267,7 @@ export default function InsightsPage() {
                 {canComparePhases && maturity !== "generic" && (
                   <div className="grid grid-cols-2 gap-3">
                     {bestPhase && (
-                      <div className="bg-white rounded-2xl p-4 shadow-card"
+                      <div className="bg-surface rounded-2xl p-4 shadow-card"
                         style={{ borderLeft: `3px solid ${PHASE_COLORS[bestPhase.phase].dot}` }}>
                         <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">
                           {maturity === "personalized" ? "Best phase" : "Highest mood"}
@@ -282,7 +282,7 @@ export default function InsightsPage() {
                       </div>
                     )}
                     {worstPhase && worstPhase.phase !== bestPhase?.phase && (
-                      <div className="bg-white rounded-2xl p-4 shadow-card"
+                      <div className="bg-surface rounded-2xl p-4 shadow-card"
                         style={{ borderLeft: `3px solid ${PHASE_COLORS[worstPhase.phase].dot}` }}>
                         <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2">
                           {maturity === "personalized" ? "Needs support" : "Lower mood"}
@@ -320,7 +320,7 @@ export default function InsightsPage() {
                     { label: "Mood logs", value: moods.length,    color: "#A78BFA" },
                     { label: "Meal logs", value: meals.length,    color: "#34D399" },
                   ].map(s => (
-                    <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+                    <div key={s.label} className="bg-surface rounded-2xl p-3 text-center shadow-card">
                       <p className="font-display font-bold text-lg" style={{ color: s.color }}>{s.value}</p>
                       <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-0.5">{s.label}</p>
                     </div>
@@ -367,7 +367,7 @@ export default function InsightsPage() {
 
                 {/* Mood by phase bars — always shown when data exists */}
                 {phasesWithMood.length > 0 && (
-                  <div className="bg-white rounded-2xl shadow-card p-4">
+                  <div className="bg-surface rounded-2xl shadow-card p-4">
                     <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">Mood by phase</p>
                     {maturity === "generic" && (
                       <p className="text-xs text-dark/35 font-body mb-3">Based on limited data — patterns will sharpen with more logs.</p>
@@ -390,13 +390,13 @@ export default function InsightsPage() {
                           </div>
                           {p.count > 0 ? (
                             <div className="flex items-center gap-2">
-                              <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                              <div className="flex-1 h-2 rounded-full bg-ghost overflow-hidden">
                                 <div className="h-full rounded-full transition-all" style={{ width: `${(p.avgMood! / 5) * 100}%`, background: PHASE_COLORS[p.phase].dot }} />
                               </div>
                               <span className="text-xs font-semibold text-dark/50 w-6 text-right">{p.avgMood!.toFixed(1)}</span>
                             </div>
                           ) : (
-                            <div className="h-2 bg-gray-50 rounded-full" />
+                            <div className="h-2 bg-ghost rounded-full" />
                           )}
                         </div>
                       ))}
@@ -416,7 +416,7 @@ export default function InsightsPage() {
                   if (!hasData) return null;
                   const worst = sleepByPhase.filter(p => p.avg !== null).sort((a, b) => a.avg! - b.avg!)[0];
                   return (
-                    <div className="bg-white rounded-2xl shadow-card p-4">
+                    <div className="bg-surface rounded-2xl shadow-card p-4">
                       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Avg sleep by phase</p>
                       <div className="grid grid-cols-4 gap-2 mb-3">
                         {sleepByPhase.map(p => (
@@ -427,7 +427,7 @@ export default function InsightsPage() {
                         ))}
                       </div>
                       {worst && worst.avg !== null && (
-                        <div className="rounded-xl px-3 py-2 text-xs font-body leading-snug" style={{ background: "rgba(196,138,151,0.06)", color: "#6B7280" }}>
+                        <div className="rounded-xl px-3 py-2 text-xs font-body leading-snug" style={{ background: "rgba(196,138,151,0.06)", color: "var(--color-text-mid)" }}>
                           {maturity === "personalized"
                             ? `💡 You sleep least in ${PHASE_EMOJIS[worst.phase]} ${worst.phase} — this is your established pattern, hormonally driven.`
                             : `💡 Lowest sleep so far: ${PHASE_EMOJIS[worst.phase]} ${worst.phase}. This is common in this phase — log more to confirm your personal pattern.`}
@@ -439,7 +439,7 @@ export default function InsightsPage() {
 
                 {/* Training overview */}
                 {workouts.length > 0 && bestTrainingPhase && (
-                  <div className="bg-white rounded-2xl shadow-card p-4">
+                  <div className="bg-surface rounded-2xl shadow-card p-4">
                     <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
                       {maturity === "personalized" ? "Strongest training phase" : "Most active phase so far"}
                     </p>
@@ -475,7 +475,7 @@ export default function InsightsPage() {
                   />
                 ) : (
                   <>
-                    <div className="bg-white rounded-2xl shadow-card p-4">
+                    <div className="bg-surface rounded-2xl shadow-card p-4">
                       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
                         Workouts & avg volume by phase
                       </p>
@@ -500,13 +500,13 @@ export default function InsightsPage() {
                             </div>
                             {p.count > 0 ? (
                               <div className="flex items-center gap-2">
-                                <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                <div className="flex-1 h-2 rounded-full bg-ghost overflow-hidden">
                                   <div className="h-full rounded-full transition-all" style={{ width: `${(p.avgVolume / maxVol) * 100}%`, background: PHASE_COLORS[p.phase].dot }} />
                                 </div>
                                 <span className="text-xs font-semibold text-dark/50 w-16 text-right">{p.avgVolume.toLocaleString()} kg</span>
                               </div>
                             ) : (
-                              <div className="h-2 bg-gray-50 rounded-full" />
+                              <div className="h-2 bg-ghost rounded-full" />
                             )}
                           </div>
                         ))}
@@ -517,7 +517,7 @@ export default function InsightsPage() {
                         { label: "Total sessions", value: workouts.length, color: "#C48A97" },
                         { label: "Total volume", value: `${Math.round(trainingByPhase.reduce((a, p) => a + p.totalVolume, 0) / 1000 * 10) / 10}t`, color: "#7B6D8D" },
                       ].map(s => (
-                        <div key={s.label} className="bg-white rounded-2xl p-4 text-center shadow-card">
+                        <div key={s.label} className="bg-surface rounded-2xl p-4 text-center shadow-card">
                           <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
                           <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-1">{s.label}</p>
                         </div>
@@ -542,7 +542,7 @@ export default function InsightsPage() {
                   />
                 ) : (
                   <>
-                    <div className="bg-white rounded-2xl shadow-card p-4">
+                    <div className="bg-surface rounded-2xl shadow-card p-4">
                       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
                         Avg daily calories by phase
                       </p>
@@ -567,13 +567,13 @@ export default function InsightsPage() {
                             </div>
                             {p.count > 0 ? (
                               <div className="flex items-center gap-2">
-                                <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                <div className="flex-1 h-2 rounded-full bg-ghost overflow-hidden">
                                   <div className="h-full rounded-full transition-all" style={{ width: `${(p.avgCal / maxCal) * 100}%`, background: PHASE_COLORS[p.phase].dot }} />
                                 </div>
                                 <span className="text-xs font-semibold text-dark/50 w-16 text-right">{p.avgCal} kcal</span>
                               </div>
                             ) : (
-                              <div className="h-2 bg-gray-50 rounded-full" />
+                              <div className="h-2 bg-ghost rounded-full" />
                             )}
                           </div>
                         ))}
@@ -584,7 +584,7 @@ export default function InsightsPage() {
                         { label: "Days logged", value: meals.length, color: "#34D399" },
                         { label: "Avg protein", value: `${Math.round(mealsByPhase.filter(p => p.count > 0).reduce((a, p) => a + p.avgProtein, 0) / Math.max(mealsByPhase.filter(p => p.count > 0).length, 1))}g`, color: "#7B6D8D" },
                       ].map(s => (
-                        <div key={s.label} className="bg-white rounded-2xl p-4 text-center shadow-card">
+                        <div key={s.label} className="bg-surface rounded-2xl p-4 text-center shadow-card">
                           <p className="font-display font-bold text-xl" style={{ color: s.color }}>{s.value}</p>
                           <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-1">{s.label}</p>
                         </div>
@@ -608,7 +608,7 @@ export default function InsightsPage() {
                 ) : (
                   <>
                     {/* Mood + energy averages */}
-                    <div className="bg-white rounded-2xl shadow-card p-4">
+                    <div className="bg-surface rounded-2xl shadow-card p-4">
                       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
                         Mood & energy by phase
                       </p>
@@ -643,21 +643,21 @@ export default function InsightsPage() {
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs text-dark/40 w-10 flex-shrink-0">Mood</span>
-                                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                    <div className="flex-1 h-2 rounded-full bg-ghost overflow-hidden">
                                       <div className="h-full rounded-full" style={{ width: `${(p.avgMood! / 5) * 100}%`, background: color }} />
                                     </div>
                                     <span className="text-xs font-semibold text-dark/50 w-6 text-right">{p.avgMood!.toFixed(1)}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs text-dark/40 w-10 flex-shrink-0">Energy</span>
-                                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                    <div className="flex-1 h-2 rounded-full bg-ghost overflow-hidden">
                                       <div className="h-full rounded-full" style={{ width: `${(p.avgEnergy! / 5) * 100}%`, background: color, opacity: 0.5 }} />
                                     </div>
                                     <span className="text-xs font-semibold text-dark/50 w-6 text-right">{p.avgEnergy!.toFixed(1)}</span>
                                   </div>
                                 </div>
                               ) : (
-                                <div className="h-4 bg-gray-50 rounded-full" />
+                                <div className="h-4 bg-ghost rounded-full" />
                               )}
                             </div>
                           );
@@ -670,7 +670,7 @@ export default function InsightsPage() {
                       {maturity === "personalized" ? "Your symptom patterns" : "Symptom patterns so far"}
                     </p>
                     {symptomsByPhase.filter(p => p.symptoms.length > 0).map(p => (
-                      <div key={p.phase} className="bg-white rounded-2xl shadow-card p-4">
+                      <div key={p.phase} className="bg-surface rounded-2xl shadow-card p-4">
                         <div className="flex items-center gap-2 mb-3">
                           <span style={{ fontSize: 18 }}>{PHASE_EMOJIS[p.phase]}</span>
                           <p className="text-sm font-bold text-dark capitalize">{p.phase}</p>
@@ -680,7 +680,7 @@ export default function InsightsPage() {
                           {p.symptoms.map(({ symptom, pct }) => (
                             <div key={symptom} className="flex items-center gap-2">
                               <span className="text-xs text-dark/70 font-body flex-1 truncate">{symptom}</span>
-                              <div className="w-24 h-1.5 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                              <div className="w-24 h-1.5 rounded-full bg-ghost overflow-hidden flex-shrink-0">
                                 <div className="h-full rounded-full" style={{ width: `${pct}%`, background: PHASE_COLORS[p.phase].dot }} />
                               </div>
                               <span className="text-xs font-semibold text-dark/40 w-8 text-right flex-shrink-0">{pct}%</span>
@@ -695,7 +695,7 @@ export default function InsightsPage() {
                       </div>
                     ))}
                     {symptomsByPhase.every(p => p.symptoms.length === 0) && (
-                      <div className="bg-white rounded-2xl shadow-card p-6 text-center">
+                      <div className="bg-surface rounded-2xl shadow-card p-6 text-center">
                         <p className="text-dark/40 text-sm">No symptom data yet</p>
                         <p className="text-dark/30 text-xs font-body mt-1">Log symptoms in the Mood tab to see patterns here</p>
                       </div>
@@ -711,7 +711,7 @@ export default function InsightsPage() {
         {hasEnoughData && (
           <button onClick={() => router.push("/history")}
             className="w-full py-3 rounded-2xl text-sm font-semibold text-dark/40 flex items-center justify-center gap-2 mb-4 active:scale-95 transition-all"
-            style={{ background: "rgba(0,0,0,0.03)" }}>
+            style={{ background: "rgba(var(--color-text-rgb),0.03)" }}>
             📋 See all logs
             <span className="text-dark/25">→</span>
           </button>

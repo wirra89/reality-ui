@@ -20,6 +20,7 @@ const config: Config = {
         "text-dim": "var(--color-text-dim)",
         card:       "var(--color-surface)",
         "card-dark":"#141828",
+        ghost:      "var(--color-ghost)",
       },
       fontFamily: {
         display: ["'Playfair Display'", "serif"],

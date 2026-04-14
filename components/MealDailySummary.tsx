@@ -57,7 +57,7 @@ export default function MealDailySummary({ meals, phaseData, profile, onRemove, 
               <div key={m.label} className="text-center">
                 <p className="text-white font-display font-bold text-base">{Math.round(m.value)}g</p>
                 <p className="text-white/40 text-xs font-body">/ {m.goal}g {m.label}</p>
-                <div className="mt-1.5 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div className="mt-1.5 h-1.5 rounded-full bg-surface/10 overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${pct}%`, background: done ? "#34D399" : m.color }} />
                 </div>
@@ -100,7 +100,7 @@ export default function MealDailySummary({ meals, phaseData, profile, onRemove, 
             {meals.map((meal, idx) => {
               const style = MEAL_TYPE_LABELS[meal.mealType as MealType] ?? MEAL_TYPE_LABELS.snack;
               return (
-                <div key={idx} className="bg-white rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
+                <div key={idx} className="bg-surface rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
                   <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0"
                     style={{ background: style.bg }}>{style.emoji}</span>
                   <div className="flex-1 min-w-0">

@@ -115,7 +115,7 @@ export default function WeightPage() {
         {/* Header */}
         <header className="flex items-center gap-3 mb-5">
           <button onClick={() => router.back()}
-            className="w-9 h-9 rounded-xl bg-white shadow-card flex items-center justify-center text-dark/40 hover:text-dark transition-colors">
+            className="w-9 h-9 rounded-xl bg-surface shadow-card flex items-center justify-center text-dark/40 hover:text-dark transition-colors">
             ←
           </button>
           <div>
@@ -128,11 +128,11 @@ export default function WeightPage() {
         <div className="grid grid-cols-4 gap-2 mb-4">
           {[
             { label: "Current", value: current ? `${current}` : "—", unit: "kg" },
-            { label: "Change", value: change !== null ? (change > 0 ? `+${change.toFixed(1)}` : change.toFixed(1)) : "—", unit: "kg", color: change !== null ? (change < 0 ? "#34D399" : change > 0 ? "#F87171" : "#9CA3AF") : undefined },
+            { label: "Change", value: change !== null ? (change > 0 ? `+${change.toFixed(1)}` : change.toFixed(1)) : "—", unit: "kg", color: change !== null ? (change < 0 ? "#34D399" : change > 0 ? "#F87171" : "var(--color-text-dim)") : undefined },
             { label: "Lowest", value: lowest ? `${lowest}` : "—", unit: "kg" },
             { label: "Goal", value: goal, unit: "" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+            <div key={s.label} className="bg-surface rounded-2xl p-3 text-center shadow-card">
               <p className="font-display font-bold text-sm text-dark leading-tight" style={{ color: s.color }}>{s.value}</p>
               {s.unit && <p className="text-xs text-dark/30 font-semibold">{s.unit}</p>}
               <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-0.5">{s.label}</p>
@@ -142,7 +142,7 @@ export default function WeightPage() {
 
         {/* Chart */}
         {logs.length >= 2 ? (
-          <div className="bg-white rounded-2xl p-4 shadow-card mb-4">
+          <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-dark">Weight over time</p>
               <p className="text-xs text-dark/40 font-body">{logs.length} entries</p>
@@ -150,7 +150,7 @@ export default function WeightPage() {
             <WeightChart logs={logs} />
           </div>
         ) : logs.length === 1 ? (
-          <div className="bg-white rounded-2xl p-5 shadow-card mb-4 text-center">
+          <div className="bg-surface rounded-2xl p-5 shadow-card mb-4 text-center">
             <p className="text-3xl mb-2">📊</p>
             <p className="text-dark font-semibold text-sm">One more entry needed</p>
             <p className="text-dark/40 text-xs font-body mt-1">Log tomorrow's weight to unlock your chart</p>
@@ -166,7 +166,7 @@ export default function WeightPage() {
         )}
 
         {/* Log new weight */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-4">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Log today's weight</p>
           <div className="flex gap-2 mb-2">
             <div className="flex-1 relative">
@@ -195,7 +195,7 @@ export default function WeightPage() {
             </p>
             <div className="space-y-2">
               {[...logs].reverse().slice(0, 10).map((log, i) => (
-                <div key={i} className="bg-white rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
+                <div key={i} className="bg-surface rounded-2xl px-4 py-3 shadow-card flex items-center gap-3">
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{ background: "rgba(196,138,151,0.1)" }}>
                     <span className="text-sm font-bold text-primary">⚖</span>

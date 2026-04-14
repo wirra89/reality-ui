@@ -47,7 +47,7 @@ export default function NutritionCard({ phaseData }: Props) {
   const icon  = nutrientIcons[phaseData.phase];
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-card flex flex-col">
+    <div className="bg-surface rounded-2xl p-4 shadow-card flex flex-col">
       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">
         Nutrition
       </p>
@@ -65,7 +65,7 @@ export default function NutritionCard({ phaseData }: Props) {
       </div>
 
       {/* Avoid */}
-      <div className="mt-auto pt-2 border-t border-gray-50">
+      <div className="mt-auto pt-2 border-t border-[var(--color-border)]">
         <p className="text-[10px] font-semibold uppercase tracking-wide mb-0.5"
           style={{ color }}>
           Limit

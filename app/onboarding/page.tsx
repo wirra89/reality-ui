@@ -210,7 +210,7 @@ export default function OnboardingPage() {
                     desc: "Log daily, and HerPhase shows you why you felt that way — and what's coming next.",
                   },
                 ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-3 bg-white rounded-2xl px-4 py-3.5 shadow-card">
+                  <div key={item.title} className="flex items-start gap-3 bg-surface rounded-2xl px-4 py-3.5 shadow-card">
                     <span className="text-xl flex-shrink-0 mt-0.5">{item.emoji}</span>
                     <div>
                       <p className="text-sm font-semibold text-dark leading-tight">{item.title}</p>
@@ -246,7 +246,7 @@ export default function OnboardingPage() {
                 ))}
               </div>
             </div>
-            <div className="bg-white rounded-2xl px-4 py-4 shadow-card">
+            <div className="bg-surface rounded-2xl px-4 py-4 shadow-card">
               <label className="text-xs font-semibold text-dark/50 uppercase tracking-wide block mb-2">Your name</label>
               <input type="text" placeholder="e.g. Ana, Maria, Sara…" value={name}
                 onChange={(e) => setName(e.target.value)} autoFocus
@@ -264,7 +264,7 @@ export default function OnboardingPage() {
               <p className="text-secondary text-sm font-body mt-1">Helps us personalise everything for you.</p>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
               <div className="flex items-center justify-between mb-2">
                 <div><p className="text-sm font-semibold text-dark">Cycle length</p>
                 <p className="text-xs text-dark/40 font-body">Average days between periods</p></div>
@@ -274,7 +274,7 @@ export default function OnboardingPage() {
               <div className="flex justify-between text-xs text-dark/30 mt-1"><span>21</span><span>28</span><span>35</span></div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-4">
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
               <div className="flex items-center justify-between mb-2">
                 <div><p className="text-sm font-semibold text-dark">Period length</p>
                 <p className="text-xs text-dark/40 font-body">How many days it lasts</p></div>
@@ -285,8 +285,8 @@ export default function OnboardingPage() {
             </div>
 
             {/* Period start date — new field */}
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-4"
-              style={{ border: periodStartDate ? "1.5px solid rgba(196,138,151,0.35)" : "1.5px solid rgba(248,113,113,0.25)", background: periodStartDate ? "white" : "rgba(248,113,113,0.03)" }}>
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-4"
+              style={{ border: periodStartDate ? "1.5px solid rgba(196,138,151,0.35)" : "1.5px solid rgba(248,113,113,0.25)", background: periodStartDate ? "var(--color-surface)" : "rgba(248,113,113,0.03)" }}>
               <div className="flex items-center gap-2 mb-1">
                 <p className="text-sm font-semibold text-dark">When did your last period start?</p>
                 {!periodStartDate && <span className="text-xs font-bold text-rose-400 bg-rose-50 px-1.5 py-0.5 rounded-full">Important</span>}
@@ -313,7 +313,7 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl p-4 shadow-card mb-4">
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
               <p className="text-sm font-semibold text-dark mb-1">What are your goals?</p>
               <p className="text-xs text-dark/40 font-body mb-3">Select all that apply</p>
               <div className="grid grid-cols-2 gap-2">
@@ -322,7 +322,7 @@ export default function OnboardingPage() {
                   return (
                     <button key={g.label} onClick={() => toggleGoal(g.label)}
                       className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-sm font-medium text-left transition-all active:scale-95"
-                      style={{ background: active ? "rgba(196,138,151,0.12)" : "#F9FAFB", color: active ? "#C48A97" : "#6B7280", border: `1.5px solid ${active ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
+                      style={{ background: active ? "rgba(196,138,151,0.12)" : "var(--color-ghost)", color: active ? "#C48A97" : "var(--color-text-mid)", border: `1.5px solid ${active ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
                       <span className="text-base">{g.emoji}</span>
                       <span className="font-semibold text-xs leading-tight">{g.label}</span>
                     </button>
@@ -358,7 +358,7 @@ export default function OnboardingPage() {
                       <div className="relative">
                         <input type="number" placeholder={f.placeholder} value={f.value}
                           onChange={(e) => f.onChange(e.target.value)}
-                          className="w-full bg-white rounded-xl px-3 py-2.5 text-sm text-dark outline-none font-body border border-transparent focus:border-primary/30 transition-colors pr-8 shadow-card" />
+                          className="w-full bg-surface rounded-xl px-3 py-2.5 text-sm text-dark outline-none font-body border border-transparent focus:border-primary/30 transition-colors pr-8 shadow-card" />
                         <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-dark/30 font-semibold">{f.unit}</span>
                       </div>
                     </div>
@@ -372,12 +372,12 @@ export default function OnboardingPage() {
                     {(Object.entries(ACTIVITY_LABELS) as [ActivityLevel, string][]).map(([key, label]) => (
                       <button key={key} onClick={() => setActivityLevel(key)}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all"
-                        style={{ background: activityLevel === key ? "rgba(196,138,151,0.12)" : "white", border: `1.5px solid ${activityLevel === key ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
+                        style={{ background: activityLevel === key ? "rgba(196,138,151,0.12)" : "var(--color-surface)", border: `1.5px solid ${activityLevel === key ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
                         <span className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
                           style={{ borderColor: activityLevel === key ? "#C48A97" : "#D1D5DB" }}>
                           {activityLevel === key && <span className="w-2 h-2 rounded-full bg-primary" />}
                         </span>
-                        <span className="text-xs font-medium" style={{ color: activityLevel === key ? "#C48A97" : "#6B7280" }}>{label}</span>
+                        <span className="text-xs font-medium" style={{ color: activityLevel === key ? "#C48A97" : "var(--color-text-mid)" }}>{label}</span>
                       </button>
                     ))}
                   </div>
@@ -390,9 +390,9 @@ export default function OnboardingPage() {
                     {(Object.entries(GOAL_LABELS) as [BodyGoal, typeof GOAL_LABELS[BodyGoal]][]).map(([key, g]) => (
                       <button key={key} onClick={() => setBodyGoal(key)}
                         className="flex flex-col items-center gap-1 px-2 py-3 rounded-2xl transition-all active:scale-95"
-                        style={{ background: bodyGoal === key ? "rgba(196,138,151,0.12)" : "white", border: `1.5px solid ${bodyGoal === key ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
+                        style={{ background: bodyGoal === key ? "rgba(196,138,151,0.12)" : "var(--color-surface)", border: `1.5px solid ${bodyGoal === key ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
                         <span className="text-xl">{g.emoji}</span>
-                        <span className="text-xs font-bold" style={{ color: bodyGoal === key ? "#C48A97" : "#374151" }}>{g.label}</span>
+                        <span className="text-xs font-bold" style={{ color: bodyGoal === key ? "#C48A97" : "var(--color-text)" }}>{g.label}</span>
                       </button>
                     ))}
                   </div>
@@ -424,7 +424,7 @@ export default function OnboardingPage() {
                         { label: "Carbs",   value: macroResult.carbs,   color: "#EDD5DB" },
                         { label: "Fats",    value: macroResult.fats,    color: "#A78BFA" },
                       ].map((m) => (
-                        <div key={m.label} className="bg-white/5 rounded-xl p-2.5 text-center">
+                        <div key={m.label} className="bg-surface/5 rounded-xl p-2.5 text-center">
                           <p className="font-display font-bold text-lg text-white">{m.value}g</p>
                           <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: m.color }}>{m.label}</p>
                         </div>
@@ -447,7 +447,7 @@ export default function OnboardingPage() {
         <div className="flex gap-3 mt-6 flex-shrink-0">
           {step > 0 && (
             <button onClick={back}
-              className="w-14 py-4 rounded-2xl font-semibold text-dark/40 bg-white shadow-card transition-all active:scale-95">
+              className="w-14 py-4 rounded-2xl font-semibold text-dark/40 bg-surface shadow-card transition-all active:scale-95">
               ←
             </button>
           )}
@@ -457,8 +457,8 @@ export default function OnboardingPage() {
             {saving ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
-                  <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--color-surface)" strokeWidth="4"/>
+                  <path className="opacity-75" fill="var(--color-surface)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
                 Setting up…
               </span>

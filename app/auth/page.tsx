@@ -86,7 +86,7 @@ export default function AuthPage() {
 
         {registered ? (
           /* ── Email confirmation state ── */
-          <div className="bg-white rounded-3xl p-6 shadow-card text-center">
+          <div className="bg-surface rounded-3xl p-6 shadow-card text-center">
             <div className="text-4xl mb-3">✉️</div>
             <h2 className="font-display text-xl font-semibold text-dark mb-2">Check your email</h2>
             <p className="text-dark/60 text-sm font-body mb-2 leading-relaxed">
@@ -104,7 +104,7 @@ export default function AuthPage() {
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-6 shadow-card">
+          <div className="bg-surface rounded-3xl p-6 shadow-card">
             {/* Mode toggle */}
             <div className="flex rounded-2xl bg-background p-1 mb-6 gap-1">
               {(["login", "register"] as const).map((m) => (
@@ -114,7 +114,7 @@ export default function AuthPage() {
                   className="flex-1 py-2 rounded-xl text-sm font-semibold capitalize transition-all duration-200"
                   style={{
                     background: mode === m ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
-                    color: mode === m ? "white" : "#9CA3AF",
+                    color: mode === m ? "var(--color-surface)" : "var(--color-text-dim)",
                   }}
                 >
                   {m === "login" ? "Sign In" : "Register"}
@@ -188,8 +188,8 @@ export default function AuthPage() {
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
-                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--color-surface)" strokeWidth="4"/>
+                    <path className="opacity-75" fill="var(--color-surface)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                   </svg>
                   {mode === "login" ? "Signing in…" : "Creating account…"}
                 </span>
@@ -207,7 +207,7 @@ export default function AuthPage() {
             <button
               onClick={handleGoogleSignIn} disabled={submitting}
               className="w-full mt-3 py-3.5 rounded-2xl font-semibold text-dark text-sm tracking-wide transition-all duration-300 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 border"
-              style={{ background: "white", borderColor: "rgba(0,0,0,0.12)" }}
+              style={{ background: "var(--color-surface)", borderColor: "rgba(var(--color-text-rgb),0.12)" }}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

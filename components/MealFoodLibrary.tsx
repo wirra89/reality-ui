@@ -23,7 +23,7 @@ function FoodCard({ food, expanded, onExpand, onAdd, showPhase }: {
 }) {
   const typeStyle = MEAL_TYPE_LABELS[food.mealType];
   return (
-    <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-card overflow-hidden">
       <div className="flex items-center gap-3 px-4 py-3">
         <span className="text-2xl flex-shrink-0">{food.emoji}</span>
         <div className="flex-1 min-w-0">
@@ -46,7 +46,7 @@ function FoodCard({ food, expanded, onExpand, onAdd, showPhase }: {
         <div className="flex flex-col gap-1.5 flex-shrink-0">
           <button onClick={onExpand}
             className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/30 transition-all"
-            style={{ background: "#F9FAFB" }}>
+            style={{ background: "var(--color-ghost)" }}>
             <span className="text-xs">{expanded ? "↑" : "↓"}</span>
           </button>
           <button onClick={onAdd}
@@ -57,7 +57,7 @@ function FoodCard({ food, expanded, onExpand, onAdd, showPhase }: {
         </div>
       </div>
       {expanded && (
-        <div className="px-4 pb-4 border-t border-gray-50 pt-3">
+        <div className="px-4 pb-4 border-t border-[var(--color-border)] pt-3">
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="bg-background rounded-xl p-2.5">
               <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mb-1">Portion</p>
@@ -126,7 +126,7 @@ function QuickFoodCard({ food, onAdd }: { food: QuickFood; onAdd: (entry: MealEn
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-card overflow-hidden">
       <div className="flex items-center gap-3 px-4 py-3">
         <span className="text-2xl flex-shrink-0">{food.emoji}</span>
         <div className="flex-1 min-w-0">
@@ -148,7 +148,7 @@ function QuickFoodCard({ food, onAdd }: { food: QuickFood; onAdd: (entry: MealEn
         <div className="flex flex-col gap-1.5 flex-shrink-0">
           <button onClick={() => setExpanded(!expanded)}
             className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/30 transition-all"
-            style={{ background: "#F9FAFB" }}>
+            style={{ background: "var(--color-ghost)" }}>
             <span className="text-xs">{expanded ? "↑" : "↓"}</span>
           </button>
           <button onClick={handleAdd}
@@ -159,7 +159,7 @@ function QuickFoodCard({ food, onAdd }: { food: QuickFood; onAdd: (entry: MealEn
         </div>
       </div>
       {expanded && (
-        <div className="px-4 pb-4 border-t border-gray-50 pt-3 space-y-3">
+        <div className="px-4 pb-4 border-t border-[var(--color-border)] pt-3 space-y-3">
           {/* Gram input */}
           <div className="flex items-center gap-3">
             <label className="text-xs font-semibold text-dark/50 flex-shrink-0">Amount</label>
@@ -215,9 +215,9 @@ function TabPill({ label, active, onClick }: { label: string; active: boolean; o
     <button onClick={onClick}
       className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
       style={{
-        background: active ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "white",
-        color: active ? "white" : "#9CA3AF",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        background: active ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "var(--color-surface)",
+        color: active ? "var(--color-surface)" : "var(--color-text-dim)",
+        boxShadow: "0 1px 4px rgba(var(--color-text-rgb),0.06)",
       }}>
       {label}
     </button>
@@ -298,7 +298,7 @@ export default function MealFoodLibrary({ phase, onAddFood }: Props) {
   return (
     <>
       {/* Search */}
-      <div className="bg-white rounded-2xl flex items-center gap-2 px-3 py-3 shadow-card mb-3">
+      <div className="bg-surface rounded-2xl flex items-center gap-2 px-3 py-3 shadow-card mb-3">
         <svg className="w-4 h-4 text-dark/30 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="m21 21-4.35-4.35" />
         </svg>

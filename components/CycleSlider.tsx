@@ -45,7 +45,7 @@ export default function CycleSlider({ cycleDay, cycleLength = 28, cycleParams = 
   }, [updateThumb]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-card mb-3 overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-card mb-3 overflow-hidden">
 
       {/* CYCLE DAY header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
@@ -97,7 +97,7 @@ export default function CycleSlider({ cycleDay, cycleLength = 28, cycleParams = 
             className="absolute pointer-events-none"
             style={{
               top: "50%", width: 22, height: 22, borderRadius: "50%",
-              background: "white", border: "2.5px solid #A78BFA",
+              background: "var(--color-surface)", border: "2.5px solid #A78BFA",
               transform: "translate(-50%, -50%)",
               boxShadow: "0 1px 5px rgba(0,0,0,0.18)",
               transition: "border-color 0.2s",
@@ -124,7 +124,7 @@ export default function CycleSlider({ cycleDay, cycleLength = 28, cycleParams = 
                   gap: 4, padding: "4px 0", borderRadius: 999,
                   border: `1px solid ${active ? p.color + "55" : "transparent"}`,
                   background: active ? p.color + "18" : "transparent",
-                  color: active ? p.color : "#9CA3AF",
+                  color: active ? p.color : "var(--color-text-dim)",
                   fontSize: 11, fontWeight: active ? 600 : 400,
                   whiteSpace: "nowrap", overflow: "hidden",
                   cursor: "pointer", transition: "all 0.15s",

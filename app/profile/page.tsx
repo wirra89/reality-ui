@@ -329,7 +329,7 @@ export default function ProfilePage() {
           onClick={() => setShowPeriodModal(false)}>
           <div
             className="w-full max-w-sm rounded-3xl p-6 shadow-2xl"
-            style={{ background: "#FFFFFF" }}
+            style={{ background: "var(--color-surface)" }}
             onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-center mb-4">
               <div className="w-14 h-14 rounded-full flex items-center justify-center text-3xl"
@@ -347,7 +347,7 @@ export default function ProfilePage() {
             </button>
             <button onClick={() => setShowPeriodModal(false)}
               className="w-full py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95"
-              style={{ background: "rgba(0,0,0,0.04)", color: "#6B7280" }}>
+              style={{ background: "rgba(var(--color-text-rgb),0.04)", color: "var(--color-text-mid)" }}>
               Cancel
             </button>
           </div>
@@ -367,7 +367,7 @@ export default function ProfilePage() {
         {/* ════════════════════════════════════════════════════
             Section 1 — Identity
         ════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-2xl p-5 shadow-card mb-3 flex flex-col items-center">
+        <div className="bg-surface rounded-2xl p-5 shadow-card mb-3 flex flex-col items-center">
 
           {/* Avatar with phase-color ring */}
           <div className="relative mb-3">
@@ -392,11 +392,11 @@ export default function ProfilePage() {
               style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
               {avatarUploading ? (
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
-                  <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--color-surface)" strokeWidth="4"/>
+                  <path className="opacity-75" fill="var(--color-surface)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
               ) : (
-                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="white" strokeWidth="2.5">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="var(--color-surface)" strokeWidth="2.5">
                   <path strokeLinecap="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
                 </svg>
               )}
@@ -442,14 +442,14 @@ export default function ProfilePage() {
 
           {/* Profile completeness — hidden when complete */}
           {!isComplete && firstMissing && (
-            <div className="w-full mt-4 pt-4 border-t border-gray-50">
+            <div className="w-full mt-4 pt-4 border-t border-[var(--color-border)]">
               <p className="text-xs text-dark/45 font-body text-center leading-relaxed mb-3">
                 {completenessNudge[firstMissing.label]}
               </p>
               <div className="flex gap-1.5">
                 {completenessItems.map((item, i) => (
                   <div key={i} className="flex-1 h-1.5 rounded-full transition-all duration-500"
-                    style={{ background: item.done ? phaseColor : "rgba(0,0,0,0.08)" }} />
+                    style={{ background: item.done ? phaseColor : "rgba(var(--color-text-rgb),0.08)" }} />
                 ))}
               </div>
               <p className="text-xs text-dark/25 font-body text-center mt-2">{completeCount} of {completenessItems.length} complete</p>
@@ -460,7 +460,7 @@ export default function ProfilePage() {
         {/* ════════════════════════════════════════════════════
             Section 2 — Cycle
         ════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-2xl shadow-card mb-2 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-card mb-2 overflow-hidden">
           <button
             onClick={() => setShowCycleAccordion(v => !v)}
             className="w-full flex items-center justify-between px-4 py-4 transition-all"
@@ -484,7 +484,7 @@ export default function ProfilePage() {
           </button>
 
           {showCycleAccordion && (
-            <div className="px-4 pb-4 border-t border-gray-100 space-y-5 pt-4">
+            <div className="px-4 pb-4 border-t border-[var(--color-border)] space-y-5 pt-4">
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-sm font-semibold text-dark">Cycle length</label>
@@ -529,14 +529,14 @@ export default function ProfilePage() {
               </div>
 
               {/* Live phase preview */}
-              <div className="rounded-xl overflow-hidden border border-gray-100">
+              <div className="rounded-xl overflow-hidden border border-[var(--color-border)]">
                 {[
                   { label: "🌙 Menstrual",  days: `${periodLength}d`,    note: "your period",  color: "#F87171" },
                   { label: "🌱 Follicular", days: `~${folLen}d`,         note: "auto",         color: "#34D399" },
                   { label: "⚡ Ovulation",  days: `${ovulationLength}d`, note: "your window",  color: "#FBBF24" },
                   { label: "🍂 Luteal",     days: `~${lutLen}d`,         note: "auto",         color: "#A78BFA" },
                 ].map((p, i) => (
-                  <div key={i} className="flex items-center justify-between px-3 py-2 border-b border-gray-50 last:border-0">
+                  <div key={i} className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-border)] last:border-0">
                     <div className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: p.color }} />
                       <span className="text-xs font-semibold text-dark">{p.label}</span>
@@ -564,7 +564,7 @@ export default function ProfilePage() {
         {/* ════════════════════════════════════════════════════
             Section 3 — Goals
         ════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">My goals</p>
           <div className="flex flex-wrap gap-2">
             {GOALS.map((g) => {
@@ -573,8 +573,8 @@ export default function ProfilePage() {
                 <button key={g} onClick={() => toggleGoal(g)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
                   style={{
-                    background: active ? "rgba(196,138,151,0.15)" : "#F9FAFB",
-                    color:      active ? "#C48A97" : "#6B7280",
+                    background: active ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
+                    color:      active ? "#C48A97" : "var(--color-text-mid)",
                     border:     `1px solid ${active ? "rgba(196,138,151,0.4)" : "transparent"}`,
                   }}>
                   {active ? "✓ " : ""}{g}
@@ -591,7 +591,7 @@ export default function ProfilePage() {
         {/* ════════════════════════════════════════════════════
             Section 4 — Nutrition / Macros
         ════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-2xl shadow-card mb-3 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-card mb-3 overflow-hidden">
           <button
             onClick={() => setShowCalc(!showCalc)}
             className="w-full px-4 py-4 flex items-center justify-between">
@@ -616,7 +616,7 @@ export default function ProfilePage() {
           </button>
 
           {showCalc && (
-            <div className="px-4 pb-5 border-t border-gray-50">
+            <div className="px-4 pb-5 border-t border-[var(--color-border)]">
               <p className="text-xs text-dark/40 font-body mt-3 mb-4">
                 Uses the Mifflin-St Jeor formula — the most accurate for women.
               </p>
@@ -649,8 +649,8 @@ export default function ProfilePage() {
                     <button key={key} onClick={() => { setActivityLevel(key); setDirty(true); }}
                       className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
                       style={{
-                        background: activityLevel === key ? "rgba(196,138,151,0.15)" : "#F9FAFB",
-                        color:      activityLevel === key ? "#C48A97" : "#6B7280",
+                        background: activityLevel === key ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
+                        color:      activityLevel === key ? "#C48A97" : "var(--color-text-mid)",
                         border:     `1px solid ${activityLevel === key ? "rgba(196,138,151,0.4)" : "transparent"}`,
                       }}>
                       {label}
@@ -669,11 +669,11 @@ export default function ProfilePage() {
                     <button key={key} onClick={() => { setBodyGoal(key); setDirty(true); }}
                       className="flex-1 flex flex-col items-center gap-1 px-2 py-2.5 rounded-2xl transition-all active:scale-95"
                       style={{
-                        background: bodyGoal === key ? "rgba(196,138,151,0.12)" : "#F9FAFB",
+                        background: bodyGoal === key ? "rgba(196,138,151,0.12)" : "var(--color-ghost)",
                         border:     `1.5px solid ${bodyGoal === key ? "rgba(196,138,151,0.35)" : "transparent"}`,
                       }}>
                       <span className="text-xl">{g.emoji}</span>
-                      <span className="text-xs font-bold" style={{ color: bodyGoal === key ? "#C48A97" : "#374151" }}>{g.label}</span>
+                      <span className="text-xs font-bold" style={{ color: bodyGoal === key ? "#C48A97" : "var(--color-text)" }}>{g.label}</span>
                     </button>
                   ))}
                 </div>
@@ -689,7 +689,7 @@ export default function ProfilePage() {
 
               {/* Results — light card, consistent with page style */}
               {macroResult && (
-                <div className="rounded-2xl overflow-hidden border border-gray-100"
+                <div className="rounded-2xl overflow-hidden border border-[var(--color-border)]"
                   style={{ background: "linear-gradient(135deg, rgba(196,138,151,0.07), rgba(123,109,141,0.05))" }}>
                   <div className="p-4">
                     {/* Kcal */}
@@ -720,7 +720,7 @@ export default function ProfilePage() {
                         { label: "Carbs",   value: macroResult.carbs,   color: "#7B6D8D" },
                         { label: "Fats",    value: macroResult.fats,    color: "#A78BFA" },
                       ].map((m) => (
-                        <div key={m.label} className="bg-white rounded-xl p-2.5 text-center shadow-sm">
+                        <div key={m.label} className="bg-surface rounded-xl p-2.5 text-center shadow-sm">
                           <p className="font-display font-bold text-xl" style={{ color: m.color }}>{m.value}g</p>
                           <p className="text-xs font-semibold uppercase tracking-wide mt-0.5 text-dark/50">{m.label}</p>
                         </div>
@@ -768,7 +768,7 @@ export default function ProfilePage() {
         {/* ════════════════════════════════════════════════════
             Section 5 — Preferences
         ════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">How you track</p>
 
           <div className="flex items-center justify-between mb-4">
@@ -779,18 +779,18 @@ export default function ProfilePage() {
                 <p className="text-xs text-dark/40 font-body">Used in training log</p>
               </div>
             </div>
-            <div className="flex rounded-xl overflow-hidden border border-gray-100">
+            <div className="flex rounded-xl overflow-hidden border border-[var(--color-border)]">
               {(["kg", "lbs"] as const).map((u) => (
                 <button key={u} onClick={() => { setUnits(u); setDirty(true); }}
                   className="px-4 py-1.5 text-sm font-semibold transition-all"
-                  style={{ background: units === u ? "#C48A97" : "transparent", color: units === u ? "white" : "#9CA3AF" }}>
+                  style={{ background: units === u ? "#C48A97" : "transparent", color: units === u ? "var(--color-surface)" : "var(--color-text-dim)" }}>
                   {u}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+          <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
             <div className="flex items-center gap-3">
               <span className="text-base">🔔</span>
               <div>
@@ -803,7 +803,7 @@ export default function ProfilePage() {
               className="relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0"
               style={{ background: notifications ? "#C48A97" : "#E5E7EB" }}>
               <span
-                className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all duration-300"
+                className="absolute top-0.5 w-5 h-5 rounded-full bg-surface shadow-sm transition-all duration-300"
                 style={{ left: notifications ? "calc(100% - 22px)" : "2px" }} />
             </button>
           </div>
@@ -814,7 +814,7 @@ export default function ProfilePage() {
         ════════════════════════════════════════════════════ */}
         <div className="mb-3">
           <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2 px-1">My data</p>
-          <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+          <div className="bg-surface rounded-2xl shadow-card overflow-hidden">
             {[
               { label: "Weight Tracker",   sub: "Log daily weight and see your trend", emoji: "⚖️", href: "/weight",  bg: "linear-gradient(135deg, #7B6D8D, #C48A97)", count: weightCount,  unit: "entries" },
               { label: "Personal Records", sub: "Track your strongest lifts by phase",  emoji: "🏆", href: "/prs",     bg: "linear-gradient(135deg, #C48A97, #7B6D8D)", count: prCount,      unit: "PRs" },
@@ -822,7 +822,7 @@ export default function ProfilePage() {
             ].map((item, i, arr) => (
               <button key={item.href} onClick={() => router.push(item.href)}
                 className="w-full flex items-center gap-3 px-4 py-4 transition-all active:scale-98"
-                style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none" }}>
+                style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(var(--color-text-rgb),0.04)" : "none" }}>
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
                   style={{ background: item.bg }}>{item.emoji}</div>
                 <div className="text-left flex-1">
@@ -846,13 +846,13 @@ export default function ProfilePage() {
         ════════════════════════════════════════════════════ */}
         <div className="mb-3">
           <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide mb-2 px-1">Account</p>
-          <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-50">
+          <div className="bg-surface rounded-2xl shadow-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-[var(--color-border)]">
               <p className="text-xs text-dark/40 font-body">Signed in as</p>
               <p className="text-sm font-medium text-dark truncate">{user.email}</p>
             </div>
             {/* Theme toggle */}
-            <div className="w-full flex items-center justify-between gap-3 px-4 py-3.5 border-b border-gray-50">
+            <div className="w-full flex items-center justify-between gap-3 px-4 py-3.5 border-b border-[var(--color-border)]">
               <div className="flex items-center gap-3">
                 <span className="text-base">🎨</span>
                 <span className="text-sm font-semibold text-dark">App theme</span>
@@ -860,7 +860,7 @@ export default function ProfilePage() {
               <ThemeToggle />
             </div>
             <a href="mailto:wwealth989@gmail.com?subject=HerPhase Feedback&body=Hi! Here's my feedback on HerPhase:%0A%0AWhat I love:%0A%0AWhat confused me:%0A%0AWhat's missing:%0A%0AWhat I'd pay for:%0A"
-              className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 transition-all active:scale-98">
+              className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-[var(--color-border)] transition-all active:scale-98">
               <span className="text-base">💌</span>
               <span className="text-sm font-semibold text-dark">Send feedback</span>
             </a>
@@ -893,8 +893,8 @@ export default function ProfilePage() {
             {saveStatus === "loading" ? (
               <>
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
-                  <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--color-surface)" strokeWidth="4"/>
+                  <path className="opacity-75" fill="var(--color-surface)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
                 Saving…
               </>

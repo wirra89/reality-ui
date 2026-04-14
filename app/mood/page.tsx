@@ -278,7 +278,7 @@ export default function MoodPage() {
         </div>
 
         {/* Mood */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Overall mood</p>
           <div className="flex justify-between">
             {moods.map((mood) => {
@@ -290,7 +290,7 @@ export default function MoodPage() {
                     style={{ filter: active ? "none" : "grayscale(60%) opacity(0.5)", transform: active ? "scale(1.2)" : "scale(1)" }}>
                     {mood.emoji}
                   </span>
-                  <span className="text-xs font-semibold transition-colors" style={{ color: active ? "#C48A97" : "#9CA3AF" }}>
+                  <span className="text-xs font-semibold transition-colors" style={{ color: active ? "#C48A97" : "var(--color-text-dim)" }}>
                     {mood.label}
                   </span>
                 </button>
@@ -300,7 +300,7 @@ export default function MoodPage() {
         </div>
 
         {/* Energy */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">Energy level</p>
             <span className="text-sm font-semibold text-primary">{energyLevels[energy - 1]}</span>
@@ -313,7 +313,7 @@ export default function MoodPage() {
         </div>
 
         {/* Symptoms */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">
             How are you feeling physically?
           </p>
@@ -330,8 +330,8 @@ export default function MoodPage() {
                 <button key={s} onClick={() => toggleSymptom(s)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
                   style={{
-                    background: active ? "rgba(52,211,153,0.15)" : "#F9FAFB",
-                    color: active ? "#059669" : "#6B7280",
+                    background: active ? "rgba(52,211,153,0.15)" : "var(--color-ghost)",
+                    color: active ? "#059669" : "var(--color-text-mid)",
                     border: `1px solid ${active ? "rgba(52,211,153,0.4)" : "transparent"}`,
                   }}>
                   {active ? "✓ " : ""}{s}
@@ -352,8 +352,8 @@ export default function MoodPage() {
                 <button key={s} onClick={() => toggleSymptom(s)}
                   className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
                   style={{
-                    background: active ? "rgba(196,138,151,0.15)" : "#F9FAFB",
-                    color: active ? "#C48A97" : "#6B7280",
+                    background: active ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
+                    color: active ? "#C48A97" : "var(--color-text-mid)",
                     border: `1px solid ${active ? "rgba(196,138,151,0.4)" : "transparent"}`,
                   }}>
                   {active ? "✓ " : ""}{s}
@@ -364,7 +364,7 @@ export default function MoodPage() {
         </div>
 
         {/* Cravings */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">Any cravings today?</p>
           <p className="text-xs text-dark/30 font-body mb-3">Select all that apply. Tap to see what your body actually needs.</p>
           <div className="flex flex-wrap gap-2">
@@ -383,8 +383,8 @@ export default function MoodPage() {
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
                   style={{
-                    background: isSelected ? "rgba(196,138,151,0.15)" : "#F9FAFB",
-                    color: isSelected ? "#C48A97" : "#6B7280",
+                    background: isSelected ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
+                    color: isSelected ? "#C48A97" : "var(--color-text-mid)",
                     border: `1px solid ${isSelected ? "rgba(196,138,151,0.4)" : "transparent"}`,
                   }}>
                   <span style={{ fontSize: 14 }}>{c.emoji}</span>
@@ -431,7 +431,7 @@ export default function MoodPage() {
         </div>
 
         {/* Sleep */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-3">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Last night's sleep 😴</p>
           {/* Hours */}
           <div className="flex items-center justify-between mb-1">
@@ -454,18 +454,18 @@ export default function MoodPage() {
               <button key={q.value} onClick={() => setSleepQuality(q.value)}
                 className="flex-1 flex flex-col items-center gap-1 py-2 rounded-xl transition-all active:scale-95"
                 style={{
-                  background: sleepQuality === q.value ? "rgba(196,138,151,0.12)" : "#F9FAFB",
+                  background: sleepQuality === q.value ? "rgba(196,138,151,0.12)" : "var(--color-ghost)",
                   border: sleepQuality === q.value ? "1.5px solid rgba(196,138,151,0.4)" : "1.5px solid transparent",
                 }}>
                 <span className="text-xl" style={{ filter: sleepQuality === q.value ? "none" : "grayscale(60%) opacity(0.5)" }}>{q.emoji}</span>
-                <span className="text-xs font-semibold" style={{ color: sleepQuality === q.value ? "#C48A97" : "#9CA3AF" }}>{q.label}</span>
+                <span className="text-xs font-semibold" style={{ color: sleepQuality === q.value ? "#C48A97" : "var(--color-text-dim)" }}>{q.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* Notes */}
-        <div className="bg-white rounded-2xl p-4 shadow-card mb-4">
+        <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
           <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Notes (optional)</p>
           <textarea placeholder="How's your body feeling today?…" value={note}
             onChange={(e) => setNote(e.target.value)} rows={3}

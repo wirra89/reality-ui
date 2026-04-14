@@ -46,7 +46,7 @@ export default function CyclePrediction({ periodStartDate, cycleLength, periodLe
   const daysLeftInPhase = phases[nextPhaseIndex].end - cycleDay;
 
   return (
-    <div className="bg-white rounded-2xl shadow-card mb-3 overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-card mb-3 overflow-hidden">
       {/* Header */}
       <div className="px-4 pt-4 pb-3 flex items-center justify-between">
         <div>

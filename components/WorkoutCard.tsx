@@ -75,7 +75,7 @@ export default function WorkoutCard({ recommendation, phase }: Props) {
             {recommendation.duration > 0 && ` · ${recommendation.duration} min`}
           </span>
         </div>
-        <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+        <div className="h-1.5 rounded-full bg-surface/10 overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{

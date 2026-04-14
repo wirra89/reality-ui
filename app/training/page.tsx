@@ -406,7 +406,7 @@ export default function TrainingPage() {
           <div className="flex gap-2">
             <button onClick={() => setShowTemplates(!showTemplates)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold border transition-all active:scale-95"
-              style={{ borderColor: "rgba(196,138,151,0.3)", color: "#C48A97", background: showTemplates ? "rgba(196,138,151,0.08)" : "white" }}>
+              style={{ borderColor: "rgba(196,138,151,0.3)", color: "#C48A97", background: showTemplates ? "rgba(196,138,151,0.08)" : "var(--color-surface)" }}>
               📋 Templates {templates.length > 0 ? `(${templates.length})` : ""}
             </button>
           </div>
@@ -414,7 +414,7 @@ export default function TrainingPage() {
 
         {/* Templates panel */}
         {showTemplates && (
-          <div className="bg-white rounded-2xl shadow-card mb-4 overflow-hidden">
+          <div className="bg-surface rounded-2xl shadow-card mb-4 overflow-hidden">
             <div className="px-4 pt-4 pb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-dark">Saved Templates</p>
               <button
@@ -431,7 +431,7 @@ export default function TrainingPage() {
                 <p className="text-dark/30 text-xs font-body py-4">No saved workouts yet. Build a workout and save it!</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-[var(--color-border)]">
                 {templates.map((t) => (
                   <div key={t.id} className="flex items-center gap-3 px-4 py-3">
                     <div className="flex-1 min-w-0">
@@ -453,7 +453,7 @@ export default function TrainingPage() {
                           Delete
                         </button>
                         <button onClick={() => setConfirmDeleteId(null)}
-                          className="text-xs font-bold text-dark/40 px-2 py-1 rounded-lg bg-gray-50 active:scale-95">
+                          className="text-xs font-bold text-dark/40 px-2 py-1 rounded-lg bg-ghost active:scale-95">
                           Cancel
                         </button>
                       </div>
@@ -562,8 +562,8 @@ export default function TrainingPage() {
         {/* Exercise list */}
         <div className="space-y-3 mb-4">
           {exercises.map((exercise, exIdx) => (
-            <div key={exercise.id} className="bg-white rounded-2xl shadow-card overflow-hidden">
-              <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-gray-50">
+            <div key={exercise.id} className="bg-surface rounded-2xl shadow-card overflow-hidden">
+              <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
                 <span className="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
                   style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>{exIdx + 1}</span>
                 <input type="text" placeholder="Exercise name…" value={exercise.name}
@@ -699,7 +699,7 @@ export default function TrainingPage() {
           <div className="grid grid-cols-3 gap-2 mb-4">
             {[{ label: "Exercises", value: exercises.length }, { label: "Total Sets", value: totalSets }, { label: "Volume kg", value: totalVolume > 0 ? totalVolume.toLocaleString() : "—" }]
               .map((s) => (
-                <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-card">
+                <div key={s.label} className="bg-surface rounded-2xl p-3 text-center shadow-card">
                   <p className="font-display font-bold text-xl text-dark">{s.value}</p>
                   <p className="text-xs text-dark/40 font-semibold uppercase tracking-wide mt-0.5">{s.label}</p>
                 </div>
@@ -721,18 +721,18 @@ export default function TrainingPage() {
         {/* PR toast notification */}
         {newPRs.length > 0 && (
           <div className="mb-3 rounded-2xl px-4 py-3 flex items-center gap-3 animate-fade-up"
-            style={{ background: "linear-gradient(135deg, #FEF3C7, #FDE68A)", border: "1px solid #FBBF24" }}>
+            style={{ background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.35)" }}>
             <span className="text-2xl flex-shrink-0">🏆</span>
             <div className="flex-1">
-              <p className="text-sm font-bold" style={{ color: "#92400E" }}>New PR{newPRs.length > 1 ? "s" : ""} detected!</p>
-              <p className="text-xs font-body" style={{ color: "#B45309" }}>{newPRs.join(", ")} — automatically saved</p>
+              <p className="text-sm font-bold" style={{ color: "#FBBF24" }}>New PR{newPRs.length > 1 ? "s" : ""} detected!</p>
+              <p className="text-xs font-body" style={{ color: "var(--color-text-mid)" }}>{newPRs.join(", ")} — automatically saved</p>
             </div>
           </div>
         )}
 
         {/* Save for future use — name input only shown when user opts in */}
         {showTemplateForm && (
-          <div className="bg-white rounded-2xl shadow-card px-4 py-4 mb-3">
+          <div className="bg-surface rounded-2xl shadow-card px-4 py-4 mb-3">
             <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-2">Name this workout</p>
             <input
               type="text"
@@ -745,7 +745,7 @@ export default function TrainingPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowTemplateForm(false)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-gray-50 active:scale-95 transition-all">
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
                 Cancel
               </button>
               <button
@@ -763,7 +763,7 @@ export default function TrainingPage() {
           <button onClick={() => setShowTemplateForm(v => !v)}
             disabled={savingTemplate}
             className="py-4 px-4 rounded-2xl text-sm font-semibold border-2 transition-all active:scale-95 disabled:opacity-40"
-            style={{ borderColor: "rgba(196,138,151,0.4)", color: showTemplateForm ? "#9CA3AF" : "#C48A97", background: showTemplateForm ? "#F9FAFB" : "white" }}>
+            style={{ borderColor: "rgba(196,138,151,0.4)", color: showTemplateForm ? "var(--color-text-dim)" : "#C48A97", background: showTemplateForm ? "var(--color-ghost)" : "var(--color-surface)" }}>
             {showTemplateForm ? "✕" : "📋 Save Workout"}
           </button>
           <button onClick={handleSave}

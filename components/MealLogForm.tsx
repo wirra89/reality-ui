@@ -136,7 +136,7 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-card p-4 mb-4">
+    <div className="bg-surface rounded-2xl shadow-card p-4 mb-4">
 
       {/* Mode toggle */}
       <div className="flex rounded-xl bg-background p-1 gap-1 mb-3">
@@ -147,7 +147,7 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
         ] as const).map(t => (
           <button key={t.id} onClick={() => setMode(t.id)}
             className="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all"
-            style={{ background: mode === t.id ? "white" : "transparent", color: mode === t.id ? "#2E2E2E" : "#9CA3AF", boxShadow: mode === t.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none" }}>
+            style={{ background: mode === t.id ? "var(--color-surface)" : "transparent", color: mode === t.id ? "var(--color-text)" : "var(--color-text-dim)", boxShadow: mode === t.id ? "0 1px 4px rgba(var(--color-text-rgb),0.08)" : "none" }}>
             {t.label}
           </button>
         ))}
@@ -166,10 +166,10 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-dark/30 text-lg leading-none">×</button>}
           </div>
           {searchQuery && !selectedFood && searchResults.length > 0 && (
-            <div className="rounded-xl overflow-hidden border border-gray-100 max-h-44 overflow-y-auto">
+            <div className="rounded-xl overflow-hidden border border-[var(--color-border)] max-h-44 overflow-y-auto">
               {searchResults.map(food => (
                 <button key={food.id} onClick={() => { setSelectedFood(food); setSearchQuery(food.name); setGrams("100"); }}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-gray-100 border-b border-gray-50 last:border-0">
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-ghost border-b border-[var(--color-border)] last:border-0">
                   <div className="flex items-center gap-2">
                     <span style={{ fontSize: 18 }}>{food.emoji}</span>
                     <span className="text-sm font-semibold text-dark">{food.name}</span>
@@ -194,13 +194,13 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
               <div className="flex items-center gap-3">
                 <label className="text-xs font-semibold text-dark/50 flex-shrink-0">Amount</label>
                 <input type="number" value={grams} onChange={(e) => setGrams(e.target.value)} min="1" max="2000" step="5"
-                  className="flex-1 bg-white rounded-xl px-3 py-2 text-sm text-dark outline-none font-body text-center border border-transparent focus:border-primary/30 transition-colors" />
+                  className="flex-1 bg-surface rounded-xl px-3 py-2 text-sm text-dark outline-none font-body text-center border border-transparent focus:border-primary/30 transition-colors" />
                 <span className="text-sm font-semibold text-dark/40 flex-shrink-0">g</span>
               </div>
               {calculated && (
                 <div className="grid grid-cols-4 gap-1.5">
                   {[{ label: "kcal", value: calculated.calories, color: "#C48A97" }, { label: "P", value: `${calculated.protein}g`, color: "#7B6D8D" }, { label: "C", value: `${calculated.carbs}g`, color: "#F59E0B" }, { label: "F", value: `${calculated.fats}g`, color: "#34D399" }].map(m => (
-                    <div key={m.label} className="bg-white rounded-xl p-2 text-center">
+                    <div key={m.label} className="bg-surface rounded-xl p-2 text-center">
                       <p className="text-sm font-bold" style={{ color: m.color }}>{m.value}</p>
                       <p className="text-[9px] text-dark/30 font-semibold uppercase">{m.label}</p>
                     </div>
@@ -235,7 +235,7 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
                     <span className="text-sm font-semibold text-dark flex-1 truncate">{ing.food.name}</span>
                     <input type="number" value={ing.grams} min="1" max="2000" step="5"
                       onChange={(e) => setIngredients(prev => prev.map(i => i.id === ing.id ? { ...i, grams: parseFloat(e.target.value) || 1 } : i))}
-                      className="w-16 text-center bg-white rounded-lg px-2 py-1 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors flex-shrink-0" />
+                      className="w-16 text-center bg-surface rounded-lg px-2 py-1 text-sm font-semibold text-dark outline-none border border-transparent focus:border-primary/30 transition-colors flex-shrink-0" />
                     <span className="text-xs text-dark/40 flex-shrink-0">g</span>
                     <span className="text-xs text-dark/30 font-body w-12 text-right flex-shrink-0">{cal} kcal</span>
                     <button onClick={() => setIngredients(prev => prev.filter(i => i.id !== ing.id))}
@@ -263,10 +263,10 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-dark/30 text-lg leading-none">×</button>
                 </div>
                 {ingResults.length > 0 && (
-                  <div className="rounded-xl overflow-hidden border border-gray-100 max-h-44 overflow-y-auto">
+                  <div className="rounded-xl overflow-hidden border border-[var(--color-border)] max-h-44 overflow-y-auto">
                     {ingResults.map(food => (
                       <button key={food.id} onClick={() => addIngredient(food)}
-                        className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-gray-100 border-b border-gray-50 last:border-0">
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-ghost border-b border-[var(--color-border)] last:border-0">
                         <div className="flex items-center gap-2">
                           <span style={{ fontSize: 16 }}>{food.emoji}</span>
                           <span className="text-sm font-semibold text-dark">{food.name}</span>
@@ -284,8 +284,8 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
           </div>
 
           {ingredients.length > 0 && (
-            <div className="rounded-xl overflow-hidden border border-gray-100 mb-3">
-              <div className="grid grid-cols-4 divide-x divide-gray-100">
+            <div className="rounded-xl overflow-hidden border border-[var(--color-border)] mb-3">
+              <div className="grid grid-cols-4 divide-x divide-[var(--color-border)]">
                 {[{ label: "kcal", value: Math.round(totals.calories), color: "#C48A97" }, { label: "P", value: `${Math.round(totals.protein * 10) / 10}g`, color: "#7B6D8D" }, { label: "C", value: `${Math.round(totals.carbs * 10) / 10}g`, color: "#F59E0B" }, { label: "F", value: `${Math.round(totals.fats * 10) / 10}g`, color: "#34D399" }].map(m => (
                   <div key={m.label} className="py-2 text-center">
                     <p className="text-sm font-bold" style={{ color: m.color }}>{m.value}</p>
@@ -335,7 +335,7 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
                           className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold active:scale-90 transition-all"
                           style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>+</button>
                         <button onClick={() => meal.id && handleDeleteMine(meal.id)}
-                          className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/25 active:text-rose-400 transition-colors bg-white">×</button>
+                          className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/25 active:text-rose-400 transition-colors bg-surface">×</button>
                       </div>
                     </div>
                   </div>
@@ -349,7 +349,7 @@ export default function MealLogForm({ onAdd, onCancel }: Props) {
       {/* Action buttons */}
       <div className="flex gap-2 mt-3">
         <button onClick={onCancel}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-gray-50 active:scale-95">Cancel</button>
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95">Cancel</button>
         {mode === "search" && (
           <button onClick={handleAddFromSearch} disabled={!selectedFood || !calculated}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white active:scale-95 disabled:opacity-40"
