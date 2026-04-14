@@ -73,10 +73,10 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50"
       style={{
-        background: "rgba(247,245,242,0.95)",
+        background: "var(--nav-bg)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
-        borderTop: "1px solid rgba(196,138,151,0.22)",
+        borderTop: "1px solid var(--nav-border)",
       }}
     >
       <div className="mx-auto max-w-app">
