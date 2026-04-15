@@ -437,17 +437,21 @@ export default function MealRecommendationCards({
                     )}
 
                     {/* Ingredients */}
-                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>
-                      Ingredients
-                    </p>
-                    <ul className="mb-4 space-y-1">
-                      {recipe.ingredients.map((ing, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs font-body text-white/70">
-                          <span className="mt-0.5 flex-shrink-0" style={{ color }}>•</span>
-                          <span>{ing}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {recipe.ingredients.length > 0 && (
+                      <>
+                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>
+                          Ingredients
+                        </p>
+                        <ul className="mb-4 space-y-1">
+                          {recipe.ingredients.map((ing, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-xs font-body text-white/70">
+                              <span className="mt-0.5 flex-shrink-0" style={{ color }}>•</span>
+                              <span>{ing}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
 
                     {/* Preparation steps */}
                     {recipe.instructions.length > 0 && (
