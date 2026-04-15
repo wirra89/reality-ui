@@ -84,11 +84,9 @@ export function scoreRecipe(recipe: Recipe, input: RecipeEngineInput): ScoredRec
     if (input.energy <= 2 && (recipe.is_quick || recipe.energy_tags.includes("low_energy"))) {
       score += 12;
       matchReasons.push("Good for low energy today");
-    } else if (input.energy >= 4 && recipe.is_high_protein) {
+    } else if (input.energy >= 4) {
       score += 12;
       matchReasons.push("Fuels your energy today");
-    } else if (input.energy === 3) {
-      score += 6;
     }
   }
 
