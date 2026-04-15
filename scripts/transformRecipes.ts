@@ -31,7 +31,7 @@ interface OldRecipe {
 // Tags that map to symptom signals
 const SYMPTOM_TAGS = new Set([
   "anti_inflammatory", "cramp_support", "recovery", "iron_support",
-  "comfort", "magnesium_support", "mood_support", "craving_control",
+  "magnesium_support", "mood_support", "craving_control",
   "anti_bloat", "bloat_friendly",
 ]);
 
@@ -71,12 +71,6 @@ function inferMealTypes(recipe: OldRecipe): string[] {
     types.add("dinner");
   }
 
-  // Default fallback
-  if (types.size === 0) {
-    types.add("lunch");
-    types.add("dinner");
-  }
-
   return Array.from(types);
 }
 
@@ -102,6 +96,7 @@ function escapeSql(s: string): string {
 }
 
 function pgArray(arr: string[]): string {
+  if (arr.length === 0) return "ARRAY[]::text[]";
   return `ARRAY[${arr.map(s => `'${escapeSql(s)}'`).join(",")}]`;
 }
 
@@ -124,11 +119,11 @@ const rows: string[] = rawRecipes.map((r) => {
   return `(
   '${escapeSql(r.slug)}',
   '${escapeSql(r.name)}',
-  ARRAY['${r.phase}'],
+  ARRAY['${escapeSql(r.phase)}'],
   ${pgArray(mealTypes)},
-  ${r.prep_time_min},
+  ${Math.max(1, r.prep_time_min)},
   0,
-  '${r.difficulty}',
+  '${escapeSql(r.difficulty)}',
   '${r.macro_type === "high_protein" ? "high_protein" : r.macro_type === "carb_focus" ? "carb_focus" : r.macro_type === "fat_focus" ? "fat_focus" : "balanced"}',
   ${pgArray(r.goals)},
   ${pgArray(phaseTags)},
