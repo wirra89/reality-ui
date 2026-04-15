@@ -93,8 +93,9 @@ describe("scoreRecipe", () => {
     });
     const result = scoreRecipe(BASE_RECIPE, input);
     expect(result).not.toBeNull();
-    // cramps maps to anti_inflammatory (in symptom_tags) → +8
-    // fatigue maps to recovery (in symptom_tags) → +8 → total symptom 16, capped at 24
+    // cramps overlaps with anti_inflammatory + warm + recovery (3 tags in BASE_RECIPE) → 3*8=24, hits cap immediately
+    // fatigue adds nothing (cap already reached) → total symptomScore = 24
+    // score = 30 (phase) + 24 (symptom) = 54, assertion checks >= 46
     expect(result!.score).toBeGreaterThanOrEqual(30 + 16);
   });
 
@@ -148,6 +149,7 @@ describe("recommendForSlot", () => {
     const breakfastRecipe: Recipe = { ...BASE_RECIPE, id: 2, slug: "breakfast-bowl", meal_types: ["breakfast"] };
     const dinnerRecipe: Recipe    = { ...BASE_RECIPE, id: 3, slug: "dinner-bowl",    meal_types: ["dinner"] };
     const results = recommendForSlot([breakfastRecipe, dinnerRecipe], BASE_INPUT, "breakfast");
+    expect(results).toHaveLength(1);
     expect(results.every(r => r.recipe.meal_types.includes("breakfast"))).toBe(true);
   });
 
