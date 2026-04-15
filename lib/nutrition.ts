@@ -528,6 +528,53 @@ export async function logFood(
   return { success: true, entryId: data?.id as number };
 }
 
+/**
+ * Logs a recipe as a meal entry for today.
+ * Creates or reuses today's meal_logs row, then inserts into meal_log_entries
+ * with entry_source = 'recipe' and the recipe's macro values as the snapshot.
+ */
+export async function logRecipe(
+  recipe: {
+    id: number;
+    name: string;
+    calories: number;
+    protein_g: number;
+    carbs_g: number;
+    fat_g: number;
+  },
+  mealType: MealType,
+  cycleDay: number,
+  phase: Phase,
+): Promise<MealLogEntry> {
+  const user = await getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const mealLogId = await getOrCreateTodayMealLog(cycleDay, phase);
+
+  const { data, error } = await supabase
+    .from("meal_log_entries")
+    .insert({
+      meal_log_id:        mealLogId,
+      user_id:            user.id,
+      entry_source:       "recipe" as EntrySource,
+      food_id:            null,
+      recipe_id:          recipe.id.toString(),
+      quantity_g:         null,
+      servings_consumed:  1,
+      meal_type:          mealType,
+      snapshot_name:      recipe.name,
+      snapshot_kcal:      recipe.calories,
+      snapshot_protein_g: recipe.protein_g,
+      snapshot_carbs_g:   recipe.carbs_g,
+      snapshot_fats_g:    recipe.fat_g,
+    })
+    .select("*")
+    .single();
+
+  if (error) throw new Error(`logRecipe failed: ${error.message}`);
+  return mapRowToEntry(data as MealLogEntryRow);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // MEAL RECOMMENDATIONS — exported
 // ─────────────────────────────────────────────────────────────────────────────
