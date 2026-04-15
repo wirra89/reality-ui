@@ -32,7 +32,7 @@ import { type MacroRemaining } from "@/lib/macroMatcher";
 const SHOW_LEGACY_MEALS = false;
 
 export default function MealsPage() {
-  const { user, profile, cycleDay, cycleParams, loading, todayState } = useApp();
+  const { user, profile, cycleDay, cycleParams, loading, todayState, latestMoodLog } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
   const phase = phaseData.phase as Phase;
@@ -253,6 +253,8 @@ export default function MealsPage() {
         <MealRecommendationCards
           phase={phase}
           cycleDay={cycleDay}
+          moodLog={latestMoodLog}
+          profile={profile}
           foods={phaseFoods}
           loggedMealTypes={new Set(nutritionEntries.map(e => e.mealType))}
           onLogged={() => {
