@@ -39,6 +39,7 @@ export interface Recipe {
   sort_priority: number;
   image_url: string | null;
   benefits: string;
+  description: string;
 }
 
 export interface ScoredRecipe {

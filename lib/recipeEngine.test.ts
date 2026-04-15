@@ -35,6 +35,7 @@ const BASE_RECIPE: Recipe = {
   sort_priority: 0,
   image_url: null,
   benefits: "",
+  description: "",
 };
 
 const BASE_INPUT = buildEngineInput({

@@ -40,6 +40,7 @@ function dbRowToRecipe(row: any): Recipe {
     sort_priority:         (row.sort_priority as number) ?? 0,
     image_url:             (row.image_url as string | null) ?? null,
     benefits:              (row.benefits as string) ?? "",
+    description:           (row.description as string) ?? "",
   };
 }
 
