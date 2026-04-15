@@ -3,15 +3,17 @@
 // Phase and MealType are re-exported from their canonical sources
 // so consumers only need one import.
 
-export type { Phase } from "@/lib/cycle";
-export type { MealType } from "@/lib/nutrition";
+import type { Phase } from "@/lib/cycle";       // canonical; lib/nutrition.ts has a copy — use this one
+import type { MealType } from "@/lib/nutrition";
+
+export type { Phase, MealType };
 
 export interface Recipe {
   id: number;
   slug: string;
   name: string;
-  phases: import("@/lib/cycle").Phase[];
-  meal_types: import("@/lib/nutrition").MealType[];
+  phases: Phase[];
+  meal_types: MealType[];
   prep_time_min: number;
   cook_time_min: number;
   difficulty: "easy" | "medium" | "hard";
@@ -33,7 +35,7 @@ export interface Recipe {
   is_high_protein: boolean;
   is_comfort_meal: boolean;
   is_low_bloat: boolean;
-  is_quick: boolean;
+  is_quick: boolean;   // generated column: prep_time_min <= 15
   sort_priority: number;
   image_url: string | null;
   benefits: string;
@@ -47,7 +49,7 @@ export interface ScoredRecipe {
 }
 
 export interface RecipeEngineInput {
-  phase: import("@/lib/cycle").Phase;
+  phase: Phase;
   cycleDay: number;
   goal: string | null;
   trainingIntensity: "rest" | "light" | "moderate" | "hard" | null;
@@ -55,7 +57,7 @@ export interface RecipeEngineInput {
   mood: number | null;          // 1–5 from check-in
   symptoms: string[];
   cravings: string[];
-  mealType: import("@/lib/nutrition").MealType | null;
+  mealType: MealType | null;
   maxPrepTime: number | null;
   savedRecipeIds: Set<number>;
   hiddenRecipeIds: Set<number>;
