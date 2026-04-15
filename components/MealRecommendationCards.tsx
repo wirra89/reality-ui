@@ -274,7 +274,7 @@ export default function MealRecommendationCards({
             const isLogging  = logging === type;
             const isLogged   = loggedSlots.has(type);
             const isOpen     = expanded === type;
-            const showAccordion = recipe.has_real_instructions && recipe.instructions.length > 0;
+            const showAccordion = recipe.has_real_instructions;
 
             return (
               <div
@@ -423,12 +423,20 @@ export default function MealRecommendationCards({
                   )}
                 </div>
 
-                {/* Recipe accordion — only when has_real_instructions */}
+                {/* Recipe accordion — only rendered when has_real_instructions */}
                 {isOpen && showAccordion && (
                   <div
                     className="mx-4 mb-4 rounded-xl px-4 py-3"
                     style={{ background: "rgba(0,0,0,0.2)", borderTop: `2px solid ${color}33` }}
                   >
+                    {/* Description */}
+                    {recipe.description && (
+                      <p className="text-xs font-body leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.55)" }}>
+                        {recipe.description}
+                      </p>
+                    )}
+
+                    {/* Ingredients */}
                     <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>
                       Ingredients
                     </p>
@@ -440,22 +448,28 @@ export default function MealRecommendationCards({
                         </li>
                       ))}
                     </ul>
-                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>
-                      Preparation
-                    </p>
-                    <ol className="space-y-2">
-                      {recipe.instructions.map((step, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-white/70">
-                          <span
-                            className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold leading-none"
-                            style={{ background: `${color}33`, color }}
-                          >
-                            {idx + 1}
-                          </span>
-                          <span className="leading-relaxed">{step}</span>
-                        </li>
-                      ))}
-                    </ol>
+
+                    {/* Preparation steps */}
+                    {recipe.instructions.length > 0 && (
+                      <>
+                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>
+                          Preparation
+                        </p>
+                        <ol className="space-y-2">
+                          {recipe.instructions.map((step, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-white/70">
+                              <span
+                                className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold leading-none"
+                                style={{ background: `${color}33`, color }}
+                              >
+                                {idx + 1}
+                              </span>
+                              <span className="leading-relaxed">{step}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
