@@ -11,6 +11,7 @@ import type { ReadinessLabel } from "@/lib/progressionEngine";
 import { getExerciseHistory } from "@/lib/trainingQueries";
 import type { ExerciseLog } from "@/lib/trainingQueries";
 import type { Exercise } from "@/lib/exercises";
+import { getRecentWorkouts } from "@/lib/supabase";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -50,15 +51,26 @@ const INTENSITY_COLOR: Record<string, string> = {
 
 export function TrainingIntelligenceCard({ onWorkoutTypeResolved, onUseWorkout }: Props) {
   const { todayState, cycleDay, cycleParams, profile } = useApp();
-  const [exerciseRows, setExerciseRows] = useState<ExerciseWithTargets[]>([]);
-  const [inputs, setInputs]             = useState<Record<string, ExInput>>({});
-  const [loading, setLoading]           = useState(true);
-  const [isOpen, setIsOpen]             = useState(false);
+  const [exerciseRows, setExerciseRows]     = useState<ExerciseWithTargets[]>([]);
+  const [inputs, setInputs]                 = useState<Record<string, ExInput>>({});
+  const [loading, setLoading]               = useState(true);
+  const [isOpen, setIsOpen]                 = useState(false);
+  const [recentTypes, setRecentTypes]       = useState<WorkoutTypeId[]>([]);
 
-  const phase         = getPhase(cycleDay ?? 1, cycleParams);
+  const phase          = getPhase(cycleDay ?? 1, cycleParams);
   const readinessScore = todayState?.readinessScore ?? 60;
   const readinessLabel = (todayState?.readinessLabel ?? "moderate") as ReadinessLabel;
-  const goal          = profile?.body_goal ?? profile?.goals?.[0] ?? null;
+  const goal           = profile?.body_goal ?? profile?.goals?.[0] ?? null;
+
+  // Load recent workout types so repeat penalty creates daily variety
+  useEffect(() => {
+    getRecentWorkouts(7).then(workouts => {
+      const types = workouts
+        .map(w => w.workout_type)
+        .filter((t): t is WorkoutTypeId => !!t);
+      setRecentTypes(types);
+    }).catch(() => { /* unauthenticated — stay empty */ });
+  }, []);
 
   const trainingInput = buildTrainingInput({
     phase,
@@ -70,7 +82,7 @@ export function TrainingIntelligenceCard({ onWorkoutTypeResolved, onUseWorkout }
     energy:             null,
     equipmentLevel:     "gym",
     availableMinutes:   60,
-    recentWorkoutTypes: [],
+    recentWorkoutTypes: recentTypes,
   });
 
   const recommendation = scoreWorkoutTypes(trainingInput);
@@ -153,7 +165,7 @@ export function TrainingIntelligenceCard({ onWorkoutTypeResolved, onUseWorkout }
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="min-w-0">
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-0.5">AI Recommendation</p>
+            <p className="text-xs text-white/40 uppercase tracking-widest mb-0.5">Today's Training Recommendation</p>
             <p className="font-semibold text-white text-sm leading-tight">{workoutDef.name}</p>
           </div>
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize shrink-0 ${INTENSITY_COLOR[primaryIntensity] ?? "bg-white/10 text-white/60"}`}>

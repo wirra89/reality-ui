@@ -67,7 +67,7 @@ export const WORKOUT_TYPES: Record<WorkoutTypeId, WorkoutTypeDef> = {
   strength_lower: {
     id: "strength_lower",
     name: "Lower Body Strength",
-    phases: ["follicular", "ovulation"],
+    phases: ["follicular", "ovulation", "luteal"],  // early luteal still supports strength
     intensities: ["high", "peak"],
     durationMin: 50,
     equipmentRequired: "gym",
@@ -76,7 +76,7 @@ export const WORKOUT_TYPES: Record<WorkoutTypeId, WorkoutTypeDef> = {
   strength_upper: {
     id: "strength_upper",
     name: "Upper Body Strength",
-    phases: ["follicular", "ovulation"],
+    phases: ["follicular", "ovulation", "luteal"],
     intensities: ["high", "peak"],
     durationMin: 50,
     equipmentRequired: "gym",
@@ -112,7 +112,7 @@ export const WORKOUT_TYPES: Record<WorkoutTypeId, WorkoutTypeDef> = {
   hiit_cardio: {
     id: "hiit_cardio",
     name: "HIIT Cardio",
-    phases: ["follicular", "ovulation"],
+    phases: ["follicular", "ovulation", "luteal"],  // viable in early luteal
     intensities: ["high", "peak"],
     durationMin: 30,
     equipmentRequired: "minimal",
@@ -121,7 +121,7 @@ export const WORKOUT_TYPES: Record<WorkoutTypeId, WorkoutTypeDef> = {
   circuit_full: {
     id: "circuit_full",
     name: "Full Body Circuit",
-    phases: ["follicular", "ovulation", "luteal"],
+    phases: ["follicular", "ovulation", "luteal", "menstrual"],
     intensities: ["moderate", "high"],
     durationMin: 40,
     equipmentRequired: "minimal",
@@ -148,7 +148,7 @@ export const WORKOUT_TYPES: Record<WorkoutTypeId, WorkoutTypeDef> = {
   bodyweight_light: {
     id: "bodyweight_light",
     name: "Light Bodyweight",
-    phases: ["menstrual", "luteal"],
+    phases: ["menstrual", "luteal", "follicular"],  // good active recovery in follicular
     intensities: ["light", "moderate"],
     durationMin: 30,
     equipmentRequired: "none",
@@ -157,8 +157,8 @@ export const WORKOUT_TYPES: Record<WorkoutTypeId, WorkoutTypeDef> = {
   glute_focused: {
     id: "glute_focused",
     name: "Glute Focus",
-    phases: ["luteal", "follicular"],
-    intensities: ["moderate", "high"],
+    phases: ["luteal", "follicular", "menstrual"],  // gentle activation fine on period
+    intensities: ["light", "moderate", "high"],
     durationMin: 45,
     equipmentRequired: "minimal",
     description: "Hip thrusts, glute bridges, kickbacks and isolation work",
@@ -204,7 +204,8 @@ function getReadinessIntensity(label: TrainingEngineInput["readinessLabel"]): Wo
 }
 
 function countRepeatPenalty(typeId: WorkoutTypeId, recent: WorkoutTypeId[]): number {
-  return recent.filter(t => t === typeId).length * 8;
+  // 18 pts per repeat — enough to rotate away from yesterday's winner
+  return recent.filter(t => t === typeId).length * 18;
 }
 
 // ── Core scoring ──────────────────────────────────────────────────────────────
