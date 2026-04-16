@@ -44,6 +44,7 @@ export interface Workout {
   name: string;
   cycle_day: number;
   phase: string;
+  workout_type?: string;
   exercises: WorkoutExercise[];
 }
 
@@ -144,7 +145,11 @@ export async function saveProfile(updates: Partial<Profile>, userId?: string): P
 export async function saveWorkout(workout: Workout): Promise<{ success: boolean; error?: string; id?: number }> {
   const user = await getUser();
   if (!user) return { success: false, error: "Not logged in" };
-  const { data, error } = await supabase.from("workouts").insert([{ ...workout, user_id: user.id }]).select("id").single();
+  const { data, error } = await supabase.from("workouts").insert([{
+    ...workout,
+    user_id: user.id,
+    workout_type: workout.workout_type ?? null,
+  }]).select("id").single();
   return error ? { success: false, error: error.message } : { success: true, id: data?.id };
 }
 
@@ -468,4 +473,82 @@ export async function deletePR(id: number): Promise<void> {
   const user = await getUser();
   if (!user) return;
   await supabase.from("personal_records").delete().eq("id", id).eq("user_id", user.id);
+}
+
+// ── Exercise Logs ─────────────────────────────────────────────────────────────
+
+export interface ExerciseLog {
+  id?: number;
+  workout_id?: number | null;
+  exercise_name: string;
+  exercise_id: string;
+  workout_type: string;
+  phase: string;
+  cycle_day: number;
+  performed_at?: string; // ISO date string YYYY-MM-DD
+  sets_data: Array<{ reps: number; weight: number }>;
+  total_volume_kg: number;
+}
+
+export async function saveExerciseLog(log: ExerciseLog): Promise<void> {
+  const user = await getUser();
+  if (!user) throw new Error("Not logged in");
+  const { error } = await supabase
+    .from("exercise_logs")
+    .insert({
+      user_id:         user.id,
+      workout_id:      log.workout_id ?? null,
+      exercise_name:   log.exercise_name,
+      exercise_id:     log.exercise_id,
+      workout_type:    log.workout_type,
+      phase:           log.phase,
+      cycle_day:       log.cycle_day,
+      performed_at:    log.performed_at ?? new Date().toISOString().split("T")[0],
+      sets_data:       log.sets_data,
+      total_volume_kg: log.total_volume_kg,
+    });
+  if (error) throw error;
+}
+
+export async function getExerciseLogsForPhaseAndType(
+  phase: string,
+  workoutType: string,
+  limitDays = 60,
+): Promise<ExerciseLog[]> {
+  const user = await getUser();
+  if (!user) return [];
+  const since = new Date();
+  since.setDate(since.getDate() - limitDays);
+
+  const { data, error } = await supabase
+    .from("exercise_logs")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("phase", phase)
+    .eq("workout_type", workoutType)
+    .gte("performed_at", since.toISOString().split("T")[0])
+    .order("performed_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as ExerciseLog[];
+}
+
+export async function getExerciseHistory(
+  exerciseName: string,
+  phase: string,
+  limitSessions = 10,
+): Promise<ExerciseLog[]> {
+  const user = await getUser();
+  if (!user) return [];
+  const { data, error } = await supabase
+    .from("exercise_logs")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("exercise_name", exerciseName)
+    .eq("phase", phase)
+    .order("performed_at", { ascending: false })
+    .limit(limitSessions);
+
+  if (error) throw error;
+  return (data ?? []) as ExerciseLog[];
 }
