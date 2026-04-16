@@ -42,6 +42,7 @@ export interface WorkoutRecommendation {
   duration: number;       // minutes
   reasoning: string;      // why this recommendation was generated
   exercises?: string[];   // optional phase-appropriate exercise suggestions
+  workoutType?: import("./trainingEngine").WorkoutTypeId;
 }
 
 export interface MealFocus {
