@@ -18,7 +18,7 @@ export interface DailySignals {
   readinessScore: number;
   readinessLabel: ReadinessLabel;
   biasTone:       BiasTone;
-  /** Title-cased strings matching CheckInSnapshot.symptoms, e.g. "Cramps", "Bloating" */
+  /** Lowercase-normalised symptom strings, e.g. "cramps", "bloating". Normalised from Title-cased CheckInSnapshot.symptoms. */
   symptomFlags:   string[];
   energy:         number | null;
   mood:           number | null;
@@ -56,7 +56,7 @@ export function extractDailySignals(
     readinessScore: todayState.readinessScore,
     readinessLabel: todayState.readinessLabel,
     biasTone:       deriveBiasTone(todayState.readinessLabel, extras.phase),
-    symptomFlags:   extras.symptomFlags,
+    symptomFlags:   extras.symptomFlags.map(s => s.toLowerCase()),
     energy:         extras.energy,
     mood:           extras.mood,
     primaryGoal:    extras.primaryGoal,

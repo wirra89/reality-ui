@@ -67,6 +67,11 @@ describe("extractDailySignals — extras passthrough", () => {
     expect(result.symptomFlags).toEqual(["cramps", "fatigue"]);
   });
 
+  it("lowercases symptomFlags from extras", () => {
+    const result = extractDailySignals(makeTodayState(), { ...BASE_EXTRAS, symptomFlags: ["Cramps", "Bloating"] });
+    expect(result.symptomFlags).toEqual(["cramps", "bloating"]);
+  });
+
   it("passes energy from extras", () => {
     const result = extractDailySignals(makeTodayState(), { ...BASE_EXTRAS, energy: 3 });
     expect(result.energy).toBe(3);
