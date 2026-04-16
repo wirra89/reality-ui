@@ -7,7 +7,6 @@ import { scoreWorkoutTypes, buildTrainingInput, WORKOUT_TYPES } from "@/lib/trai
 import type { WorkoutTypeId } from "@/lib/trainingEngine";
 import { selectExercisesForWorkout } from "@/lib/exerciseSelector";
 import { computeProgressionTargets } from "@/lib/progressionEngine";
-import type { ReadinessLabel } from "@/lib/progressionEngine";
 import { getExerciseHistory } from "@/lib/trainingQueries";
 import type { ExerciseLog } from "@/lib/trainingQueries";
 import type { Exercise } from "@/lib/exercises";
@@ -50,17 +49,13 @@ const INTENSITY_COLOR: Record<string, string> = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function TrainingIntelligenceCard({ onWorkoutTypeResolved, onUseWorkout }: Props) {
-  const { todayState, cycleDay, cycleParams, profile } = useApp();
+  const { dailySignals, cycleDay, cycleParams } = useApp();
   const [exerciseRows, setExerciseRows]     = useState<ExerciseWithTargets[]>([]);
   const [inputs, setInputs]                 = useState<Record<string, ExInput>>({});
   const [loading, setLoading]               = useState(true);
   const [isOpen, setIsOpen]                 = useState(false);
   const [recentTypes, setRecentTypes]       = useState<WorkoutTypeId[]>([]);
 
-  const phase          = getPhase(cycleDay ?? 1, cycleParams);
-  const readinessScore = todayState?.readinessScore ?? 60;
-  const readinessLabel = (todayState?.readinessLabel ?? "moderate") as ReadinessLabel;
-  const goal           = profile?.body_goal ?? profile?.goals?.[0] ?? null;
 
   // Load recent workout types so repeat penalty creates daily variety
   useEffect(() => {
@@ -73,17 +68,20 @@ export function TrainingIntelligenceCard({ onWorkoutTypeResolved, onUseWorkout }
   }, []);
 
   const trainingInput = buildTrainingInput({
-    phase,
-    cycleDay:           cycleDay ?? 1,
-    readinessScore,
-    readinessLabel,
-    symptoms:           [],
-    goal,
-    energy:             null,
+    phase:              dailySignals?.phase ?? getPhase(cycleDay ?? 1, cycleParams),
+    cycleDay:           dailySignals?.cycleDay ?? cycleDay ?? 1,
+    readinessScore:     dailySignals?.readinessScore ?? 60,
+    readinessLabel:     dailySignals?.readinessLabel ?? "moderate",
+    symptoms:           dailySignals?.symptomFlags   ?? [],
+    goal:               dailySignals?.primaryGoal    ?? null,
+    energy:             dailySignals?.energy         ?? null,
     equipmentLevel:     "gym",
     availableMinutes:   60,
     recentWorkoutTypes: recentTypes,
   });
+
+  const phase           = trainingInput.phase;
+  const readinessLabel  = trainingInput.readinessLabel;
 
   const recommendation = scoreWorkoutTypes(trainingInput);
   const workoutTypeId  = recommendation.primary.workoutTypeId;
