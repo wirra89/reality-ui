@@ -13,6 +13,8 @@ import {
 } from "@/lib/supabase";
 import ExerciseLibrary from "@/components/ExerciseLibrary";
 import { getExerciseInputTypeByName, type InputType } from "@/lib/exercises";
+import { TrainingIntelligenceCard } from "@/components/TrainingIntelligenceCard";
+import type { WorkoutTypeId } from "@/lib/trainingEngine";
 
 interface SetRow { id: string; reps: string; weight: string; durationMin?: string; distanceKm?: string; }
 interface ExRow  { id: string; name: string; sets: SetRow[]; exType: InputType; }
@@ -164,6 +166,7 @@ export default function TrainingPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [loggedWorkoutId, setLoggedWorkoutId] = useState<number | null>(null);
   const [newPRs, setNewPRs] = useState<string[]>([]);
+  const [resolvedWorkoutType, setResolvedWorkoutType] = useState<WorkoutTypeId | null>(null);
 
   // Use today's date in draft key so drafts don't persist across cycles
   const today = new Date().toISOString().split("T")[0];
@@ -288,6 +291,7 @@ export default function TrainingPage() {
       name: smartName,
       cycle_day: cycleDay,
       phase: phaseData.phase,
+      workout_type: resolvedWorkoutType ?? undefined,
       exercises: exercises.map(e => ({
         name: e.name,
         sets: e.sets.map(s => ({
@@ -469,6 +473,9 @@ export default function TrainingPage() {
             )}
           </div>
         )}
+
+        {/* ── TRAINING INTELLIGENCE CARD ── */}
+        <TrainingIntelligenceCard onWorkoutTypeResolved={setResolvedWorkoutType} />
 
         {/* ── RECOMMENDATION CARD — TodayState or phase fallback ── */}
         {todayState ? (
