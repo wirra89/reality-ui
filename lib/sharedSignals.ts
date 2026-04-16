@@ -8,14 +8,17 @@ import type { TodayState, ReadinessLabel } from "@/lib/dailyPlan";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+/** Derived intensity bias: "push" = encourage high-intensity, "recover" = deload, "neutral" = standard */
 export type BiasTone = "push" | "recover" | "neutral";
 
 export interface DailySignals {
   phase:          Phase;
+  /** null when the user has not yet configured cycle tracking */
   cycleDay:       number | null;
   readinessScore: number;
   readinessLabel: ReadinessLabel;
   biasTone:       BiasTone;
+  /** Title-cased strings matching CheckInSnapshot.symptoms, e.g. "Cramps", "Bloating" */
   symptomFlags:   string[];
   energy:         number | null;
   mood:           number | null;
@@ -24,6 +27,10 @@ export interface DailySignals {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+// Only "peak" readiness earns "push" bias — "good" readiness is not enough
+// because peak-level hormonal priming (ovulation approach) is required to
+// justify maximum-intensity training. All other readiness levels get "neutral"
+// or "recover".
 function deriveBiasTone(label: ReadinessLabel, phase: Phase): BiasTone {
   if (label === "rest") return "recover";
   if (label === "peak" && (phase === "follicular" || phase === "ovulation")) return "push";

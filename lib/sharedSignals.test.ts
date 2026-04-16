@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import { extractDailySignals } from "./sharedSignals";
 import type { TodayState } from "./dailyPlan";
 
-// Minimal TodayState — only fields extractDailySignals reads
+// Intentionally minimal fixture — extractDailySignals only reads
+// readinessScore and readinessLabel from TodayState. Other fields
+// are present to satisfy the type but are not representative of
+// real engine output.
 function makeTodayState(overrides: Partial<TodayState> = {}): TodayState {
   return {
     readinessScore: 70,
@@ -52,6 +55,11 @@ describe("extractDailySignals — extras passthrough", () => {
   it("passes cycleDay from extras (including null)", () => {
     const result = extractDailySignals(makeTodayState(), { ...BASE_EXTRAS, cycleDay: null });
     expect(result.cycleDay).toBeNull();
+  });
+
+  it("passes cycleDay from extras (positive number)", () => {
+    const result = extractDailySignals(makeTodayState(), { ...BASE_EXTRAS, cycleDay: 14 });
+    expect(result.cycleDay).toBe(14);
   });
 
   it("passes symptomFlags from extras", () => {
