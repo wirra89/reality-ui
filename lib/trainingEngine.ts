@@ -302,11 +302,19 @@ export function scoreWorkoutTypes(input: TrainingEngineInput): TrainingRecommend
     .map(id => scoreOne(id, WORKOUT_TYPES[id], input))
     .sort((a, b) => b.score - a.score);
 
-  return {
-    primary:   allScored[0],
-    fallback:  allScored[1],
-    allScored,
-  };
+  // When multiple types score within 10 pts of the leader they are genuinely equally good.
+  // Rotate through them by cycleDay so each day surfaces a different option — without
+  // needing workout history in the DB.
+  const topScore = allScored[0]?.score ?? 0;
+  const topCandidates = allScored.filter(s => s.score > 0 && topScore - s.score <= 10);
+
+  const primary = topCandidates.length > 1
+    ? topCandidates[input.cycleDay % topCandidates.length]
+    : allScored[0];
+
+  const fallback = allScored.find(s => s.workoutTypeId !== primary.workoutTypeId) ?? allScored[1];
+
+  return { primary, fallback, allScored };
 }
 
 export function buildTrainingInput(params: {
