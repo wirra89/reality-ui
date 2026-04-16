@@ -558,7 +558,7 @@ export async function logRecipe(
       user_id:            user.id,
       entry_source:       "recipe" as EntrySource,
       food_id:            null,
-      recipe_id:          recipe.id.toString(),
+      recipe_id:          recipe.id,
       quantity_g:         null,
       servings_consumed:  1,
       meal_type:          mealType,
