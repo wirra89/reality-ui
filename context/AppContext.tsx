@@ -17,6 +17,7 @@ import {
   type TodayState,
   type CheckInSnapshot,
 } from "@/lib/dailyPlan";
+import { extractDailySignals, type DailySignals } from "@/lib/sharedSignals";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONTEXT INTERFACE — backward compatible, all existing fields preserved
@@ -41,6 +42,9 @@ interface AppContextValue {
   latestMoodLog: MoodLog | null;       // today's check-in (null if not submitted)
   logCount: number;                    // total mood logs — drives data maturity
   refreshTodayState: () => Promise<void>; // call after mood save to recompute
+
+  // ── Shared signals ────────────────────────────────────────────────────────
+  dailySignals: DailySignals | null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -57,6 +61,7 @@ const AppContext = createContext<AppContextValue>({
   latestMoodLog: null,
   logCount: 0,
   refreshTodayState: async () => {},
+  dailySignals: null,
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -131,6 +136,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logCount,
     });
   }, [cycleDay, cycleParams, latestMoodLog, profile?.goals, logCount, profile]);
+
+  const dailySignals = useMemo<DailySignals | null>(() => {
+    if (!todayState) return null;
+    return extractDailySignals(todayState, {
+      phase:        getPhase(cycleDay, cycleParams),
+      cycleDay:     cycleDay ?? null,
+      symptomFlags: latestMoodLog?.symptoms ?? [],
+      energy:       latestMoodLog?.energy   ?? null,
+      mood:         latestMoodLog?.mood     ?? null,
+      primaryGoal:  profile?.body_goal ?? profile?.goals?.[0] ?? null,
+    });
+  }, [todayState, cycleDay, cycleParams, latestMoodLog, profile]);
 
   // ─────────────────────────────────────────────────────────────────────────
   // MOOD LOG LOADER — single DB call, runs after profile loads
@@ -328,6 +345,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       latestMoodLog,
       logCount,
       refreshTodayState,
+      // Shared signals
+      dailySignals,
     }}>
       {children}
     </AppContext.Provider>
