@@ -14,6 +14,7 @@ import {
 import ExerciseLibrary from "@/components/ExerciseLibrary";
 import { getExerciseInputTypeByName, type InputType } from "@/lib/exercises";
 import { TrainingIntelligenceCard } from "@/components/TrainingIntelligenceCard";
+import type { IntelligenceWorkoutExercise } from "@/components/TrainingIntelligenceCard";
 import type { WorkoutTypeId } from "@/lib/trainingEngine";
 
 interface SetRow { id: string; reps: string; weight: string; durationMin?: string; distanceKm?: string; }
@@ -282,6 +283,16 @@ export default function TrainingPage() {
     setShowTemplates(false);
   }
 
+  function handleUseIntelligenceWorkout(exs: IntelligenceWorkoutExercise[]) {
+    const exRows: ExRow[] = exs.map(e => ({
+      id: crypto.randomUUID(),
+      name: e.name,
+      exType: getExerciseInputTypeByName(e.name),
+      sets: e.sets.map(s => ({ id: crypto.randomUUID(), reps: s.reps, weight: s.weight })),
+    }));
+    setExercises(exRows);
+  }
+
   async function handleSave() {
     setSaveStatus("loading");
     // Smart name fallback: user's name → first exercise → phase default
@@ -474,9 +485,6 @@ export default function TrainingPage() {
           </div>
         )}
 
-        {/* ── TRAINING INTELLIGENCE CARD ── */}
-        <TrainingIntelligenceCard onWorkoutTypeResolved={setResolvedWorkoutType} />
-
         {/* ── RECOMMENDATION CARD — TodayState or phase fallback ── */}
         {todayState ? (
           <div className="rounded-2xl p-4 mb-4"
@@ -539,6 +547,12 @@ export default function TrainingPage() {
             </div>
           </div>
         )}
+
+        {/* ── TRAINING INTELLIGENCE CARD — collapsible, below phase card ── */}
+        <TrainingIntelligenceCard
+          onWorkoutTypeResolved={setResolvedWorkoutType}
+          onUseWorkout={handleUseIntelligenceWorkout}
+        />
 
         {/* Suggested + Library — same row, easy access right after phase context */}
         <div className="mb-4">
