@@ -483,7 +483,7 @@ export default function HistoryPage() {
                   {/* Weight chart */}
                   <div className="bg-surface rounded-2xl shadow-card p-4 mb-3">
                     <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Weight over time</p>
-                    <WeightChart logs={[...weights].reverse()} compact />
+                    <WeightChart logs={[...weights].reverse().map(l => ({ date: l.date, weight: l.weight_kg }))} compact />
                   </div>
                   <div className="grid grid-cols-3 gap-2 mb-4">
                     {(() => {
