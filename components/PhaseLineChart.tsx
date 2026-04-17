@@ -57,7 +57,10 @@ export default function PhaseLineChart({
   const windowed = useMemo(() =>
     series.map(s => ({
       ...s,
-      points: s.points.filter(p => new Date(p.date).getTime() >= cutoffTs),
+      points: s.points.filter(p => {
+        const ts = new Date(p.date).getTime();
+        return !isNaN(ts) && ts >= cutoffTs;
+      }),
     })),
   [series, cutoffTs]);
 
@@ -160,9 +163,9 @@ export default function PhaseLineChart({
           // Dots to render
           const dotPoints = showPoints
             ? s.points
-            : [s.points[0], s.points[s.points.length - 1]].filter(
-                (p, i, arr) => arr.findIndex(q => q.date === p.date) === i
-              );
+            : s.points.length === 1
+              ? [s.points[0]]
+              : [s.points[0], s.points[s.points.length - 1]];
 
           return (
             <g key={s.id}>
