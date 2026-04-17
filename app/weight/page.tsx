@@ -56,46 +56,6 @@ export default function WeightPage() {
   const change = current && starting ? (current - starting) : null;
   const goal = profile?.body_goal === "cut" ? "↓ Lose fat" : profile?.body_goal === "bulk" ? "↑ Build muscle" : "⚖️ Recomp";
 
-  // Chart dimensions
-  const chartW = 340;
-  const chartH = 120;
-  const padding = { top: 12, right: 12, bottom: 24, left: 36 };
-
-  function getChartPoints(): string {
-    if (logs.length < 2) return "";
-    const minW = Math.min(...weights) - 1;
-    const maxW = Math.max(...weights) + 1;
-    const rangeW = maxW - minW || 1;
-    const innerW = chartW - padding.left - padding.right;
-    const innerH = chartH - padding.top - padding.bottom;
-
-    return logs.map((log, i) => {
-      const x = padding.left + (i / (logs.length - 1)) * innerW;
-      const y = padding.top + (1 - (log.weight_kg - minW) / rangeW) * innerH;
-      return `${x},${y}`;
-    }).join(" ");
-  }
-
-  function getAreaPath(): string {
-    if (logs.length < 2) return "";
-    const minW = Math.min(...weights) - 1;
-    const maxW = Math.max(...weights) + 1;
-    const rangeW = maxW - minW || 1;
-    const innerW = chartW - padding.left - padding.right;
-    const innerH = chartH - padding.top - padding.bottom;
-    const bottomY = padding.top + innerH;
-
-    const points = logs.map((log, i) => {
-      const x = padding.left + (i / (logs.length - 1)) * innerW;
-      const y = padding.top + (1 - (log.weight_kg - minW) / rangeW) * innerH;
-      return `${x},${y}`;
-    });
-
-    const firstX = padding.left;
-    const lastX  = chartW - padding.right;
-    return `M ${firstX},${bottomY} L ${points.join(" L ")} L ${lastX},${bottomY} Z`;
-  }
-
   function formatDate(dateStr: string): string {
     const d = new Date(dateStr);
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
@@ -147,7 +107,7 @@ export default function WeightPage() {
               <p className="text-xs font-semibold text-dark">Weight over time</p>
               <p className="text-xs text-dark/40 font-body">{logs.length} entries</p>
             </div>
-            <WeightChart logs={logs} />
+            <WeightChart logs={logs.map(l => ({ date: l.date, weight: l.weight_kg }))} />
           </div>
         ) : logs.length === 1 ? (
           <div className="bg-surface rounded-2xl p-5 shadow-card mb-4 text-center">
