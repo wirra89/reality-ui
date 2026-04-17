@@ -249,21 +249,6 @@ export default function MealsPage() {
           />
         </div>
 
-        {/* ── Phase meal focus banner — sourced from todayState.mealFocus ── */}
-        {todayState?.mealFocus && (
-          <div
-            className="rounded-2xl px-4 py-3 mb-3"
-            style={{ background: "rgba(196,138,151,0.07)", border: "1px solid rgba(196,138,151,0.12)" }}
-          >
-            <p className="text-sm font-semibold text-white/80 leading-snug">
-              {todayState.mealFocus.headline}
-            </p>
-            <p className="text-xs text-white/50 mt-0.5 leading-snug">
-              {todayState.mealFocus.reasoning.split(".")[0]}.
-            </p>
-          </div>
-        )}
-
         {/* ── V1.1: Phase-aware meal recommendation cards — below logged entries ── */}
         <MealRecommendationCards
           phase={phase}
