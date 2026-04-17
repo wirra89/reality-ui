@@ -263,6 +263,24 @@ export default function InsightsPage() {
             {activeTab === "overview" && (
               <div className="space-y-4">
 
+                {/* ── Today's insight — same source as Dashboard, richer layout ── */}
+                {maturity !== "generic" && todayState?.insightTitle && (
+                  <div
+                    className="rounded-2xl p-5 shadow-card"
+                    style={{ background: "rgba(196,138,151,0.07)", border: "1px solid rgba(196,138,151,0.12)" }}
+                  >
+                    <p className="text-xs font-semibold text-dark/40 uppercase tracking-widest mb-2">
+                      Today's Insight
+                    </p>
+                    <p className="font-semibold text-dark text-base leading-snug mb-2">
+                      {todayState.insightTitle}
+                    </p>
+                    <p className="text-sm text-dark/60 leading-relaxed font-body">
+                      {todayState.insightBody}
+                    </p>
+                  </div>
+                )}
+
                 {/* Best/worst phase — only shown with 2+ phases and early/personalized */}
                 {canComparePhases && maturity !== "generic" && (
                   <div className="grid grid-cols-2 gap-3">
