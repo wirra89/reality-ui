@@ -4,6 +4,8 @@
 // DO NOT import from this file in files that still use the legacy saveMealLog/getTodayMealLog.
 
 import { createClient } from "@supabase/supabase-js";
+import type { Phase } from "@/lib/cycle";
+export type { Phase };
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,7 +17,6 @@ const supabase = createClient(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
-export type Phase    = "menstrual" | "follicular" | "ovulation" | "luteal";
 export type EntrySource = "food" | "recipe" | "legacy_snapshot";
 
 /** A food ingredient from the foods table. */

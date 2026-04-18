@@ -1,8 +1,9 @@
 // lib/foods.ts
 // Complete food library with macros, portions, and phase recommendations
 
+import type { Phase } from "@/lib/cycle";
+export type { Phase };
 export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
-export type Phase = "menstrual" | "follicular" | "ovulation" | "luteal";
 
 export interface FoodItem {
   id: string;

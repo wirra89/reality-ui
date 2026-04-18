@@ -1,5 +1,6 @@
 // lib/quickFoods.ts — Generic food database with phase recommendations
-export type Phase = "menstrual" | "follicular" | "ovulation" | "luteal";
+import type { Phase } from "@/lib/cycle";
+export type { Phase };
 
 export interface QuickFood {
   id: string;

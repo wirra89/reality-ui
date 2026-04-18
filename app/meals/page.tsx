@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData } from "@/lib/cycle";
 import { saveMealLog, getTodayMealLog, type MealEntry } from "@/lib/supabase";
-import { type Phase } from "@/lib/foods";
+import { type Phase } from "@/lib/cycle";
 import MealPhaseBanner    from "@/components/MealPhaseBanner";
 import MealDailySummary   from "@/components/MealDailySummary";
 import MealLogForm        from "@/components/MealLogForm";

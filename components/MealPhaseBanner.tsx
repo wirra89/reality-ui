@@ -89,7 +89,7 @@ export default function MealPhaseBanner({ phaseData, cycleDay, mealFocus, adapte
 
         {/* Reasoning */}
         <p className="text-white/60 text-xs font-body leading-relaxed mb-3">
-          {mealFocus.reasoning}
+          {mealFocus.reasoning.split(".")[0].trim() + "."}
         </p>
 
         {/* Macro adjustment — shown only if present */}
