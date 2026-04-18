@@ -8,6 +8,9 @@ import { useApp } from "@/context/AppContext";
 import { getPhaseData } from "@/lib/cycle";
 import { savePR, getPRs, getBestPRPerExercise, deletePR, type PersonalRecord } from "@/lib/supabase";
 import { EXERCISES } from "@/lib/exercises";
+import PhaseLineChart from "@/components/PhaseLineChart";
+import type { LineSeries } from "@/lib/chartTypes";
+import type { Phase } from "@/lib/cycle";
 
 const PHASE_STYLES: Record<string, { bg: string; text: string; emoji: string }> = {
   menstrual:  { bg: "rgba(248,113,113,0.12)",  text: "#DC2626", emoji: "🌙" },
@@ -29,6 +32,18 @@ export default function PRsPage() {
   const [prs, setPRs] = useState<PersonalRecord[]>([]);
   const [bests, setBests] = useState<PersonalRecord[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+
+  // ── PR chart state ─────────────────────────────────────────────────────────
+  const exerciseNames = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const pr of prs) counts[pr.exercise] = (counts[pr.exercise] ?? 0) + 1;
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name]) => name);
+  }, [prs]);
+
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const activeExercise = selectedExercise ?? exerciseNames[0] ?? null;
 
   // Log form state
   const [exercise, setExercise] = useState("");
@@ -299,37 +314,116 @@ export default function PRsPage() {
                 </button>
               </div>
             ) : (
-              <div className="space-y-2">
-                {prs.map((pr) => {
-                  const ps = pr.phase ? PHASE_STYLES[pr.phase] : null;
+              <>
+                {/* Exercise filter — horizontal scroll, one chip per exercise */}
+                {exerciseNames.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1 mb-3 scrollbar-hide">
+                    {exerciseNames.map(name => (
+                      <button
+                        key={name}
+                        onClick={() => setSelectedExercise(name)}
+                        className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 whitespace-nowrap"
+                        style={{
+                          background: activeExercise === name
+                            ? "linear-gradient(135deg, #C48A97, #7B6D8D)"
+                            : "var(--color-surface)",
+                          color: activeExercise === name
+                            ? "var(--color-surface)"
+                            : "var(--color-text-dim)",
+                          boxShadow: "0 1px 4px rgba(var(--color-text-rgb),0.06)",
+                        }}>
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* PR progression chart */}
+                {(() => {
+                  if (!activeExercise) return null;
+                  const chartPRs = prs
+                    .filter(pr => pr.exercise === activeExercise)
+                    .sort((a, b) => (a.logged_at ?? "").localeCompare(b.logged_at ?? ""));
+                  if (chartPRs.length < 2) return null;
+
+                  const series: LineSeries[] = [{
+                    id:     "pr-weight",
+                    label:  activeExercise,
+                    color:  "#C48A97",
+                    points: chartPRs.map(pr => ({
+                      date:  pr.logged_at ?? "",
+                      value: pr.weight,
+                      phase: pr.phase as Phase | undefined,
+                    })),
+                  }];
+
                   return (
-                    <div key={pr.id} className="bg-surface rounded-2xl px-4 py-3.5 shadow-card">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-semibold text-dark">{pr.exercise}</p>
-                            {ps && (
-                              <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
-                                style={{ background: ps.bg, color: ps.text }}>
-                                {ps.emoji} {pr.phase}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-dark/50 font-body mt-0.5">
-                            {pr.reps} reps × {pr.weight}kg · {pr.logged_at}
-                          </p>
-                          {pr.notes && <p className="text-xs text-dark/35 font-body mt-0.5">{pr.notes}</p>}
-                        </div>
-                        <button onClick={() => pr.id && handleDelete(pr.id)}
-                          className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/20 hover:text-rose-400 transition-colors flex-shrink-0"
-                          style={{ background: "var(--color-ghost)" }}>
-                          ×
-                        </button>
+                    <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
+                      <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
+                        {activeExercise} — weight progression
+                      </p>
+                      <PhaseLineChart
+                        series={series}
+                        phaseBands={[]}
+                        showPoints={true}
+                        pointColorMode="phase"
+                        showLegend={false}
+                        height={120}
+                        windowDays={365}
+                      />
+                      <div className="flex flex-wrap gap-3 mt-2">
+                        {(["menstrual","follicular","ovulation","luteal"] as const).map(ph => {
+                          const colors: Record<string, string> = {
+                            menstrual: "#F87171", follicular: "#34D399",
+                            ovulation: "#FBBF24", luteal: "#A78BFA",
+                          };
+                          return (
+                            <div key={ph} className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full inline-block" style={{ background: colors[ph] }} />
+                              <span className="text-xs text-dark/40 capitalize font-body">{ph}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
-                })}
-              </div>
+                })()}
+
+                {/* PR log list — filtered to active exercise */}
+                <div className="space-y-2">
+                  {prs
+                    .filter(pr => !activeExercise || pr.exercise === activeExercise)
+                    .map((pr) => {
+                      const ps = pr.phase ? PHASE_STYLES[pr.phase] : null;
+                      return (
+                        <div key={pr.id} className="bg-surface rounded-2xl px-4 py-3.5 shadow-card">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="text-sm font-semibold text-dark">{pr.exercise}</p>
+                                {ps && (
+                                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
+                                    style={{ background: ps.bg, color: ps.text }}>
+                                    {ps.emoji} {pr.phase}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-dark/50 font-body mt-0.5">
+                                {pr.reps} reps × {pr.weight}kg · {pr.logged_at}
+                              </p>
+                              {pr.notes && <p className="text-xs text-dark/35 font-body mt-0.5">{pr.notes}</p>}
+                            </div>
+                            <button onClick={() => pr.id && handleDelete(pr.id)}
+                              className="w-8 h-8 rounded-xl flex items-center justify-center text-dark/20 hover:text-rose-400 transition-colors flex-shrink-0"
+                              style={{ background: "var(--color-ghost)" }}>
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </>
             )}
           </div>
         )}
