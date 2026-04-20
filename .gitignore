@@ -1,9 +1,12 @@
 node_modules/
 .next/
 .env.local
-.vercel.claude/worktrees/ 
-.claude/skills/ui-ux-pro-max/scripts/__pycache__/ 
-.claude/worktrees/ 
+.vercel.claude/worktrees/
+.claude/skills/ui-ux-pro-max/scripts/__pycache__/
+.claude/worktrees/
+.superpowers/
+.antigravity/
+.cache/
 
 # Sentry Config File
 .env.sentry-build-plugin
