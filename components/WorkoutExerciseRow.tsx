@@ -27,14 +27,8 @@ export default function WorkoutExerciseRow({
     return exercise.sets.every((s, si) => {
       const last = exercise.lastSession!.sets[si];
       if (!last) return true; // no reference, treat as improvement
-      const weightOk =
-        s.weight !== null && last.weight !== null
-          ? s.weight >= last.weight
-          : true;
-      const repsOk =
-        s.reps !== null && last.reps !== null
-          ? s.reps >= last.reps
-          : true;
+      const weightOk = s.weight !== null && last.weight !== null && s.weight >= last.weight;
+      const repsOk = s.reps !== null && last.reps !== null && s.reps >= last.reps;
       return weightOk && repsOk;
     });
   })();
@@ -202,10 +196,8 @@ export default function WorkoutExerciseRow({
                 <button
                   type="button"
                   onClick={() => {
-                    if (lastSet.weight != null)
-                      onSetUpdate(exerciseIndex, si, "weight", lastSet.weight);
-                    if (lastSet.reps != null)
-                      onSetUpdate(exerciseIndex, si, "reps", lastSet.reps);
+                    onSetUpdate(exerciseIndex, si, "weight", lastSet.weight);
+                    onSetUpdate(exerciseIndex, si, "reps", lastSet.reps);
                   }}
                   className="w-full flex items-center gap-2 px-1 pb-1.5 text-xs font-body rounded-lg transition-opacity hover:opacity-80 active:opacity-60"
                   style={{ color: "rgba(0,0,0,0.25)" }}
