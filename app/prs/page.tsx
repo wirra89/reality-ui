@@ -19,9 +19,6 @@ const PHASE_STYLES: Record<string, { bg: string; text: string; emoji: string }> 
   luteal:     { bg: "rgba(167,139,250,0.12)",  text: "#6D28D9", emoji: "🍂" },
 };
 
-// PRO GATE — flip to true when paywall is ready
-const IS_PRO_FEATURE = false;
-
 export default function PRsPage() {
   const router = useRouter();
   const { user, profile, loading, cycleParams } = useApp();
@@ -106,23 +103,6 @@ export default function PRsPage() {
   }
 
   if (loading || !user) return <PageSkeleton />;
-
-  // PRO GATE UI
-  if (IS_PRO_FEATURE) {
-    return (
-      <div className="min-h-dvh bg-background flex flex-col items-center justify-center px-6 text-center pb-24">
-        <div className="text-5xl mb-4">🏆</div>
-        <h2 className="font-display text-2xl font-semibold text-dark mb-2">PR Tracker</h2>
-        <p className="text-sm text-dark/50 font-body mb-6 max-w-xs">Track personal records and see which phase you're strongest in. Available in HerPhase Pro.</p>
-        <button
-          className="px-8 py-3.5 rounded-2xl font-semibold text-white text-sm"
-          style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}
-          onClick={() => router.push("/profile")}>
-          Upgrade to Pro
-        </button>
-      </div>
-    );
-  }
 
   const phaseStyle = PHASE_STYLES[phaseData.phase] ?? PHASE_STYLES.follicular;
 
