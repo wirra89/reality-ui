@@ -35,6 +35,13 @@ const PHASE_EMOJIS_DASH: Record<string, string> = {
   menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
 };
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 function readinessLabel(score: number) {
   if (score >= 80) return "High energy";
   if (score >= 60) return "Good energy";
@@ -264,7 +271,7 @@ export default function DashboardPage() {
         {/* ── 1. HEADER ── */}
         <header className="flex items-center justify-between mb-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#B8788A" }}>Good morning</p>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#B8788A" }}>{getGreeting()}</p>
             <h1 className="font-display text-2xl font-semibold text-dark leading-tight">Hi, {firstName} 👋</h1>
           </div>
           <div className="flex items-center gap-2">
