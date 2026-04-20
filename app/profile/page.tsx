@@ -864,6 +864,12 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        <p className="text-center text-xs mt-6 mb-2 font-body" style={{ color: "var(--color-text-dim)" }}>
+          <a href="/privacy" className="underline hover:opacity-70 transition-opacity">
+            Privacy Policy
+          </a>
+        </p>
+
       </main>
 
       {/* ════════════════════════════════════════════════════

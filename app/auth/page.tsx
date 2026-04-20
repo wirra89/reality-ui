@@ -220,7 +220,12 @@ export default function AuthPage() {
           </div>
         )}
 
-        <p className="text-center text-xs text-dark/25 mt-6 font-body">HerPhase · Your data stays private</p>
+        <p className="text-center text-xs text-dark/25 mt-6 font-body">
+          HerPhase · Your data stays private ·{" "}
+          <a href="/privacy" className="underline hover:text-dark/50 transition-colors">
+            Privacy Policy
+          </a>
+        </p>
       </div>
     </div>
   );
