@@ -28,6 +28,55 @@ import { recommendForSlot, buildEngineInput } from "@/lib/recipeEngine";
 import type { Recipe, ScoredRecipe } from "@/types/recipe";
 import type { MoodLog, Profile } from "@/lib/supabase";
 
+// ── Recipe emoji — derived from name keywords, no DB change needed ──────────
+const RECIPE_EMOJI_MAP: [RegExp, string][] = [
+  [/salmon|tuna|cod|halibut|trout|sardine|anchovy|mackerel|sea bass|fish/i, "🐟"],
+  [/prawn|shrimp|lobster|crab|seafood/i,                                     "🦐"],
+  [/chicken|turkey|poultry/i,                                                "🍗"],
+  [/beef|steak|mince|ground beef|burger|brisket|sirloin/i,                  "🥩"],
+  [/pork|bacon|ham|sausage/i,                                                "🥓"],
+  [/lamb|mutton/i,                                                           "🍖"],
+  [/egg|omelette|frittata|scramble/i,                                        "🥚"],
+  [/avocado/i,                                                               "🥑"],
+  [/spinach|kale|greens|rocket|arugula|chard/i,                             "🥬"],
+  [/broccoli|cauliflower|broccolini/i,                                       "🥦"],
+  [/sweet potato|yam/i,                                                      "🍠"],
+  [/tomato/i,                                                                "🍅"],
+  [/carrot/i,                                                                "🥕"],
+  [/mushroom/i,                                                              "🍄"],
+  [/lemon|lime/i,                                                            "🍋"],
+  [/berry|berries|blueberry|strawberry|raspberry/i,                         "🫐"],
+  [/banana/i,                                                                "🍌"],
+  [/apple/i,                                                                 "🍎"],
+  [/mango/i,                                                                 "🥭"],
+  [/oat|porridge|granola/i,                                                  "🌾"],
+  [/rice|risotto|paella/i,                                                   "🍚"],
+  [/pasta|spaghetti|noodle|linguine|penne/i,                                 "🍝"],
+  [/bread|toast|wrap|pitta|tortilla/i,                                       "🍞"],
+  [/soup|broth|stew|chowder/i,                                               "🫕"],
+  [/salad/i,                                                                 "🥗"],
+  [/smoothie|shake|blend/i,                                                  "🥤"],
+  [/yogurt|yoghurt/i,                                                        "🫙"],
+  [/cheese/i,                                                                "🧀"],
+  [/tofu|tempeh|edamame/i,                                                   "🫘"],
+  [/lentil|chickpea|bean|legume/i,                                           "🫘"],
+  [/almond|walnut|cashew|nut|seed/i,                                        "🌰"],
+  [/chocolate|cacao|cocoa/i,                                                 "🍫"],
+  [/bowl/i,                                                                  "🥣"],
+  [/curry|dal|dahl/i,                                                        "🍛"],
+  [/stir.fry|stir fry/i,                                                     "🥘"],
+  [/taco|burrito|burrito|quesadilla/i,                                       "🌮"],
+  [/pizza/i,                                                                 "🍕"],
+  [/pancake|waffle/i,                                                        "🥞"],
+];
+
+function getRecipeEmoji(name: string): string {
+  for (const [pattern, emoji] of RECIPE_EMOJI_MAP) {
+    if (pattern.test(name)) return emoji;
+  }
+  return "🍽️";
+}
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -281,7 +330,8 @@ export default function MealRecommendationCards({
                 key={type}
                 className="rounded-2xl overflow-hidden transition-opacity duration-300"
                 style={{
-                  background: "linear-gradient(135deg, #2A2330 0%, #3D3248 100%)",
+                  background: "var(--color-surface)",
+                  borderTop: "3px solid var(--color-primary)",
                   opacity: isLogged ? 0.6 : 1,
                 }}
               >
@@ -311,8 +361,8 @@ export default function MealRecommendationCards({
                       onClick={() => !isSaving && handleToggleSave(recipe.id)}
                       className="flex items-center justify-center w-7 h-7 rounded-full transition-all active:scale-95"
                       style={{
-                        background: isSaved ? `${color}33` : "rgba(255,255,255,0.07)",
-                        color:      isSaved ? color : "rgba(255,255,255,0.35)",
+                        background: isSaved ? `${color}33` : "rgba(0,0,0,0.04)",
+                        color:      isSaved ? color : "var(--color-text-dim)",
                       }}
                       aria-label={isSaved ? "Unsave recipe" : "Save recipe"}
                     >
@@ -327,7 +377,7 @@ export default function MealRecommendationCards({
                     <button
                       onClick={() => handleRecipeSwap(type)}
                       className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all active:scale-95"
-                      style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
+                      style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-dim)" }}
                     >
                       <span>↺</span>
                       <span>Swap</span>
@@ -338,9 +388,12 @@ export default function MealRecommendationCards({
                 {/* Recipe name + benefits */}
                 <div className="px-4 pb-3">
                   <div className="flex items-start gap-3">
-                    <span className="text-3xl leading-none flex-shrink-0 mt-0.5">🍽️</span>
+                    <span className="text-3xl leading-none flex-shrink-0 mt-0.5 w-11 h-11 flex items-center justify-center rounded-2xl"
+                      style={{ background: `${color}18` }}>
+                      {getRecipeEmoji(recipe.name)}
+                    </span>
                     <div className="min-w-0">
-                      <p className="text-white font-display font-semibold text-sm leading-snug">
+                      <p className="text-dark font-display font-semibold text-sm leading-snug">
                         {recipe.name}
                       </p>
                       {recipe.benefits && (
@@ -348,7 +401,7 @@ export default function MealRecommendationCards({
                           {recipe.benefits}
                         </p>
                       )}
-                      <p className="text-xs mt-1 font-body" style={{ color: "rgba(255,255,255,0.35)" }}>
+                      <p className="text-xs mt-1 font-body" style={{ color: "var(--color-text-dim)" }}>
                         {recipe.prep_time_min + recipe.cook_time_min} min · {recipe.difficulty}
                       </p>
                     </div>
@@ -356,7 +409,7 @@ export default function MealRecommendationCards({
                 </div>
 
                 {/* Macro strip */}
-                <div className="mx-4 mb-3 px-3 py-2.5 rounded-xl grid grid-cols-4" style={{ background: "rgba(255,255,255,0.05)" }}>
+                <div className="mx-4 mb-3 px-3 py-2.5 rounded-xl grid grid-cols-4" style={{ background: "var(--color-ghost)" }}>
                   {[
                     { label: "kcal",    value: `${recipe.calories}` },
                     { label: "protein", value: `${recipe.protein_g}g` },
@@ -364,8 +417,8 @@ export default function MealRecommendationCards({
                     { label: "fats",    value: `${recipe.fat_g}g` },
                   ].map(m => (
                     <div key={m.label} className="text-center">
-                      <p className="text-white font-semibold text-sm leading-none">{m.value}</p>
-                      <p className="text-white/40 text-xs leading-none mt-0.5">{m.label}</p>
+                      <p className="text-dark font-semibold text-sm leading-none">{m.value}</p>
+                      <p className="text-[var(--color-text-dim)] text-xs leading-none mt-0.5">{m.label}</p>
                     </div>
                   ))}
                 </div>
@@ -378,9 +431,9 @@ export default function MealRecommendationCards({
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-1.5"
                     style={{
                       background: isLogged
-                        ? "rgba(255,255,255,0.1)"
+                        ? "rgba(0,0,0,0.04)"
                         : `linear-gradient(135deg, ${color}, ${color}88)`,
-                      color: isLogged ? "rgba(255,255,255,0.5)" : "var(--color-surface)",
+                      color: isLogged ? "var(--color-text-dim)" : "var(--color-surface)",
                     }}
                   >
                     {isLogging ? (
@@ -400,9 +453,9 @@ export default function MealRecommendationCards({
                       onClick={() => setExpanded(isOpen ? null : type)}
                       className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                       style={{
-                        background: isOpen ? `${color}22` : "rgba(255,255,255,0.07)",
-                        color:      isOpen ? color : "rgba(255,255,255,0.6)",
-                        border:     `1px solid ${isOpen ? color + "44" : "rgba(255,255,255,0.1)"}`,
+                        background: isOpen ? `${color}22` : "rgba(0,0,0,0.04)",
+                        color:      isOpen ? color : "var(--color-text-mid)",
+                        border:     `1px solid ${isOpen ? color + "44" : "var(--color-border)"}`,
                       }}
                     >
                       <span>{isOpen ? "▲" : "▼"}</span>
@@ -415,7 +468,7 @@ export default function MealRecommendationCards({
                     <button
                       onClick={() => handleHide(recipe.id)}
                       className="flex items-center justify-center w-10 py-2.5 rounded-xl text-xs transition-all active:scale-95"
-                      style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.25)" }}
+                      style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-dim)" }}
                       aria-label="Hide this recipe"
                     >
                       ✕
@@ -427,11 +480,11 @@ export default function MealRecommendationCards({
                 {isOpen && showAccordion && (
                   <div
                     className="mx-4 mb-4 rounded-xl px-4 py-3"
-                    style={{ background: "rgba(0,0,0,0.2)", borderTop: `2px solid ${color}33` }}
+                    style={{ background: "var(--color-bg)", borderTop: `2px solid ${color}33` }}
                   >
                     {/* Description */}
                     {recipe.description && (
-                      <p className="text-xs font-body leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <p className="text-xs font-body leading-relaxed mb-3" style={{ color: "var(--color-text-mid)" }}>
                         {recipe.description}
                       </p>
                     )}
@@ -444,7 +497,7 @@ export default function MealRecommendationCards({
                         </p>
                         <ul className="mb-4 space-y-1">
                           {recipe.ingredients.map((ing, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-xs font-body text-white/70">
+                            <li key={idx} className="flex items-start gap-2 text-xs font-body text-[var(--color-text-mid)]">
                               <span className="mt-0.5 flex-shrink-0" style={{ color }}>•</span>
                               <span>{ing}</span>
                             </li>
@@ -461,7 +514,7 @@ export default function MealRecommendationCards({
                         </p>
                         <ol className="space-y-2">
                           {recipe.instructions.map((step, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-white/70">
+                            <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-[var(--color-text-mid)]">
                               <span
                                 className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold leading-none"
                                 style={{ background: `${color}33`, color }}
@@ -495,7 +548,8 @@ export default function MealRecommendationCards({
               key={type}
               className="rounded-2xl overflow-hidden transition-opacity duration-300"
               style={{
-                background: "linear-gradient(135deg, #2A2330 0%, #3D3248 100%)",
+                background: "var(--color-surface)",
+                borderTop: "3px solid var(--color-primary)",
                 opacity: isLogged ? 0.6 : 1,
               }}
             >
@@ -510,7 +564,7 @@ export default function MealRecommendationCards({
                 <button
                   onClick={() => handleFoodSwap(type)}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all active:scale-95"
-                  style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
+                  style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-dim)" }}
                 >
                   <span>↺</span>
                   <span>Swap</span>
@@ -519,9 +573,12 @@ export default function MealRecommendationCards({
 
               <div className="px-4 pb-3">
                 <div className="flex items-start gap-3">
-                  <span className="text-3xl leading-none flex-shrink-0 mt-0.5">{food.emoji ?? "🍽️"}</span>
+                  <span className="text-3xl leading-none flex-shrink-0 mt-0.5 w-11 h-11 flex items-center justify-center rounded-2xl"
+                    style={{ background: `${color}18` }}>
+                    {food.emoji ?? getRecipeEmoji(food.name)}
+                  </span>
                   <div className="min-w-0">
-                    <p className="text-white font-display font-semibold text-sm leading-snug">{food.name}</p>
+                    <p className="text-dark font-display font-semibold text-sm leading-snug">{food.name}</p>
                     <p className="text-xs mt-1 font-body leading-snug" style={{ color: `${color}cc` }}>
                       {recipe?.phaseReason ?? (food.keyNutrient ? `Key nutrient: ${food.keyNutrient}` : "")}
                     </p>
@@ -529,7 +586,7 @@ export default function MealRecommendationCards({
                 </div>
               </div>
 
-              <div className="mx-4 mb-3 px-3 py-2.5 rounded-xl grid grid-cols-4" style={{ background: "rgba(255,255,255,0.05)" }}>
+              <div className="mx-4 mb-3 px-3 py-2.5 rounded-xl grid grid-cols-4" style={{ background: "var(--color-ghost)" }}>
                 {[
                   { label: "kcal",    value: `${macros.kcal}` },
                   { label: "protein", value: `${macros.protein}g` },
@@ -537,8 +594,8 @@ export default function MealRecommendationCards({
                   { label: "fats",    value: `${macros.fats}g` },
                 ].map(m => (
                   <div key={m.label} className="text-center">
-                    <p className="text-white font-semibold text-sm leading-none">{m.value}</p>
-                    <p className="text-white/40 text-xs leading-none mt-0.5">{m.label}</p>
+                    <p className="text-dark font-semibold text-sm leading-none">{m.value}</p>
+                    <p className="text-[var(--color-text-dim)] text-xs leading-none mt-0.5">{m.label}</p>
                   </div>
                 ))}
               </div>
@@ -550,9 +607,9 @@ export default function MealRecommendationCards({
                   className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-1.5"
                   style={{
                     background: isLogged
-                      ? "rgba(255,255,255,0.1)"
+                      ? "rgba(0,0,0,0.04)"
                       : `linear-gradient(135deg, ${color}, ${color}88)`,
-                    color: isLogged ? "rgba(255,255,255,0.5)" : "var(--color-surface)",
+                    color: isLogged ? "var(--color-text-dim)" : "var(--color-surface)",
                   }}
                 >
                   {isLogging ? (
@@ -572,9 +629,9 @@ export default function MealRecommendationCards({
                     onClick={() => setExpanded(isOpen ? null : type)}
                     className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                     style={{
-                      background: isOpen ? `${color}22` : "rgba(255,255,255,0.07)",
-                      color:      isOpen ? color : "rgba(255,255,255,0.6)",
-                      border:     `1px solid ${isOpen ? color + "44" : "rgba(255,255,255,0.1)"}`,
+                      background: isOpen ? `${color}22` : "rgba(0,0,0,0.04)",
+                      color:      isOpen ? color : "var(--color-text-mid)",
+                      border:     `1px solid ${isOpen ? color + "44" : "var(--color-border)"}`,
                     }}
                   >
                     <span>{isOpen ? "▲" : "▼"}</span>
@@ -586,12 +643,12 @@ export default function MealRecommendationCards({
               {isOpen && recipe && (
                 <div
                   className="mx-4 mb-4 rounded-xl px-4 py-3"
-                  style={{ background: "rgba(0,0,0,0.2)", borderTop: `2px solid ${color}33` }}
+                  style={{ background: "var(--color-bg)", borderTop: `2px solid ${color}33` }}
                 >
                   <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>Ingredients</p>
                   <ul className="mb-4 space-y-1">
                     {recipe.ingredients.map((ing, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs font-body text-white/70">
+                      <li key={idx} className="flex items-start gap-2 text-xs font-body text-[var(--color-text-mid)]">
                         <span className="mt-0.5 flex-shrink-0" style={{ color }}>•</span>
                         <span>{ing}</span>
                       </li>
@@ -600,7 +657,7 @@ export default function MealRecommendationCards({
                   <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>Preparation</p>
                   <ol className="space-y-2">
                     {recipe.steps.map((step, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-white/70">
+                      <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-[var(--color-text-mid)]">
                         <span
                           className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold leading-none"
                           style={{ background: `${color}33`, color }}

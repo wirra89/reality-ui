@@ -12,7 +12,6 @@ import {
   type ActivityLevel, type BodyGoal,
 } from "@/lib/macros";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 const avatarColors = [
   "linear-gradient(135deg, #C48A97, #7B6D8D)",
@@ -311,7 +310,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       {/* Toast */}
       {toast && (
@@ -850,14 +849,6 @@ export default function ProfilePage() {
             <div className="px-4 py-3 border-b border-[var(--color-border)]">
               <p className="text-xs text-dark/40 font-body">Signed in as</p>
               <p className="text-sm font-medium text-dark truncate">{user.email}</p>
-            </div>
-            {/* Theme toggle */}
-            <div className="w-full flex items-center justify-between gap-3 px-4 py-3.5 border-b border-[var(--color-border)]">
-              <div className="flex items-center gap-3">
-                <span className="text-base">🎨</span>
-                <span className="text-sm font-semibold text-dark">App theme</span>
-              </div>
-              <ThemeToggle />
             </div>
             <a href="mailto:wwealth989@gmail.com?subject=HerPhase Feedback&body=Hi! Here's my feedback on HerPhase:%0A%0AWhat I love:%0A%0AWhat confused me:%0A%0AWhat's missing:%0A%0AWhat I'd pay for:%0A"
               className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-[var(--color-border)] transition-all active:scale-98">

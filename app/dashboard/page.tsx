@@ -5,16 +5,42 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import { getPhaseData, formatPeriodStartDate } from "@/lib/cycle";
+import { getPhaseData, formatPeriodStartDate, getDayInPhase } from "@/lib/cycle";
 import { supabase, getCheckinStreak, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
 import { getTodayNutritionSummary, type NutritionSummary } from "@/lib/nutrition";
-import CycleBadge from "@/components/CycleBadge";
 import CycleSlider from "@/components/CycleSlider";
 import WorkoutCard from "@/components/WorkoutCard";
 import AIRecommendationCard from "@/components/AIRecommendationCard";
 import ReadinessCard from "@/components/ReadinessCard";
 import NutritionCard from "@/components/NutritionCard";
 import CycleCalendar from "@/components/CycleCalendar";
+
+// ── Phase visual constants ──────────────────────────────────────────────────
+const PHASE_HERO_GRADIENT: Record<string, string> = {
+  menstrual:  "linear-gradient(135deg,#FEE2E2,#FECACA)",
+  follicular: "linear-gradient(135deg,#D1FAE5,#A7F3D0)",
+  ovulation:  "linear-gradient(135deg,#FEF3C7,#FDE68A)",
+  luteal:     "linear-gradient(135deg,#EDE9FE,#DDD6FE)",
+};
+const PHASE_HERO_TEXT: Record<string, string> = {
+  menstrual: "#7F1D1D", follicular: "#064E3B", ovulation: "#78350F", luteal: "#3B1D8B",
+};
+const PHASE_HERO_CHIP: Record<string, string> = {
+  menstrual: "rgba(0,0,0,0.08)", follicular: "rgba(0,0,0,0.07)", ovulation: "rgba(0,0,0,0.07)", luteal: "rgba(0,0,0,0.07)",
+};
+const PHASE_COLOR: Record<string, string> = {
+  menstrual: "#F87171", follicular: "#34D399", ovulation: "#FBBF24", luteal: "#A78BFA",
+};
+const PHASE_EMOJIS_DASH: Record<string, string> = {
+  menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
+};
+
+function readinessLabel(score: number) {
+  if (score >= 80) return "High energy";
+  if (score >= 60) return "Good energy";
+  if (score >= 40) return "Moderate energy";
+  return "Low energy";
+}
 
 // ── MacroCard ──────────────────────────────────────────────────────────────
 function MacroCard({ phaseData, profile, nutritionSummary }: {
@@ -115,7 +141,7 @@ function MacroCard({ phaseData, profile, nutritionSummary }: {
 
 // ── DashboardPage ──────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const { user, profile, cycleDay, cycleParams, setCycleDay, setPeriodStartToday, setPeriodStartDate, loading, newCyclePrompt, dismissNewCyclePrompt, todayState } = useApp();
+  const { user, profile, cycleDay, cycleParams, setCycleDay, setPeriodStartToday, setPeriodStartDate, loading, newCyclePrompt, dismissNewCyclePrompt, todayState, latestMoodLog } = useApp();
   const router = useRouter();
 
   const [showCalendar, setShowCalendar]     = useState(false);
@@ -203,7 +229,8 @@ export default function DashboardPage() {
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [fetchDashboardData]);
 
-  const phaseData = getPhaseData(cycleDay, cycleParams);
+  const phaseData     = getPhaseData(cycleDay, cycleParams);
+  const dayInPhase    = getDayInPhase(cycleDay, cycleParams);
 
   if (loading || !user) return (
     <PageSkeleton />
@@ -230,7 +257,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-64 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.18) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pb-12 pt-6">
 
@@ -283,8 +310,140 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ── 2. PHASE CARD ── */}
-        <CycleBadge cycleDay={cycleDay} phaseData={phaseData} cycleParams={cycleParams} />
+        {/* ── 2. PHASE TRANSITION CARD — only on day 1 of a new phase ── */}
+        {dayInPhase === 1 && (() => {
+          const prevPhaseMap: Record<string, string> = {
+            menstrual: "luteal", follicular: "menstrual", ovulation: "follicular", luteal: "ovulation",
+          };
+          const prevPhase = prevPhaseMap[phaseData.phase] ?? "previous";
+          const trainingDiff: Record<string, { from: string; to: string }> = {
+            menstrual:  { from: "Strength training",  to: "Rest & light movement" },
+            follicular: { from: "Rest & recovery",    to: "Strength + HIIT" },
+            ovulation:  { from: "Moderate training",  to: "Peak effort / PRs" },
+            luteal:     { from: "Peak performance",   to: "Moderate → wind down" },
+          };
+          const nutritionDiff: Record<string, { from: string; to: string }> = {
+            menstrual:  { from: "High carbs + protein", to: "Iron + Omega-3 + warmth" },
+            follicular: { from: "Iron + Omega-3",        to: "Lean protein + complex carbs" },
+            ovulation:  { from: "Muscle-building focus", to: "Peak fuel + zinc" },
+            luteal:     { from: "Peak fuel",             to: "Magnesium + B6 + stable carbs" },
+          };
+          const diff = trainingDiff[phaseData.phase];
+          const nutr = nutritionDiff[phaseData.phase];
+          const heroGrad = PHASE_HERO_GRADIENT[phaseData.phase];
+          const heroText = PHASE_HERO_TEXT[phaseData.phase];
+          return (
+            <div className="rounded-2xl mb-3 overflow-hidden shadow-card" style={{ background: heroGrad, color: heroText }}>
+              <div className="p-4 pb-3">
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", top: -4, right: -4, fontSize: 40, opacity: 0.12, transform: "rotate(15deg)", lineHeight: 1 }}>
+                    {PHASE_EMOJIS_DASH[phaseData.phase]}
+                  </span>
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest opacity-65 mb-1">New phase started</p>
+                <p className="font-display text-lg font-bold leading-tight mb-1">
+                  {PHASE_EMOJIS_DASH[phaseData.phase]} {phaseData.label}
+                </p>
+                <p className="text-xs leading-relaxed opacity-80 mb-3">{phaseData.aiRecommendation?.split(".")[0] + "."}</p>
+                {/* Training + nutrition diff */}
+                {diff && (
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {[
+                      { label: "Training", from: diff.from, to: diff.to },
+                      { label: "Nutrition", from: nutr?.from, to: nutr?.to },
+                    ].filter(d => d.from && d.to).map(d => (
+                      <div key={d.label} className="rounded-xl p-2.5" style={{ background: "rgba(255,255,255,0.3)" }}>
+                        <p className="text-xs font-bold uppercase tracking-wide opacity-60 mb-1.5">{d.label}</p>
+                        <p className="text-xs line-through opacity-50 leading-tight">{d.from}</p>
+                        <p className="text-xs font-bold leading-tight mt-1">→ {d.to}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs opacity-50 text-center">Swipe down to see today&apos;s full plan</p>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ── 2. PHASE HERO ── */}
+        {(() => {
+          const heroGrad  = PHASE_HERO_GRADIENT[phaseData.phase];
+          const heroText  = PHASE_HERO_TEXT[phaseData.phase];
+          const heroChip  = PHASE_HERO_CHIP[phaseData.phase];
+          const phaseColor = PHASE_COLOR[phaseData.phase];
+          const score     = todayState?.readinessScore ?? phaseData.readinessScore;
+          const scorePct  = score / 100;
+
+          // Build signal chips
+          const chips: string[] = [];
+          if (todayState?.readinessLabel) {
+            chips.push(todayState.readinessLabel.charAt(0).toUpperCase() + todayState.readinessLabel.slice(1) + " energy");
+          } else {
+            chips.push(readinessLabel(score));
+          }
+          const symptoms = (latestMoodLog?.symptoms as unknown as string[] | undefined) ?? [];
+          if (symptoms.includes("cramps") || symptoms.includes("cramp")) chips.push("Cramps today");
+          else if (symptoms.includes("bloating")) chips.push("Bloating");
+          else if (symptoms.includes("fatigue")) chips.push("Fatigue");
+          if (daysUntilNext > 0 && daysUntilNext <= 7) chips.push(`Period in ${daysUntilNext}d`);
+          else if (phaseData.phase === "menstrual") chips.push("Period week");
+
+          // Workout label for quick action
+          const workoutLabel = todayState?.workoutRecommendation?.type ?? phaseData.training;
+
+          return (
+            <div className="rounded-2xl mb-3 overflow-hidden shadow-card" style={{ background: heroGrad, color: heroText, position: "relative" }}>
+              {/* Decorative blob */}
+              <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: phaseColor, opacity: 0.12, filter: "blur(24px)", pointerEvents: "none" }} />
+              <div className="p-4 relative">
+                {/* Eyebrow */}
+                <p className="text-xs font-bold uppercase tracking-widest opacity-65 mb-1">Day {cycleDay} · {phaseData.phase} phase</p>
+                {/* Headline */}
+                <p className="font-display text-xl font-bold leading-tight mb-3">{phaseData.label} {phaseData.emoji}</p>
+                {/* Signal chips */}
+                {chips.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {chips.map(c => (
+                      <span key={c} className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: heroChip }}>{c}</span>
+                    ))}
+                  </div>
+                )}
+                {/* Readiness bar */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{ background: "rgba(255,255,255,0.28)" }}>
+                  <span className="text-sm flex-shrink-0">💪</span>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold mb-1.5">Readiness {score} / 100</p>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.4)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${scorePct * 100}%`, background: phaseColor }} />
+                    </div>
+                  </div>
+                </div>
+                {/* Quick actions */}
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={() => router.push("/mood")}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-left active:scale-95 transition-all"
+                    style={{ background: "rgba(255,255,255,0.3)" }}>
+                    <span className="text-lg">✏️</span>
+                    <div>
+                      <p className="text-xs font-bold">Check-in</p>
+                      <p className="text-xs opacity-65">{todayState?.adaptedFromCheckin ? "Done ✓" : "Personalise today"}</p>
+                    </div>
+                  </button>
+                  <button onClick={() => router.push("/training")}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-left active:scale-95 transition-all"
+                    style={{ background: "rgba(255,255,255,0.3)" }}>
+                    <span className="text-lg">💪</span>
+                    <div>
+                      <p className="text-xs font-bold">Today&apos;s plan</p>
+                      <p className="text-xs opacity-65 truncate">{workoutLabel}</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── PERIOD DATE NUDGE — show if not set ── */}
         {!profile?.period_start_date && !newCyclePrompt && (
@@ -570,6 +729,44 @@ export default function DashboardPage() {
             })()}
           </div>
         </div>
+
+        {/* ── PERIOD PREDICTION CARD — last 7 days of luteal ── */}
+        {phaseData.phase === "luteal" && daysUntilNext > 0 && daysUntilNext <= 7 && profile?.period_start_date && (() => {
+          const today = new Date();
+          const predicted = new Date(today);
+          predicted.setDate(today.getDate() + daysUntilNext);
+          const predictedStr = predicted.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+          const prepFoods = [
+            { emoji: "🌰", text: "Magnesium — almonds, dark chocolate, spinach" },
+            { emoji: "🐟", text: "Omega-3 now to reduce next week's cramps" },
+            { emoji: "🔥", text: "Shift to warming foods, reduce cold / raw" },
+            { emoji: "💊", text: "Pain relief ready at home" },
+          ];
+          return (
+            <div className="rounded-2xl mb-3 overflow-hidden shadow-card" style={{ background: "#FEF7F8" }}>
+              <div className="flex items-center gap-3 px-4 py-3" style={{ background: "#FEE2E2" }}>
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#F87171" }} />
+                <p className="text-xs font-extrabold uppercase tracking-widest flex-1" style={{ color: "#B91C1C" }}>
+                  Period predicted in {daysUntilNext}d
+                </p>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#B91C1C" }}>
+                  {predictedStr}
+                </span>
+              </div>
+              <div className="p-4">
+                <p className="text-xs font-bold text-dark mb-3">Start loading these now for an easier period</p>
+                <div className="space-y-2">
+                  {prepFoods.map(f => (
+                    <div key={f.emoji} className="flex items-center gap-2">
+                      <span>{f.emoji}</span>
+                      <p className="text-xs text-dark/60 font-body">{f.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Calendar modal */}
         {showCalendar && (

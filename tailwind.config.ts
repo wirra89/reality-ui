@@ -19,20 +19,19 @@ const config: Config = {
         "text-mid": "var(--color-text-mid)",
         "text-dim": "var(--color-text-dim)",
         card:       "var(--color-surface)",
-        "card-dark":"#141828",
         ghost:      "var(--color-ghost)",
       },
       fontFamily: {
-        display: ["'Playfair Display'", "serif"],
-        body: ["'DM Sans'", "sans-serif"],
+        display: ["'Space Mono'", "monospace"],
+        body: ["'Nunito'", "sans-serif"],
       },
       borderRadius: {
         "2xl": "1rem",
         "3xl": "1.5rem",
       },
       boxShadow: {
-        soft: "0 4px 24px rgba(196,138,151,0.10)",
-        card: "0 2px 16px rgba(46,46,46,0.06)",
+        soft: "0 2px 10px rgba(180,80,100,0.08)",
+        card: "0 0 0 1px #F5DEE2, 0 4px 16px rgba(180,80,100,0.10)",
         dark: "0 8px 32px rgba(42,35,48,0.18)",
       },
       maxWidth: {

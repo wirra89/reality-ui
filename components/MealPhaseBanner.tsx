@@ -8,6 +8,25 @@
 import type { PhaseData } from "@/lib/cycle";
 import type { MealFocus } from "@/lib/dailyPlan";
 
+const PHASE_BAND_BG: Record<string, string> = {
+  menstrual:  "#FEE2E2",
+  follicular: "#D1FAE5",
+  ovulation:  "#FEF3C7",
+  luteal:     "#EDE9FE",
+};
+const PHASE_BAND_TEXT: Record<string, string> = {
+  menstrual:  "#B91C1C",
+  follicular: "#065F46",
+  ovulation:  "#92400E",
+  luteal:     "#5B21B6",
+};
+const PHASE_COLOR: Record<string, string> = {
+  menstrual:  "#F87171",
+  follicular: "#34D399",
+  ovulation:  "#FBBF24",
+  luteal:     "#A78BFA",
+};
+
 // ── Fallback rotating message bank (original, preserved) ─────────────────
 const PHASE_STARTS: Record<string, number> = {
   menstrual: 1, follicular: 6, ovulation: 14, luteal: 17,
@@ -63,41 +82,52 @@ export default function MealPhaseBanner({ phaseData, cycleDay, mealFocus, adapte
 
   // ── TodayState version — engine-driven meal focus ─────────────────────
   if (mealFocus) {
+    const bandBg   = PHASE_BAND_BG[phase]   ?? "#FEE2E2";
+    const bandText = PHASE_BAND_TEXT[phase] ?? "#B91C1C";
+    const dotColor = PHASE_COLOR[phase]     ?? "#F87171";
     return (
-      <div className="rounded-2xl p-4 mb-3"
-        style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+      <div className="rounded-2xl mb-3 overflow-hidden shadow-card"
+        style={{ background: "var(--color-surface)" }}>
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-2">
+        {/* Phase band */}
+        <div className="flex items-center justify-between px-4 py-2.5"
+          style={{ background: bandBg }}>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{phaseData.emoji}</span>
-            <div>
-              <p className="text-white/40 text-xs font-body uppercase tracking-widest">
-                {phase} phase · Day {cycleDay}
-                {adaptedFromCheckin && " · personalised"}
-              </p>
-              <p className="text-white font-display font-semibold text-base">
+            <span className="w-2 h-2 rounded-full" style={{ background: dotColor }} />
+            <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: bandText }}>
+              {phase} phase
+              {adaptedFromCheckin && " · personalised"}
+            </span>
+          </div>
+          <span className="font-display text-xs font-bold" style={{ color: bandText }}>Day {cycleDay}</span>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{phaseData.emoji}</span>
+              <p className="text-dark font-display font-semibold text-base">
                 {mealFocus.headline}
               </p>
             </div>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+              style={{ background: bandBg, color: bandText }}>
+              Meal focus
+            </span>
           </div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-            style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)" }}>
-            Meal focus
-          </span>
-        </div>
 
         {/* Reasoning */}
-        <p className="text-white/60 text-xs font-body leading-relaxed mb-3">
+        <p className="text-[var(--color-text-mid)] text-xs font-body leading-relaxed mb-3">
           {mealFocus.reasoning.split(".")[0].trim() + "."}
         </p>
 
         {/* Macro adjustment — shown only if present */}
         {mealFocus.macroAdjustment && (
           <div className="flex items-start gap-2 mb-3 px-3 py-2 rounded-xl"
-            style={{ background: "rgba(255,255,255,0.06)" }}>
+            style={{ background: "rgba(0,0,0,0.03)" }}>
             <span className="text-sm flex-shrink-0">⚡</span>
-            <p className="text-white/70 text-xs font-body leading-relaxed">
+            <p className="text-[var(--color-text-mid)] text-xs font-body leading-relaxed">
               {mealFocus.macroAdjustment}
             </p>
           </div>
@@ -109,53 +139,70 @@ export default function MealPhaseBanner({ phaseData, cycleDay, mealFocus, adapte
             {mealFocus.suggestedFoods.map((food) => (
               <div key={food}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
-                style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>
+                style={{ background: bandBg, color: bandText }}>
                 {food}
               </div>
             ))}
           </div>
         )}
+        </div>
       </div>
     );
   }
 
-  // ── Fallback — original rotating phase tip (unchanged) ────────────────
+  // ── Fallback — rotating phase tip ────────────────────────────────────
+  const bandBg2   = PHASE_BAND_BG[phase]   ?? "#FEE2E2";
+  const bandText2 = PHASE_BAND_TEXT[phase] ?? "#B91C1C";
+  const dotColor2 = PHASE_COLOR[phase]     ?? "#F87171";
+
   return (
-    <div className="rounded-2xl p-4 mb-3"
-      style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
-      <div className="flex items-center justify-between mb-2">
+    <div className="rounded-2xl mb-3 overflow-hidden shadow-card"
+      style={{ background: "var(--color-surface)" }}>
+
+      {/* Phase band */}
+      <div className="flex items-center justify-between px-4 py-2.5"
+        style={{ background: bandBg2 }}>
         <div className="flex items-center gap-2">
-          <span className="text-2xl">{phaseData.emoji}</span>
-          <div>
-            <p className="text-white/40 text-xs font-body uppercase tracking-widest">
-              {phase} phase · Day {cycleDay}
-            </p>
-            <p className="text-white font-display font-semibold text-base">{msg.title}</p>
-          </div>
+          <span className="w-2 h-2 rounded-full" style={{ background: dotColor2 }} />
+          <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: bandText2 }}>
+            {phase} phase
+          </span>
         </div>
-        <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-          style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)" }}>
-          {msg.category}
-        </span>
+        <span className="font-display text-xs font-bold" style={{ color: bandText2 }}>Day {cycleDay}</span>
       </div>
-      <p className="text-white/60 text-xs font-body leading-relaxed mb-3">{msg.detail}</p>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {msg.tips.map((tip) => (
-          <div key={tip.label}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-            style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>
-            <span>{tip.emoji}</span><span>{tip.label}</span>
+
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{phaseData.emoji}</span>
+            <div>
+              <p className="text-dark font-display font-semibold text-base">{msg.title}</p>
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="flex gap-1.5">
-        {msgs.map((_, i) => (
-          <div key={i} className="h-1 rounded-full transition-all duration-300"
-            style={{
-              width: i === msgIdx ? 16 : 6,
-              background: i === msgIdx ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.15)",
-            }} />
-        ))}
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+            style={{ background: bandBg2, color: bandText2 }}>
+            {msg.category}
+          </span>
+        </div>
+        <p className="text-[var(--color-text-mid)] text-xs font-body leading-relaxed mb-3">{msg.detail}</p>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {msg.tips.map((tip) => (
+            <div key={tip.label}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+              style={{ background: bandBg2, color: bandText2 }}>
+              <span>{tip.emoji}</span><span>{tip.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-1.5">
+          {msgs.map((_, i) => (
+            <div key={i} className="h-1 rounded-full transition-all duration-300"
+              style={{
+                width: i === msgIdx ? 16 : 6,
+                background: i === msgIdx ? dotColor2 : "var(--color-border)",
+              }} />
+          ))}
+        </div>
       </div>
     </div>
   );

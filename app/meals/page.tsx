@@ -6,16 +6,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData } from "@/lib/cycle";
-import { saveMealLog, getTodayMealLog, type MealEntry } from "@/lib/supabase";
 import { type Phase } from "@/lib/cycle";
-import MealPhaseBanner    from "@/components/MealPhaseBanner";
-import MealDailySummary   from "@/components/MealDailySummary";
-import MealLogForm        from "@/components/MealLogForm";
-import MealFoodLibrary    from "@/components/MealFoodLibrary";
-// V1.1 nutrition components — coexist with legacy system during transition
-import NutritionFoodSearch      from "@/components/NutritionFoodSearch";
-import NutritionEntryList       from "@/components/NutritionEntryList";
-import MealRecommendationCards  from "@/components/MealRecommendationCards";
+import MealPhaseBanner           from "@/components/MealPhaseBanner";
+import NutritionFoodSearch       from "@/components/NutritionFoodSearch";
+import NutritionEntryList        from "@/components/NutritionEntryList";
+import MealRecommendationCards   from "@/components/MealRecommendationCards";
 import {
   getTodayMealEntries,
   getTodayNutritionSummary,
@@ -26,10 +21,6 @@ import {
 } from "@/lib/nutrition";
 import { type MacroTargets } from "@/components/NutritionEntryList";
 import { type MacroRemaining } from "@/lib/macroMatcher";
-
-// Set to true to re-enable legacy meal UI (MealDailySummary, MealFoodLibrary, Log Custom Meal button).
-// Legacy code is preserved intact — this flag only controls visibility.
-const SHOW_LEGACY_MEALS = false;
 
 export default function MealsPage() {
   const { user, profile, cycleDay, cycleParams, loading, todayState, latestMoodLog } = useApp();
@@ -46,17 +37,12 @@ export default function MealsPage() {
     fats:     profile?.calculated_fats     ?? phaseData.macros.fats,
   };
 
-  const [meals, setMeals]             = useState<MealEntry[]>([]);
-  const [showForm, setShowForm]       = useState(false);
-  const [saveStatus, setSaveStatus]   = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [dataLoading, setDataLoading] = useState(true);
-  const [toast, setToast]             = useState<string | null>(null);
-
-  // ── V1.1 nutrition state — new relational system, coexists with legacy ──
+  const [toast, setToast]                             = useState<string | null>(null);
   const [showNutritionSearch, setShowNutritionSearch] = useState(false);
   const [nutritionEntries, setNutritionEntries]       = useState<MealLogEntry[]>([]);
   const [nutritionSummary, setNutritionSummary]       = useState<NutritionSummary | null>(null);
   const [nutritionLoading, setNutritionLoading]       = useState(true);
+  const [phaseFoods, setPhaseFoods]                   = useState<Food[]>([]);
 
   // Remaining macros — clamped to 0, recomputed whenever nutritionSummary updates
   const macroRemaining: MacroRemaining = {
@@ -66,21 +52,7 @@ export default function MealsPage() {
     kcal:    Math.max(0, macroTargets.calories - Math.round(nutritionSummary?.kcal    ?? 0)),
   };
 
-  // ── Phase food pool — lifted here so both NutritionEntryList and
-  //    MealRecommendationCards share the same loaded data ──
-  const [phaseFoods, setPhaseFoods] = useState<Food[]>([]);
-
-  useEffect(() => {
-    getFoodsForPhase(phase).then(all => {
-      const meals = all.filter(f => f.category === "meal");
-      setPhaseFoods(meals.length >= 4 ? meals : all);
-    });
-  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Use today's date as the load guard — not cycleDay.
-  // meal_logs rows are keyed by (user_id, date), so re-fetching on the same day
-  // is safe and correct. Previously used cycleDay which caused stale data from
-  // previous cycles with the same cycle_day number to be loaded.
+  // Use today's date as load guard — meal_logs rows are keyed by (user_id, date)
   const today = new Date().toISOString().split("T")[0];
 
   function showToast(msg: string) {
@@ -91,16 +63,12 @@ export default function MealsPage() {
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
   useEffect(() => {
-    if (!user) return;
-    setDataLoading(true);
-    setMeals([]);
-    getTodayMealLog().then((log) => {
-      if (log?.meals) setMeals(log.meals as MealEntry[]);
-      setDataLoading(false);
+    getFoodsForPhase(phase).then(all => {
+      const meals = all.filter(f => f.category === "meal");
+      setPhaseFoods(meals.length >= 4 ? meals : all);
     });
-  }, [user, today]); // re-fetch if date changes (midnight rollover)
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── V1.1: load nutrition entries + summary from new relational table ──
   async function refreshNutrition() {
     const [entries, summary] = await Promise.all([
       getTodayMealEntries(),
@@ -117,42 +85,12 @@ export default function MealsPage() {
     refreshNutrition();
   }, [user, today]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function persistMeals(updated: MealEntry[]) {
-    setSaveStatus("loading");
-    const result = await saveMealLog({ cycle_day: cycleDay, phase, meals: updated });
-    setSaveStatus(result.success ? "success" : "error");
-    setTimeout(() => setSaveStatus("idle"), 2000);
-  }
-
-  function handleAdd(entry: MealEntry) {
-    const updated = [...meals, entry];
-    setMeals(updated);
-    persistMeals(updated);
-    setShowForm(false);
-    showToast(`✓ ${entry.name} added`);
-  }
-
-  function handleRemove(idx: number) {
-    const updated = meals.filter((_, i) => i !== idx);
-    setMeals(updated);
-    persistMeals(updated);
-  }
-
-  function handleAddFromLibrary(entry: MealEntry) {
-    const updated = [...meals, entry];
-    setMeals(updated);
-    persistMeals(updated);
-    showToast(`✓ ${entry.name} added`);
-  }
-
-  if (loading || !user) return (
-    <PageSkeleton />
-  );
+  if (loading || !user) return <PageSkeleton />;
 
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       {/* Toast notification */}
       {toast && (
@@ -170,10 +108,6 @@ export default function MealsPage() {
             <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Nutrition</p>
             <h1 className="font-display text-2xl font-semibold text-dark">Meals & Food</h1>
           </div>
-          <div className="flex items-center gap-2">
-            {saveStatus === "success" && <span className="text-xs text-emerald-500 font-semibold">✓ Saved</span>}
-            {saveStatus === "error"   && <span className="text-xs text-rose-500 font-semibold">✗ Error</span>}
-          </div>
         </header>
 
         {/* Phase banner — TodayState mealFocus or rotating fallback */}
@@ -184,30 +118,7 @@ export default function MealsPage() {
           adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
         />
 
-        {/* Daily summary + logged meals — legacy system, hidden from testers */}
-        {SHOW_LEGACY_MEALS && (
-          <MealDailySummary
-            meals={meals}
-            phaseData={phaseData}
-            profile={profile}
-            onRemove={handleRemove}
-            dataLoading={dataLoading}
-            logButton={
-              showForm ? (
-                <MealLogForm onAdd={handleAdd} onCancel={() => setShowForm(false)} />
-              ) : (
-                <button onClick={() => setShowForm(true)}
-                  className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 shadow-soft mb-4 flex items-center justify-center gap-2"
-                  style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-                  <span className="text-base">✏️</span>
-                  Log Custom Meal
-                </button>
-              )
-            }
-          />
-        )}
-
-        {/* ── V1.1: Search & log food — above recommendations ── */}
+        {/* Search & log food */}
         <div className="mb-3">
           {!showNutritionSearch ? (
             <button
@@ -249,7 +160,7 @@ export default function MealsPage() {
           />
         </div>
 
-        {/* ── V1.1: Phase-aware meal recommendation cards — below logged entries ── */}
+        {/* Phase-aware meal recommendation cards */}
         <MealRecommendationCards
           phase={phase}
           cycleDay={cycleDay}
@@ -263,8 +174,6 @@ export default function MealsPage() {
           }}
         />
 
-        {/* Food library — phase recommendations, legacy system, hidden from testers */}
-        {SHOW_LEGACY_MEALS && <MealFoodLibrary phase={phase} onAddFood={handleAddFromLibrary} />}
       </main>
     </div>
   );

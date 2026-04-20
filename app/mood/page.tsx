@@ -231,7 +231,7 @@ export default function MoodPage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
         <header className="flex items-center justify-between mb-5">
@@ -256,22 +256,22 @@ export default function MoodPage() {
 
         {/* Daily message */}
         <div className="rounded-2xl p-4 mb-4"
-          style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+          style={{ background: "var(--color-surface)", borderTop: "3px solid var(--color-primary)" }}>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-white/40 text-xs font-body uppercase tracking-widest">{phaseData.phase} phase · Day {cycleDay}</p>
+            <p className="text-[var(--color-text-dim)] text-xs font-body uppercase tracking-widest">{phaseData.phase} phase · Day {cycleDay}</p>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}>
+              style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-mid)" }}>
               {todayMsg.category}
             </span>
           </div>
-          <p className="text-white font-display italic text-base leading-snug">"{todayMsg.message}"</p>
+          <p className="text-dark font-display italic text-base leading-snug">"{todayMsg.message}"</p>
           {/* Day indicator dots */}
           <div className="flex gap-1.5 mt-3">
             {msgs.map((_, i) => (
               <div key={i} className="h-1 rounded-full transition-all duration-300"
                 style={{
                   width: i === dayIdx ? 16 : 6,
-                  background: i === dayIdx ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.15)",
+                  background: i === dayIdx ? "var(--color-text-mid)" : "var(--color-border)",
                 }} />
             ))}
           </div>
@@ -401,24 +401,24 @@ export default function MoodPage() {
             const phaseData_ = c.phases[phaseData.phase] ?? c.phases.luteal;
             return (
               <div className="mt-4 rounded-2xl overflow-hidden"
-                style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+                style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
                 <div className="px-4 pt-4 pb-4">
                   <div className="flex items-center gap-2 mb-2.5">
                     <span style={{ fontSize: 20 }}>{c.emoji}</span>
                     <div>
-                      <p className="text-white font-semibold text-sm">{c.label} cravings = low {c.nutrient}</p>
-                      <p className="text-white/40 text-xs font-body uppercase tracking-wide">{phaseData.phase} phase · Day {cycleDay}</p>
+                      <p className="text-dark font-semibold text-sm">{c.label} cravings = low {c.nutrient}</p>
+                      <p className="text-[var(--color-text-dim)] text-xs font-body uppercase tracking-wide">{phaseData.phase} phase · Day {cycleDay}</p>
                     </div>
                   </div>
-                  <p className="text-white/65 text-xs font-body leading-relaxed mb-3">
+                  <p className="text-[var(--color-text-mid)] text-xs font-body leading-relaxed mb-3">
                     {phaseData_.reason}
                   </p>
-                  <p className="text-white/40 text-xs font-semibold uppercase tracking-wide mb-2">Eat this instead</p>
+                  <p className="text-[var(--color-text-dim)] text-xs font-semibold uppercase tracking-wide mb-2">Eat this instead</p>
                   <div className="flex flex-wrap gap-2">
                     {phaseData_.foods.map((f) => (
                       <div key={f.name}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-                        style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.75)" }}>
+                        style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-mid)" }}>
                         <span style={{ fontSize: 13 }}>{f.emoji}</span>
                         {f.name}
                       </div>

@@ -71,34 +71,38 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50"
+      className="fixed z-50"
       style={{
+        bottom: 14,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "calc(100% - 28px)",
+        maxWidth: "calc(430px - 28px)",
         background: "var(--nav-bg)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        borderTop: "1px solid var(--nav-border)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: 26,
+        boxShadow: "0 8px 32px rgba(180,80,100,0.14), 0 2px 8px rgba(180,80,100,0.08)",
       }}
     >
-      <div className="mx-auto max-w-app">
-        <div className="flex items-center justify-around px-2 py-2">
-          {tabs.map((tab) => {
-            const active = pathname === tab.href;
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className="flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-200 active:scale-90"
-                style={{ background: active ? "rgba(196,138,151,0.10)" : "transparent" }}
-              >
-                {tab.icon(active)}
-                <span className="text-xs font-semibold tracking-wide"
-                  style={{ color: active ? "#C48A97" : "var(--color-text-dim)" }}>
-                  {tab.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
+      <div className="flex items-center justify-around px-2 py-1.5">
+        {tabs.map((tab) => {
+          const active = pathname === tab.href;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-all duration-200 active:scale-90"
+              style={{ background: active ? "rgba(232,130,154,0.12)" : "transparent" }}
+            >
+              {tab.icon(active)}
+              <span className="text-[7.5px] font-extrabold uppercase tracking-wider"
+                style={{ color: active ? "#E8829A" : "var(--color-text-dim)", opacity: active ? 1 : 0.7 }}>
+                {tab.label}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

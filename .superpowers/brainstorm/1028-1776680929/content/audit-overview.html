@@ -1,0 +1,63 @@
+<h2>HerPhase — Pre-Publish Audit</h2>
+<p class="subtitle">Here's what I found across the codebase. Before we decide what to fix, I have a few questions for you.</p>
+
+<div class="section">
+  <div class="label">🚨 Blockers (must fix before launch)</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px 14px">
+      <strong style="color:#dc2626">No Privacy Policy or Terms of Service</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">HerPhase collects menstrual cycle data, health metrics, and mood logs. This is sensitive health data. Publishing without a privacy policy is a legal risk in most regions (GDPR, US state laws).</p>
+    </div>
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px 14px">
+      <strong style="color:#dc2626">Dev artifacts exposed in /public</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">14 design exploration HTML files (design-exploration-*.html, mockup.html, etc.) are publicly accessible at yoursite.com/design-exploration-v5.html. Also: <code>test_output.js</code>, <code>verify_spec.js</code> in project root.</p>
+    </div>
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px 14px">
+      <strong style="color:#dc2626">Sentry example route accessible</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666"><code>/sentry-example-page</code> is a live route that exists purely for Sentry testing. Should be removed before going live.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">⚠️ Should fix (important for quality)</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 14px">
+      <strong style="color:#92400e">Hardcoded "Good morning" greeting</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">Dashboard always says "Good morning" regardless of time of day. Should be time-aware (morning / afternoon / evening).</p>
+    </div>
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 14px">
+      <strong style="color:#92400e">No 404 page</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">Next.js will show a generic 404. A branded not-found page would be more polished.</p>
+    </div>
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 14px">
+      <strong style="color:#92400e">IS_PRO_FEATURE flag is false (PRs page)</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">There's a commented-out paywall gate in <code>prs/page.tsx</code>. A monetisation decision needs to be made before launch.</p>
+    </div>
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 14px">
+      <strong style="color:#92400e">PWA icon uses "any maskable" for both purposes</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">The manifest sets <code>purpose: "any maskable"</code> for both icons. Best practice is to separate <code>purpose: "any"</code> and <code>purpose: "maskable"</code> into separate entries for better home screen display.</p>
+    </div>
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:12px;padding:12px 14px">
+      <strong style="color:#92400e">Theme hardcoded to "rose" — no dark mode</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:#666">Layout.tsx forces <code>data-theme="rose"</code>. No dark mode support. For a health app used at night (checking cycle, logging mood), dark mode matters.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">✅ What's already solid</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Sentry error tracking ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Google OAuth + email auth ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">PWA manifest + service worker ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Push notifications ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Onboarding flow ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Supabase Hydration persistence ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Data maturity awareness ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Password reset flow ✓</span>
+    <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#065f46">Profile completeness nudges ✓</span>
+  </div>
+</div>
+
+<p style="font-size:12px;color:#999;text-align:center;margin-top:16px">I'll ask a few questions to narrow down priorities — starting in the terminal.</p>

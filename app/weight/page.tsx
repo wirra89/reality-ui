@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { saveWeightLog, getWeightLogs, type WeightLog } from "@/lib/supabase";
 import WeightChart from "@/components/WeightChart";
+import type { PhaseBand } from "@/lib/chartTypes";
+import type { Phase } from "@/lib/cycle";
 
 export default function WeightPage() {
   const { user, profile, loading } = useApp();
@@ -47,6 +49,57 @@ export default function WeightPage() {
     }
   }
 
+  // ── Phase bands: compute from period_start_date + cycle_length over log range ──
+  const phaseBands: PhaseBand[] = (() => {
+    if (!profile?.period_start_date || logs.length < 2) return [];
+    const cycleLen    = profile.cycle_length ?? 28;
+    const periodLen   = profile.period_length ?? 5;
+    const cycleStart  = new Date(profile.period_start_date);
+    const PHASE_DEFS: { phase: Phase; len: number; color: string }[] = [
+      { phase: "menstrual",  len: periodLen,                        color: "rgba(248,113,113,0.12)" },
+      { phase: "follicular", len: Math.round(cycleLen * 0.29),     color: "rgba(52,211,153,0.10)" },
+      { phase: "ovulation",  len: Math.round(cycleLen * 0.11),     color: "rgba(251,191,36,0.10)" },
+      { phase: "luteal",     len: cycleLen - periodLen - Math.round(cycleLen * 0.29) - Math.round(cycleLen * 0.11), color: "rgba(167,139,250,0.12)" },
+    ];
+    const bands: PhaseBand[] = [];
+    const firstLog = new Date(logs[0].date);
+    const lastLog  = new Date(logs[logs.length - 1].date);
+    // Walk from cycleStart forward in cycles until we pass the last log
+    let cursor = new Date(cycleStart);
+    for (let cycle = 0; cycle < 6; cycle++) {
+      for (const def of PHASE_DEFS) {
+        const start = new Date(cursor);
+        const end   = new Date(cursor);
+        end.setDate(end.getDate() + def.len - 1);
+        // Only add bands that overlap the log range
+        if (end >= firstLog && start <= lastLog) {
+          bands.push({
+            phase:     def.phase,
+            startDate: start.toISOString().split("T")[0],
+            endDate:   end.toISOString().split("T")[0],
+            color:     def.color,
+          });
+        }
+        cursor.setDate(cursor.getDate() + def.len);
+        if (cursor > lastLog) break;
+      }
+      if (cursor > lastLog) break;
+    }
+    return bands;
+  })();
+
+  // Detect luteal peak: highest weight logged during a luteal band
+  const lutealPeak = (() => {
+    const lutealBands = phaseBands.filter(b => b.phase === "luteal");
+    if (!lutealBands.length || logs.length < 3) return null;
+    let peak: WeightLog | null = null;
+    for (const log of logs) {
+      const inLuteal = lutealBands.some(b => log.date >= b.startDate && log.date <= b.endDate);
+      if (inLuteal && (!peak || log.weight_kg > peak.weight_kg)) peak = log;
+    }
+    return peak;
+  })();
+
   // Stats
   const weights = logs.map(l => l.weight_kg);
   const current = weights[weights.length - 1] ?? null;
@@ -68,7 +121,7 @@ export default function WeightPage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
 
@@ -102,12 +155,49 @@ export default function WeightPage() {
 
         {/* Chart */}
         {logs.length >= 2 ? (
-          <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold text-dark">Weight over time</p>
-              <p className="text-xs text-dark/40 font-body">{logs.length} entries</p>
+          <div className="mb-4">
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-2">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-semibold text-dark">Weight over time</p>
+                <div className="flex items-center gap-3">
+                  {phaseBands.length > 0 && (
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      {(["menstrual","follicular","ovulation","luteal"] as const).map(ph => {
+                        const colors: Record<string,string> = {
+                          menstrual:"#F87171", follicular:"#34D399", ovulation:"#FBBF24", luteal:"#A78BFA"
+                        };
+                        if (!phaseBands.some(b => b.phase === ph)) return null;
+                        return (
+                          <div key={ph} className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ background: colors[ph], opacity: 0.7 }} />
+                            <span className="text-xs text-dark/30 capitalize" style={{ fontSize: 9 }}>{ph.slice(0,3)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  <p className="text-xs text-dark/40 font-body">{logs.length} entries</p>
+                </div>
+              </div>
+              <WeightChart logs={logs.map(l => ({ date: l.date, weight: l.weight_kg }))} phaseBands={phaseBands} />
             </div>
-            <WeightChart logs={logs.map(l => ({ date: l.date, weight: l.weight_kg }))} />
+            {/* Luteal peak annotation */}
+            {lutealPeak && (
+              <div className="rounded-2xl overflow-hidden shadow-card">
+                <div className="flex items-center gap-2 px-4 py-2" style={{ background: "#EDE9FE" }}>
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#A78BFA" }} />
+                  <p className="text-xs font-extrabold uppercase tracking-widest flex-1" style={{ color: "#5B21B6" }}>Luteal phase note</p>
+                </div>
+                <div className="px-4 py-3" style={{ background: "var(--color-surface)" }}>
+                  <p className="text-xs font-bold text-dark mb-1">
+                    Peak weight {lutealPeak.weight_kg} kg on {new Date(lutealPeak.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} — normal
+                  </p>
+                  <p className="text-xs text-dark/55 font-body leading-relaxed">
+                    Progesterone causes water retention during the luteal phase. This isn&apos;t fat — it resolves within 2–3 days of your period starting. The purple zone on the chart marks this phase.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         ) : logs.length === 1 ? (
           <div className="bg-surface rounded-2xl p-5 shadow-card mb-4 text-center">
@@ -116,10 +206,10 @@ export default function WeightPage() {
             <p className="text-dark/40 text-xs font-body mt-1">Log tomorrow's weight to unlock your chart</p>
           </div>
         ) : (
-          <div className="rounded-2xl p-5 mb-4 text-center" style={{ background: "linear-gradient(135deg,#2A2330,#3D3248)" }}>
+          <div className="rounded-2xl p-5 mb-4 text-center" style={{ background: "var(--color-surface)", borderTop: "3px solid var(--color-primary)" }}>
             <p className="text-4xl mb-3">⚖️</p>
-            <p className="text-white font-semibold text-sm mb-1">Start tracking your weight</p>
-            <p className="text-xs font-body mb-0" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <p className="text-dark font-semibold text-sm mb-1">Start tracking your weight</p>
+            <p className="text-xs font-body mb-0" style={{ color: "var(--color-text-mid)" }}>
               After 2 entries you'll see a chart. After a full cycle you'll see how your weight changes with each phase.
             </p>
           </div>

@@ -40,7 +40,7 @@ export default function WorkoutCard({ recommendation, phase }: Props) {
   return (
     <div
       className="relative rounded-3xl p-5 mb-3 overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #2A2330 0%, #3D3248 100%)" }}
+      style={{ background: "var(--color-surface)", borderTop: "3px solid var(--color-primary)" }}
     >
       {/* Accent blob */}
       <div
@@ -51,10 +51,10 @@ export default function WorkoutCard({ recommendation, phase }: Props) {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <p className="text-white/50 text-xs font-body uppercase tracking-widest mb-1">
+          <p className="text-[var(--color-text-dim)] text-xs font-body uppercase tracking-widest mb-1">
             Today's Training
           </p>
-          <h2 className="text-white font-display font-semibold text-xl leading-tight">
+          <h2 className="text-dark font-display font-semibold text-xl leading-tight">
             {recommendation.type}
           </h2>
         </div>
@@ -62,15 +62,15 @@ export default function WorkoutCard({ recommendation, phase }: Props) {
       </div>
 
       {/* Reasoning */}
-      <p className="text-white/60 text-sm font-body leading-relaxed mb-5">
+      <p className="text-[var(--color-text-mid)] text-sm font-body leading-relaxed mb-5">
         {recommendation.reasoning}
       </p>
 
       {/* Intensity bar */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-white/50 text-xs font-body">Intensity</span>
-          <span className="text-white/80 text-xs font-semibold">
+          <span className="text-[var(--color-text-dim)] text-xs font-body">Intensity</span>
+          <span className="text-dark text-xs font-semibold">
             {INTENSITY_LABELS[recommendation.intensity]}
             {recommendation.duration > 0 && ` · ${recommendation.duration} min`}
           </span>
@@ -92,7 +92,7 @@ export default function WorkoutCard({ recommendation, phase }: Props) {
           {recommendation.exercises.slice(0, 3).map(ex => (
             <span key={ex}
               className="text-xs px-2.5 py-1 rounded-full font-body"
-              style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.55)" }}>
+              style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-mid)" }}>
               {ex}
             </span>
           ))}

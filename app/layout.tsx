@@ -1,22 +1,20 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { DM_Sans, Playfair_Display } from "next/font/google";
+import { Nunito, Space_Mono } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-body",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const playfair = Playfair_Display({
+const spaceMono = Space_Mono({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -43,20 +41,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Anti-flash: set theme before React hydrates to prevent flicker */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('herphase-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches?'midnight':'rose';document.documentElement.setAttribute('data-theme',t||d);})();`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.setAttribute('data-theme','rose');` }} />
       </head>
-      <body className={`${dmSans.variable} ${playfair.variable} font-body bg-background text-dark antialiased`}>
-        <ThemeProvider>
-          <AppProvider>
-            <div className="pb-24">{children}</div>
-            <BottomNavWrapper />
-          </AppProvider>
-        </ThemeProvider>
+      <body className={`${nunito.variable} ${spaceMono.variable} font-body bg-background text-dark antialiased`}>
+        <AppProvider>
+          <div className="pb-28">{children}</div>
+          <BottomNavWrapper />
+        </AppProvider>
       </body>
     </html>
   );

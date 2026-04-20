@@ -122,7 +122,7 @@ export default function NutritionEntryList({
     return (
       <div className="mb-4">
         <div className="rounded-2xl p-4 animate-pulse"
-          style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+          style={{ background: "var(--color-surface)" }}>
           <div className="h-3 bg-surface/10 rounded w-1/3 mb-3" />
           <div className="h-8 bg-surface/10 rounded mb-3 w-2/3" />
           <div className="space-y-2">
@@ -146,11 +146,11 @@ export default function NutritionEntryList({
 
       {/* ── Macro progress card ── */}
       <div className="rounded-2xl p-4 mb-3"
-        style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+        style={{ background: "var(--color-surface)", borderTop: "3px solid var(--color-primary)" }}>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
-          <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
+          <p className="text-[var(--color-text-dim)] text-xs font-semibold uppercase tracking-wider">
             Today&apos;s macros
           </p>
           <span className="text-xs font-body" style={{ color: `${phaseColor}99` }}>
@@ -162,10 +162,10 @@ export default function NutritionEntryList({
         <div className="mb-3">
           <div className="flex items-end justify-between mb-1">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-white font-display font-bold text-2xl leading-none">
+              <span className="text-dark font-display font-bold text-2xl leading-none">
                 {consumed.calories > 0 ? consumed.calories.toLocaleString() : "—"}
               </span>
-              <span className="text-white/40 text-sm font-body leading-none">
+              <span className="text-[var(--color-text-dim)] text-sm font-body leading-none">
                 / {targets.calories.toLocaleString()} kcal
               </span>
             </div>
@@ -177,7 +177,7 @@ export default function NutritionEntryList({
             </span>
           </div>
           <div className="h-2 rounded-full overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.08)" }}>
+            style={{ background: "rgba(0,0,0,0.04)" }}>
             <div className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${kcalPct}%`,
@@ -195,9 +195,9 @@ export default function NutritionEntryList({
             const done = m.consumed >= m.target;
             return (
               <div key={m.label} className="flex items-center gap-2.5">
-                <p className="text-white/50 text-xs w-12 flex-shrink-0">{m.label}</p>
+                <p className="text-[var(--color-text-dim)] text-xs w-12 flex-shrink-0">{m.label}</p>
                 <div className="flex-1 h-1.5 rounded-full overflow-hidden"
-                  style={{ background: "rgba(255,255,255,0.08)" }}>
+                  style={{ background: "rgba(0,0,0,0.04)" }}>
                   <div className="h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${p}%`,
@@ -206,7 +206,7 @@ export default function NutritionEntryList({
                     }} />
                 </div>
                 <p className="text-xs font-semibold text-right flex-shrink-0 w-20"
-                  style={{ color: done ? "#34D399" : "rgba(255,255,255,0.6)" }}>
+                  style={{ color: done ? "#34D399" : "var(--color-text-mid)" }}>
                   {done
                     ? `✓ ${m.consumed}${m.unit}`
                     : `${m.consumed} / ${m.target}${m.unit}`}
@@ -222,9 +222,9 @@ export default function NutritionEntryList({
             onClick={() => setShowSuggestions(s => !s)}
             className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-2"
             style={{
-              background: showSuggestions ? `${phaseColor}22` : "rgba(255,255,255,0.07)",
-              color: showSuggestions ? phaseColor : "rgba(255,255,255,0.7)",
-              border: `1px solid ${showSuggestions ? phaseColor + "44" : "rgba(255,255,255,0.1)"}`,
+              background: showSuggestions ? `${phaseColor}22` : "rgba(0,0,0,0.04)",
+              color: showSuggestions ? phaseColor : "var(--color-text-mid)",
+              border: `1px solid ${showSuggestions ? phaseColor + "44" : "var(--color-border)"}`,
             }}
           >
             <span>🧠</span>
@@ -253,7 +253,7 @@ export default function NutritionEntryList({
               return (
                 <div key={food.id}
                   className="rounded-xl overflow-hidden"
-                  style={{ background: "rgba(0,0,0,0.25)", border: `1px solid rgba(255,255,255,0.07)` }}>
+                  style={{ background: "var(--color-bg)", border: `1px solid var(--color-border)` }}>
 
                   {/* Row header */}
                   <div className="flex items-center gap-2.5 px-3 pt-3 pb-2">
@@ -267,11 +267,11 @@ export default function NutritionEntryList({
                           </span>
                         )}
                         <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
-                          style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" }}>
+                          style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-dim)" }}>
                           {matchPct}%
                         </span>
                       </div>
-                      <p className="text-white font-semibold text-sm leading-snug truncate">
+                      <p className="text-dark font-semibold text-sm leading-snug truncate">
                         {food.name}
                       </p>
                     </div>
@@ -292,9 +292,9 @@ export default function NutritionEntryList({
                       className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 disabled:opacity-60"
                       style={{
                         background: isLogged
-                          ? "rgba(255,255,255,0.06)"
+                          ? "rgba(0,0,0,0.04)"
                           : `linear-gradient(135deg, ${phaseColor}, ${phaseColor}88)`,
-                        color: isLogged ? "rgba(255,255,255,0.4)" : "var(--color-surface)",
+                        color: isLogged ? "var(--color-text-dim)" : "var(--color-surface)",
                       }}
                     >
                       {isLogging ? "Logging…" : isLogged ? "✓ Logged" : "Log this"}
@@ -304,9 +304,9 @@ export default function NutritionEntryList({
                       onClick={() => setExpandedId(isExpanded ? null : food.id)}
                       className="px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95"
                       style={{
-                        background: isExpanded ? `${phaseColor}22` : "rgba(255,255,255,0.06)",
-                        color: isExpanded ? phaseColor : "rgba(255,255,255,0.5)",
-                        border: `1px solid ${isExpanded ? phaseColor + "33" : "rgba(255,255,255,0.08)"}`,
+                        background: isExpanded ? `${phaseColor}22` : "rgba(0,0,0,0.04)",
+                        color: isExpanded ? phaseColor : "var(--color-text-mid)",
+                        border: `1px solid ${isExpanded ? phaseColor + "33" : "var(--color-border)"}`,
                       }}
                     >
                       {isExpanded ? "▲" : "▼"} Recipe
@@ -316,15 +316,15 @@ export default function NutritionEntryList({
                   {/* Recipe accordion */}
                   {isExpanded && !recipe && (
                     <div className="mx-3 mb-3 px-3 py-2.5 rounded-lg text-center"
-                      style={{ background: "rgba(0,0,0,0.2)", borderTop: `1px solid ${phaseColor}22` }}>
-                      <p className="text-xs font-body" style={{ color: "rgba(255,255,255,0.4)" }}>
+                      style={{ background: "var(--color-bg)", borderTop: `1px solid ${phaseColor}22` }}>
+                      <p className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>
                         Recipe coming soon
                       </p>
                     </div>
                   )}
                   {isExpanded && recipe && (
                     <div className="mx-3 mb-3 px-3 py-2.5 rounded-lg space-y-2"
-                      style={{ background: "rgba(0,0,0,0.2)", borderTop: `1px solid ${phaseColor}22` }}>
+                      style={{ background: "var(--color-bg)", borderTop: `1px solid ${phaseColor}22` }}>
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wider mb-1.5"
                           style={{ color: `${phaseColor}88` }}>
@@ -332,7 +332,7 @@ export default function NutritionEntryList({
                         </p>
                         <ul className="space-y-0.5">
                           {recipe.ingredients.map((ing, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5 text-xs text-white/65 font-body">
+                            <li key={idx} className="flex items-start gap-1.5 text-xs text-[var(--color-text-mid)] font-body">
                               <span style={{ color: phaseColor }} className="flex-shrink-0 mt-0.5">•</span>
                               {ing}
                             </li>
@@ -346,7 +346,7 @@ export default function NutritionEntryList({
                         </p>
                         <ol className="space-y-1">
                           {recipe.steps.map((step, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-xs text-white/65 font-body">
+                            <li key={idx} className="flex items-start gap-2 text-xs text-[var(--color-text-mid)] font-body">
                               <span className="flex-shrink-0 w-3.5 h-3.5 rounded-full flex items-center justify-center text-xs font-bold"
                                 style={{ background: `${phaseColor}30`, color: phaseColor }}>
                                 {idx + 1}

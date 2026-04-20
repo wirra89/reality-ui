@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { getPRs, type PersonalRecord } from "@/lib/supabase";
 import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
 import type { DataMaturityStage } from "@/lib/dailyPlan";
+import { getPhaseData, getDayInPhase } from "@/lib/cycle";
 
 const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   menstrual:  { bg: "rgba(248,113,113,0.12)",  text: "#F87171",  dot: "#F87171" },
@@ -26,7 +27,7 @@ const PHASE_EMOJIS: Record<string, string> = {
 };
 const PHASES = ["menstrual", "follicular", "ovulation", "luteal"];
 
-type InsightTab = "overview" | "training" | "meals" | "mood";
+type InsightTab = "overview" | "training" | "meals" | "mood" | "cycles";
 
 // ── Data maturity banner copy ───────────────────────────────────────────────
 const MATURITY_BANNER: Record<DataMaturityStage, {
@@ -63,7 +64,7 @@ function phrasePattern(stage: DataMaturityStage, phrase: string): string {
 }
 
 export default function InsightsPage() {
-  const { user, loading, logCount, todayState } = useApp();
+  const { user, loading, logCount, todayState, cycleDay, cycleParams, profile } = useApp();
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<InsightTab>("overview");
@@ -163,7 +164,7 @@ export default function InsightsPage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.18) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-12">
 
@@ -174,18 +175,20 @@ export default function InsightsPage() {
         </header>
 
         {/* Tab bar */}
-        <div className="flex rounded-2xl bg-surface p-1 shadow-card mb-4 gap-1">
+        <div className="flex rounded-2xl bg-surface p-1 shadow-card mb-4 gap-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {([
             { id: "overview", label: "Overview", emoji: "🌸" },
             { id: "training", label: "Training", emoji: "🏋️‍♀️" },
             { id: "meals",    label: "Meals",    emoji: "🥗" },
             { id: "mood",     label: "Mood",     emoji: "💭" },
+            { id: "cycles",   label: "Cycles",   emoji: "🌙" },
           ] as { id: InsightTab; label: string; emoji: string }[]).map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
-              className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
+              className="flex-shrink-0 flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
               style={{
                 background: activeTab === t.id ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
                 color: activeTab === t.id ? "var(--color-surface)" : "var(--color-text-dim)",
+                minWidth: 56,
               }}>
               <span style={{ fontSize: 12 }}>{t.emoji}</span>{t.label}
             </button>
@@ -351,14 +354,14 @@ export default function InsightsPage() {
                   prs.forEach(pr => { if (pr.phase && prByPhase[pr.phase] !== undefined) prByPhase[pr.phase]++; });
                   const bestPRPhase = Object.entries(prByPhase).sort((a, b) => b[1] - a[1])[0];
                   return (
-                    <div className="rounded-2xl p-4 overflow-hidden relative" style={{ background: "linear-gradient(145deg,#1E1B24,#2D2638)" }}>
-                      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-15 pointer-events-none" style={{ background: "#FBBF24", filter: "blur(20px)" }} />
+                    <div className="rounded-2xl p-4 overflow-hidden relative" style={{ background: "var(--color-surface)", borderTop: "3px solid #FBBF24" }}>
+                      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-10 pointer-events-none" style={{ background: "#FBBF24", filter: "blur(20px)" }} />
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(251,191,36,0.6)" }}>
+                          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#B45309" }}>
                             Strength pattern
                           </p>
-                          <p className="text-base font-bold text-white leading-tight">
+                          <p className="text-base font-bold text-dark leading-tight">
                             {maturity === "personalized"
                               ? `You hit PRs in ${PHASE_EMOJIS[bestPRPhase[0]]} ${bestPRPhase[0]}`
                               : `Most PRs so far: ${PHASE_EMOJIS[bestPRPhase[0]]} ${bestPRPhase[0]}`}
@@ -370,12 +373,12 @@ export default function InsightsPage() {
                         {PHASES.map(phase => (
                           <div key={phase} className="rounded-xl p-2 text-center"
                             style={{
-                              background: phase === bestPRPhase[0] ? "rgba(251,191,36,0.18)" : "rgba(255,255,255,0.05)",
+                              background: phase === bestPRPhase[0] ? "rgba(251,191,36,0.15)" : "var(--color-ghost)",
                               outline: phase === bestPRPhase[0] ? "1px solid rgba(251,191,36,0.3)" : "none",
                             }}>
                             <p className="text-xs mb-1">{PHASE_EMOJIS[phase]}</p>
-                            <p className="text-base font-bold text-white">{prByPhase[phase]}</p>
-                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>PRs</p>
+                            <p className="text-base font-bold text-dark">{prByPhase[phase]}</p>
+                            <p className="text-xs" style={{ color: "var(--color-text-dim)" }}>PRs</p>
                           </div>
                         ))}
                       </div>
@@ -612,6 +615,128 @@ export default function InsightsPage() {
                 )}
               </div>
             )}
+
+            {/* ── CYCLES ── */}
+            {activeTab === "cycles" && (() => {
+              const phaseData    = getPhaseData(cycleDay, cycleParams);
+              const dayInPhase   = getDayInPhase(cycleDay, cycleParams);
+              const cycleLength  = profile?.cycle_length ?? 28;
+              const periodLength = profile?.period_length ?? 5;
+              const startDate    = profile?.period_start_date
+                ? new Date(profile.period_start_date)
+                : null;
+              const phaseSegs = [
+                { phase: "menstrual",  color: "#F87171", bg: "#FEE2E2", pct: Math.round((periodLength / cycleLength) * 100) },
+                { phase: "follicular", color: "#34D399", bg: "#D1FAE5", pct: Math.round((cycleLength * 0.29) / cycleLength * 100) },
+                { phase: "ovulation",  color: "#FBBF24", bg: "#FEF3C7", pct: Math.round((cycleLength * 0.11) / cycleLength * 100) },
+                { phase: "luteal",     color: "#A78BFA", bg: "#EDE9FE", pct: 100 - Math.round((periodLength / cycleLength) * 100) - Math.round((cycleLength * 0.29) / cycleLength * 100) - Math.round((cycleLength * 0.11) / cycleLength * 100) },
+              ];
+              return (
+                <div className="space-y-4">
+                  {/* Stats row */}
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { label: "Cycle length", value: `${cycleLength}d` },
+                      { label: "Period length", value: `${periodLength}d` },
+                      { label: "Current day", value: `Day ${cycleDay}` },
+                    ].map(s => (
+                      <div key={s.label} className="bg-surface rounded-2xl p-3 text-center shadow-card">
+                        <p className="font-display font-bold text-base text-dark leading-tight">{s.value}</p>
+                        <p className="text-xs text-dark/40 uppercase tracking-wide font-semibold mt-1 leading-tight">{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Current cycle card */}
+                  <div className="bg-surface rounded-2xl shadow-card overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-2.5" style={{ background: PHASE_COLORS[phaseData.phase].bg }}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full" style={{ background: PHASE_COLORS[phaseData.phase].dot }} />
+                        <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: PHASE_COLORS[phaseData.phase].text }}>
+                          {phaseData.phase} phase
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: PHASE_COLORS[phaseData.phase].bg, color: PHASE_COLORS[phaseData.phase].text }}>
+                        In progress
+                      </span>
+                    </div>
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-bold text-dark">Current cycle</p>
+                        {startDate && (
+                          <p className="text-xs text-dark/40 font-body">
+                            Started {startDate.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-xs text-dark/40 font-body mb-3">
+                        Day {cycleDay} of {cycleLength} · Day {dayInPhase} in {phaseData.phase}
+                      </p>
+                      {/* Phase strip */}
+                      <div className="flex gap-0.5 h-3 rounded-full overflow-hidden mb-2">
+                        {phaseSegs.map(seg => (
+                          <div key={seg.phase} className="rounded-full transition-all duration-300"
+                            style={{ width: `${seg.pct}%`, background: seg.color, opacity: seg.phase === phaseData.phase ? 1 : 0.3 }} />
+                        ))}
+                      </div>
+                      {/* Phase dots legend */}
+                      <div className="flex justify-between">
+                        {[
+                          { label: "🌙", phase: "menstrual" },
+                          { label: "🌱", phase: "follicular" },
+                          { label: "⚡", phase: "ovulation" },
+                          { label: "🍂", phase: "luteal" },
+                        ].map(seg => (
+                          <span key={seg.phase} className="text-xs" style={{ opacity: seg.phase === phaseData.phase ? 1 : 0.3 }}>
+                            {seg.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Phase breakdown */}
+                  <div className="bg-surface rounded-2xl shadow-card p-4">
+                    <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">This cycle&apos;s phases</p>
+                    <div className="space-y-2">
+                      {phaseSegs.map(seg => (
+                        <div key={seg.phase} className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 text-sm"
+                            style={{ background: seg.bg }}>
+                            {PHASE_EMOJIS[seg.phase]}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between mb-0.5">
+                              <p className="text-xs font-semibold text-dark capitalize">{seg.phase}</p>
+                              <p className="text-xs text-dark/30 font-body">{Math.round((seg.pct / 100) * cycleLength)}d</p>
+                            </div>
+                            <div className="h-1.5 rounded-full overflow-hidden bg-ghost">
+                              <div className="h-full rounded-full" style={{ width: `${seg.pct}%`, background: seg.color, opacity: seg.phase === phaseData.phase ? 1 : 0.4 }} />
+                            </div>
+                          </div>
+                          {seg.phase === phaseData.phase && (
+                            <span className="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                              style={{ background: seg.bg, color: seg.color }}>Now</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Future cycle notice */}
+                  <div className="rounded-2xl p-4 flex items-start gap-3"
+                    style={{ background: "rgba(196,138,151,0.06)", border: "1px solid rgba(196,138,151,0.12)" }}>
+                    <span className="text-xl flex-shrink-0">🌸</span>
+                    <div>
+                      <p className="text-xs font-semibold text-dark">Cycle history builds automatically</p>
+                      <p className="text-xs text-dark/45 font-body leading-snug mt-1">
+                        After each period, your previous cycle is archived here. Log your next period start date to begin tracking multi-cycle patterns.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* ── MOOD ── */}
             {activeTab === "mood" && (

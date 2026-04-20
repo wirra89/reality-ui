@@ -68,7 +68,7 @@ export default function AuthPage() {
     <div className="min-h-dvh bg-background flex flex-col items-center justify-center px-4">
       <div
         className="fixed top-0 left-0 right-0 h-72 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.22) 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }}
       />
 
       <div className="relative z-10 w-full max-w-app">

@@ -129,7 +129,7 @@ export default function PRsPage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-28">
         {/* Header */}
@@ -223,12 +223,12 @@ export default function PRsPage() {
         {tab === "log" && (
           <div className="space-y-3">
             {/* Phase context */}
-            <div className="rounded-2xl p-4" style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+            <div className="rounded-2xl p-4" style={{ background: "var(--color-surface)", borderLeft: `3px solid ${phaseStyle.text}` }}>
               <p className="text-xs uppercase tracking-widest font-body mb-1"
-                style={{ color: "rgba(255,255,255,0.4)" }}>
+                style={{ color: "var(--color-text-dim)" }}>
                 {phaseStyle.emoji} {phaseData.phase} phase · Day {cycleDay}
               </p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-dark">
                 {phaseData.phase === "ovulation" || phaseData.phase === "follicular"
                   ? "Peak strength window — great time to hit a PR 💪"
                   : phaseData.phase === "menstrual"

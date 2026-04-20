@@ -2,46 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Rose Blush (default) ─────────────────────────────────────── */
+/* ── Baby Rose (default) ──────────────────────────────────────── */
 :root,
 [data-theme="rose"] {
-  --color-bg:          #FEF0F3;
-  --color-surface:     #FFFFFF;
-  --color-surface-2:   #FDE8ED;
-  --color-primary:     #C48A97;
-  --color-accent:      #EDD5DB;
-  --color-secondary:   #7B6D8D;
+  --color-bg:          #F5E8EB;
+  --color-surface:     #FEF7F8;
+  --color-surface-2:   #FEF0F3;
+  --color-primary:     #E8829A;
+  --color-accent:      #F4B8C6;
+  --color-secondary:   #7D5C65;
   --color-text:        #2C1A1F;
   --color-text-mid:    #7D5C65;
   --color-text-dim:    #C4A4AD;
-  --color-border:      rgba(232,130,154,0.16);
-  --color-track:       #FDE8ED;
-  --color-ghost:       #F5F3F4;
+  --color-border:      #F5DEE2;
+  --color-track:       #F5DEE2;
+  --color-ghost:       #FEF7F8;
   --color-text-rgb:    44, 26, 31;
-  --shadow-soft:       0 4px 24px rgba(196,138,151,0.10);
-  --nav-bg:            rgba(254,240,243,0.88);
-  --nav-border:        rgba(232,130,154,0.18);
+  --shadow-soft:       0 2px 10px rgba(180,80,100,0.08);
+  --shadow-card:       0 4px 20px rgba(180,80,100,0.10);
+  --nav-bg:            rgba(255,255,255,0.95);
+  --nav-border:        rgba(245,222,226,0.80);
 }
 
-/* ── Midnight ─────────────────────────────────────────────────── */
-[data-theme="midnight"] {
-  --color-bg:          #0C0E1A;
-  --color-surface:     #141828;
-  --color-surface-2:   #1C2238;
-  --color-primary:     #C48A97;   /* phase colours stay locked */
-  --color-accent:      rgba(196,138,151,0.15);
-  --color-secondary:   #9892B4;
-  --color-text:        #EDE8F8;
-  --color-text-mid:    #9892B4;
-  --color-text-dim:    #4E4A66;
-  --color-border:      rgba(255,255,255,0.07);
-  --color-track:       rgba(255,255,255,0.08);
-  --color-ghost:       #1C2238;
-  --color-text-rgb:    237, 232, 248;
-  --shadow-soft:       0 4px 24px rgba(0,0,0,0.45);
-  --nav-bg:            rgba(12,14,26,0.90);
-  --nav-border:        rgba(255,255,255,0.09);
-}
 
 * {
   box-sizing: border-box;
@@ -165,26 +147,3 @@ input[type="range"]::-moz-range-thumb {
   border: none;
 }
 
-/* ── Midnight theme explicit overrides ──────────────────────────────────
-   Belt-and-suspenders: explicit CSS beats CSS-variable inheritance in case
-   the variable cascade has a specificity or timing gap in some browsers.
-   Specificity: [attr][.class] = (0,2,0) > single .class = (0,1,0) ✓
-────────────────────────────────────────────────────────────────────── */
-[data-theme="midnight"] .bg-surface {
-  background-color: #141828;
-}
-[data-theme="midnight"] .bg-background {
-  background-color: #0C0E1A;
-}
-[data-theme="midnight"] .bg-ghost {
-  background-color: #1C2238;
-}
-[data-theme="midnight"] .bg-surface-2 {
-  background-color: #1C2238;
-}
-[data-theme="midnight"] .text-dark {
-  color: #EDE8F8;
-}
-[data-theme="midnight"] .shadow-card {
-  box-shadow: 0 2px 16px rgba(0,0,0,0.40);
-}

@@ -37,7 +37,8 @@ export default function CycleBadge({
     <div
       className="relative rounded-3xl p-5 mb-3 overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #2A2330 0%, #3D3248 100%)",
+        background: "var(--color-surface)",
+        borderTop: `4px solid ${phaseColor}`,
       }}
     >
       {/* Decorative blob */}
@@ -62,7 +63,7 @@ export default function CycleBadge({
             <circle
               cx="48" cy="48" r={radius}
               fill="none"
-              stroke="rgba(255,255,255,0.08)"
+              stroke="rgba(0,0,0,0.08)"
               strokeWidth="6"
             />
             {/* Progress */}
@@ -80,10 +81,10 @@ export default function CycleBadge({
           {/* Center content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl leading-none">{phaseData.emoji}</span>
-            <span className="text-white font-display font-semibold text-lg leading-none">
+            <span className="text-dark font-display font-semibold text-lg leading-none">
               {cycleDay}
             </span>
-            <span className="text-white/50 text-xs font-body leading-none mt-0.5">
+            <span className="text-[var(--color-text-dim)] text-xs font-body leading-none mt-0.5">
               day
             </span>
           </div>
@@ -106,11 +107,11 @@ export default function CycleBadge({
             {phaseData.phase.charAt(0).toUpperCase() + phaseData.phase.slice(1)} phase
           </div>
 
-          <h2 className="text-white font-display font-semibold text-lg leading-tight">
+          <h2 className="text-dark font-display font-semibold text-lg leading-tight">
             {phaseData.label}
           </h2>
 
-          <p className="text-white/45 text-xs mt-1 font-body">
+          <p className="text-[var(--color-text-dim)] text-xs mt-1 font-body">
             Day {dayInPhase} of {phaseDuration} in this phase
           </p>
 
@@ -121,7 +122,7 @@ export default function CycleBadge({
                 key={i}
                 className="flex-1 h-1 rounded-full transition-all duration-300"
                 style={{
-                  background: i < dayInPhase ? phaseColor : "rgba(255,255,255,0.12)",
+                  background: i < dayInPhase ? phaseColor : "var(--color-border)",
                 }}
               />
             ))}
@@ -130,7 +131,7 @@ export default function CycleBadge({
       </div>
 
       {/* Phase progress bar across full cycle — new */}
-      <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="mt-4 pt-3" style={{ borderTop: "1px solid var(--color-border)" }}>
         <div className="flex gap-0.5 h-1.5 rounded-full overflow-hidden">
           {[
             { phase: "menstrual",  color: "#F87171", w: 18 },

@@ -157,7 +157,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-dvh bg-background flex flex-col">
       <div className="fixed top-0 left-0 right-0 h-72 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.22) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 flex flex-col flex-1 mx-auto w-full max-w-app px-4 pt-10 pb-8">
 
@@ -407,13 +407,13 @@ export default function OnboardingPage() {
 
                 {/* Results */}
                 {macroResult && (
-                  <div className="rounded-2xl p-4 mb-3" style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)" }}>
+                  <div className="rounded-2xl p-4 mb-3" style={{ background: "var(--color-surface)", borderTop: "3px solid var(--color-primary)" }}>
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <p className="text-white/50 text-xs">Daily target</p>
-                        <p className="text-white font-display font-bold text-2xl">{macroResult.targetCalories} kcal</p>
+                        <p className="text-[var(--color-text-dim)] text-xs">Daily target</p>
+                        <p className="text-dark font-display font-bold text-2xl">{macroResult.targetCalories} kcal</p>
                       </div>
-                      <div className="text-right text-xs text-white/40 font-body">
+                      <div className="text-right text-xs text-[var(--color-text-dim)] font-body">
                         {macroResult.deficit && <p>−{macroResult.deficit} kcal deficit</p>}
                         {macroResult.surplus && <p>+{macroResult.surplus} kcal surplus</p>}
                       </div>
@@ -424,8 +424,8 @@ export default function OnboardingPage() {
                         { label: "Carbs",   value: macroResult.carbs,   color: "#EDD5DB" },
                         { label: "Fats",    value: macroResult.fats,    color: "#A78BFA" },
                       ].map((m) => (
-                        <div key={m.label} className="bg-surface/5 rounded-xl p-2.5 text-center">
-                          <p className="font-display font-bold text-lg text-white">{m.value}g</p>
+                        <div key={m.label} className="bg-ghost rounded-xl p-2.5 text-center">
+                          <p className="font-display font-bold text-lg text-dark">{m.value}g</p>
                           <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: m.color }}>{m.label}</p>
                         </div>
                       ))}

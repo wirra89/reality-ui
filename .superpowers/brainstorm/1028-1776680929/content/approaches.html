@@ -1,0 +1,63 @@
+<h2>Three approaches to launch-readiness</h2>
+<p class="subtitle">Pick the one that matches your timeline and quality bar.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Minimum Viable Launch <span style="font-size:11px;font-weight:500;color:#999;margin-left:6px">~1–2 hrs</span></h3>
+      <p>Fix only the 3 hard blockers. Everything else ships as-is.</p>
+      <ul style="margin:8px 0 0;padding-left:16px;font-size:12px;color:#666;line-height:1.8">
+        <li>Remove 14 design-exploration HTML files from /public</li>
+        <li>Remove /sentry-example-page route</li>
+        <li>Add a basic Privacy Policy page</li>
+      </ul>
+      <div class="pros-cons" style="margin-top:10px">
+        <div class="pros"><h4>Pros</h4><ul><li>Ship today</li><li>Legally protected</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Rough edges remain</li><li>No 404 page</li><li>"Good morning" all day</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Polished Public Launch <span style="font-size:11px;font-weight:500;color:#C48A97;margin-left:6px">★ Recommended</span></h3>
+      <p>Fix all blockers + every important issue. Nothing embarrassing left.</p>
+      <ul style="margin:8px 0 0;padding-left:16px;font-size:12px;color:#666;line-height:1.8">
+        <li>Everything in Approach A</li>
+        <li>Time-aware greeting (Good morning / afternoon / evening)</li>
+        <li>Branded 404 page</li>
+        <li>Fix PWA manifest icon purpose fields</li>
+        <li>Remove IS_PRO_FEATURE dead code</li>
+        <li>Clean up test_output.js and verify_spec.js</li>
+      </ul>
+      <div class="pros-cons" style="margin-top:10px">
+        <div class="pros"><h4>Pros</h4><ul><li>Feels finished</li><li>No loose ends</li><li>Still fast (all quick wins)</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>~3–4 hrs total</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Full Pre-Launch Sweep <span style="font-size:11px;font-weight:500;color:#999;margin-left:6px">~1 day</span></h3>
+      <p>Everything in B + UX enhancements and a full app review pass.</p>
+      <ul style="margin:8px 0 0;padding-left:16px;font-size:12px;color:#666;line-height:1.8">
+        <li>Everything in Approach B</li>
+        <li>Loading state consistency audit across all pages</li>
+        <li>Empty state polish (PRs, History, Weight pages)</li>
+        <li>Privacy Policy + Terms of Service (not just policy)</li>
+        <li>Apple touch icon + splash screens for PWA</li>
+        <li>robots.txt and basic SEO meta tags</li>
+      </ul>
+      <div class="pros-cons" style="margin-top:10px">
+        <div class="pros"><h4>Pros</h4><ul><li>Production-quality</li><li>App Store / press-ready</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More scope</li><li>Delays shipping</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:12px;color:#999;text-align:center;margin-top:12px">My recommendation: <strong>B</strong> — all quick wins, nothing left embarrassing, ships in a few hours. Let me know in the terminal.</p>
