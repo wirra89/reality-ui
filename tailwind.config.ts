@@ -22,8 +22,9 @@ const config: Config = {
         ghost:      "var(--color-ghost)",
       },
       fontFamily: {
-        display: ["'Space Mono'", "monospace"],
+        display: ["'Manrope'", "sans-serif"],
         body: ["'Nunito'", "sans-serif"],
+        accent: ["'Space Mono'", "monospace"],
       },
       borderRadius: {
         "2xl": "1rem",

@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Nunito, Space_Mono } from "next/font/google";
+import { Nunito, Manrope, Space_Mono } from "next/font/google";
 import { AppProvider } from "@/context/AppContext";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
@@ -11,9 +11,15 @@ const nunito = Nunito({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const spaceMono = Space_Mono({
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-display",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  variable: "--font-accent",
   weight: ["400", "700"],
 });
 
@@ -43,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: `document.documentElement.setAttribute('data-theme','rose');` }} />
       </head>
-      <body className={`${nunito.variable} ${spaceMono.variable} font-body bg-background text-dark antialiased`}>
+      <body className={`${nunito.variable} ${manrope.variable} ${spaceMono.variable} font-body bg-background text-dark antialiased`}>
         <AppProvider>
           <div className="pb-28">{children}</div>
           <BottomNavWrapper />

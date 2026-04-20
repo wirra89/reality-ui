@@ -16,7 +16,7 @@ export default function NotFound() {
         </div>
         <p
           className="text-xs font-bold uppercase tracking-widest mb-2"
-          style={{ color: "#C48A97" }}
+          style={{ color: "var(--color-primary)" }}
         >
           404
         </p>
