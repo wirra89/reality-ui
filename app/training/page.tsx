@@ -15,6 +15,7 @@ import ExerciseLibrary from "@/components/ExerciseLibrary";
 import { getExerciseInputTypeByName, type InputType } from "@/lib/exercises";
 import { TrainingIntelligenceCard } from "@/components/TrainingIntelligenceCard";
 import type { IntelligenceWorkoutExercise } from "@/components/TrainingIntelligenceCard";
+import { getTemplates, type NewWorkoutTemplate } from "@/lib/workoutSessions";
 import type { WorkoutTypeId } from "@/lib/trainingEngine";
 
 interface SetRow { id: string; reps: string; weight: string; durationMin?: string; distanceKm?: string; }
@@ -145,7 +146,7 @@ const newEx  = (name = "", exType: InputType = "weight_reps"): ExRow =>
   ({ id: crypto.randomUUID(), name, sets: [newSet()], exType });
 
 export default function TrainingPage() {
-  const { user, cycleDay, cycleParams, loading, todayState } = useApp();
+  const { user, cycleDay, cycleParams, loading, todayState, latestMoodLog } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
 
@@ -168,6 +169,7 @@ export default function TrainingPage() {
   const [loggedWorkoutId, setLoggedWorkoutId] = useState<number | null>(null);
   const [newPRs, setNewPRs] = useState<string[]>([]);
   const [resolvedWorkoutType, setResolvedWorkoutType] = useState<WorkoutTypeId | null>(null);
+  const [myTemplates, setMyTemplates] = useState<NewWorkoutTemplate[]>([]);
 
   // Use today's date in draft key so drafts don't persist across cycles
   const today = new Date().toISOString().split("T")[0];
@@ -179,6 +181,10 @@ export default function TrainingPage() {
 
   useEffect(() => {
     if (user) getWorkoutTemplates().then(setTemplates);
+  }, [user]);
+
+  useEffect(() => {
+    if (user) getTemplates().then((data) => setMyTemplates(data.slice(0, 3)));
   }, [user]);
 
   // On mount — load today's logged workout OR draft from localStorage.
@@ -408,7 +414,7 @@ export default function TrainingPage() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196,138,151,0.15) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
 
@@ -485,63 +491,111 @@ export default function TrainingPage() {
           </div>
         )}
 
+        {/* ── MOOD→PLAN BRIDGE — visible when check-in adapted today's workout ── */}
+        {todayState?.adaptedFromCheckin && latestMoodLog && (() => {
+          const energy = (latestMoodLog.energy as unknown as number) ?? 3;
+          const moodNum = (latestMoodLog.mood as unknown as number) ?? 3;
+          const MOOD_EMOJIS = ["", "😞", "😔", "😐", "🙂", "😊"];
+          const ENERGY_LABEL = ["", "Very low", "Low", "Moderate", "Good", "High"];
+          const symptoms = (latestMoodLog.symptoms as unknown as string[]) ?? [];
+          const symptomChips = symptoms.slice(0, 2);
+          return (
+            <div className="rounded-2xl mb-4 overflow-hidden shadow-card" style={{ background: "var(--color-surface)" }}>
+              <div className="flex items-center justify-between px-4 py-2.5" style={{ background: "rgba(196,138,151,0.07)" }}>
+                <p className="text-xs font-extrabold uppercase tracking-widest" style={{ color: "#7D5C65" }}>
+                  How your check-in shaped today
+                </p>
+                <span className="text-xs text-dark/35 font-body">Adapted</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3 px-4 py-3">
+                {/* Mood input */}
+                <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(232,130,154,0.08)", border: "1px dashed rgba(232,130,154,0.3)" }}>
+                  <p className="text-xs font-bold text-dark/40 uppercase tracking-wide mb-1">You felt</p>
+                  <div className="text-2xl mb-1">{MOOD_EMOJIS[Math.round(moodNum)] ?? "😐"}</div>
+                  <p className="text-xs font-bold text-dark leading-tight">{ENERGY_LABEL[Math.round(energy)] ?? "Moderate"} energy</p>
+                  {symptomChips.length > 0 && (
+                    <p className="text-xs text-dark/40 mt-1 leading-tight">{symptomChips.join(", ")}</p>
+                  )}
+                </div>
+                {/* Arrow */}
+                <div className="text-center text-dark/25 text-xl">→</div>
+                {/* Plan output */}
+                <div className="rounded-xl p-2.5 text-center" style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)" }}>
+                  <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "#065F46" }}>We chose</p>
+                  <div className="text-2xl mb-1">{phaseData.emoji}</div>
+                  <p className="text-xs font-bold text-dark leading-tight">{todayState.workoutRecommendation.type}</p>
+                  <p className="text-xs mt-1 font-semibold" style={{ color: phaseColor }}>
+                    {todayState.workoutRecommendation.intensity} intensity
+                  </p>
+                </div>
+              </div>
+              {/* One-line reason */}
+              <div className="px-4 pb-3">
+                <p className="text-xs text-dark/50 font-body leading-relaxed">
+                  {todayState.workoutRecommendation.reasoning.split(".")[0].trim()}.
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── RECOMMENDATION CARD — TodayState or phase fallback ── */}
         {todayState ? (
           <div className="rounded-2xl p-4 mb-4"
-            style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)", borderLeft: `3px solid ${phaseColor}` }}>
+            style={{ background: "var(--color-surface)", borderLeft: `3px solid ${phaseColor}` }}>
             {/* Header row */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{phaseData.emoji}</span>
                 <div>
-                  <p className="text-white/40 text-xs font-body uppercase tracking-widest">
+                  <p className="text-[var(--color-text-dim)] text-xs font-body uppercase tracking-widest">
                     {phaseData.phase} phase · Day {cycleDay}
                     {todayState.adaptedFromCheckin && " · personalised"}
                   </p>
-                  <p className="text-white font-semibold text-sm">{todayState.workoutRecommendation.type}</p>
+                  <p className="text-dark font-semibold text-sm">{todayState.workoutRecommendation.type}</p>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1 flex-shrink-0">
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.55)" }}>
+                  style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-mid)" }}>
                   {todayState.workoutRecommendation.intensity}
                 </span>
                 {todayState.workoutRecommendation.duration > 0 && (
-                  <span className="text-xs font-body" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  <span className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>
                     {todayState.workoutRecommendation.duration} min
                   </span>
                 )}
               </div>
             </div>
             {/* Reasoning */}
-            <p className="text-white/60 text-xs font-body leading-relaxed">
+            <p className="text-[var(--color-text-mid)] text-xs font-body leading-relaxed">
               {todayState.workoutRecommendation.reasoning}
             </p>
           </div>
         ) : (
           /* Fallback — original rotating phase banner */
           <div className="rounded-2xl p-4 mb-4"
-            style={{ background: "linear-gradient(135deg, #2A2330, #3D3248)", borderLeft: `3px solid ${phaseColor}` }}>
+            style={{ background: "var(--color-surface)", borderLeft: `3px solid ${phaseColor}` }}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{phaseData.emoji}</span>
                 <div>
-                  <p className="text-white/40 text-xs font-body uppercase tracking-widest">{phaseData.phase} phase · Day {cycleDay}</p>
-                  <p className="text-white font-semibold text-sm">{todayMsg.title}</p>
+                  <p className="text-[var(--color-text-dim)] text-xs font-body uppercase tracking-widest">{phaseData.phase} phase · Day {cycleDay}</p>
+                  <p className="text-dark font-semibold text-sm">{todayMsg.title}</p>
                 </div>
               </div>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-                style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)" }}>
+                style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-dim)" }}>
                 {todayMsg.category}
               </span>
             </div>
-            <p className="text-white/60 text-xs font-body leading-relaxed mb-2">{todayMsg.detail}</p>
+            <p className="text-[var(--color-text-mid)] text-xs font-body leading-relaxed mb-2">{todayMsg.detail}</p>
             <div className="flex gap-1.5">
               {msgs.map((_, i) => (
                 <div key={i} className="h-1 rounded-full transition-all duration-300"
                   style={{
                     width: i === msgIdx ? 16 : 6,
-                    background: i === msgIdx ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.15)",
+                    background: i === msgIdx ? "var(--color-text-mid)" : "var(--color-border)",
                   }} />
               ))}
             </div>
@@ -553,6 +607,75 @@ export default function TrainingPage() {
           onWorkoutTypeResolved={setResolvedWorkoutType}
           onUseWorkout={handleUseIntelligenceWorkout}
         />
+
+        {/* ── MY WORKOUTS section ── */}
+        {myTemplates.length > 0 && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <p className="text-xs font-semibold text-secondary uppercase tracking-wide">
+                My Workouts
+              </p>
+              <button
+                onClick={() => router.push("/training/builder")}
+                className="text-xs font-semibold text-primary"
+              >
+                See all →
+              </button>
+            </div>
+            <div className="space-y-2">
+              {myTemplates.map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-surface rounded-2xl shadow-card px-4 py-3 flex items-center gap-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-dark font-semibold text-sm truncate">{t.name}</p>
+                    <p className="text-dark/40 text-xs font-body">
+                      {t.exercises.length} exercise{t.exercises.length !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => router.push(`/training/session/${t.id}`)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold text-white transition-all active:scale-95 flex-shrink-0"
+                    style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}
+                  >
+                    Start →
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex-1 h-px" style={{ background: "var(--color-border)" }} />
+              <button
+                onClick={() => router.push("/training/session/quick")}
+                className="text-xs font-semibold text-dark/35 px-3 py-1.5 rounded-xl border transition-all active:scale-95"
+                style={{ borderColor: "rgba(0,0,0,0.08)" }}
+              >
+                Quick Workout
+              </button>
+              <div className="flex-1 h-px" style={{ background: "var(--color-border)" }} />
+            </div>
+          </div>
+        )}
+
+        {myTemplates.length === 0 && (
+          <div className="mb-4 flex gap-2">
+            <button
+              onClick={() => router.push("/training/builder")}
+              className="flex-1 py-2.5 rounded-2xl text-xs font-semibold border transition-all active:scale-95"
+              style={{ borderColor: "rgba(196,138,151,0.25)", color: "#C48A97" }}
+            >
+              + Build a template
+            </button>
+            <button
+              onClick={() => router.push("/training/session/quick")}
+              className="flex-1 py-2.5 rounded-2xl text-xs font-semibold border transition-all active:scale-95"
+              style={{ borderColor: "rgba(0,0,0,0.08)", color: "rgba(0,0,0,0.35)" }}
+            >
+              Quick Workout
+            </button>
+          </div>
+        )}
 
         {/* Suggested + Library — same row, easy access right after phase context */}
         <div className="mb-4">
