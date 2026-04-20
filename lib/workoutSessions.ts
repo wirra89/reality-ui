@@ -48,18 +48,18 @@ export interface ActiveSession {
 export async function getTemplates(): Promise<NewWorkoutTemplate[]> {
   const user = await getUser();
   if (!user) return [];
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("workout_templates")
     .select("id, user_id, name, phase_tags, exercises, created_at, updated_at")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
-  if (!data) return [];
+  if (error || !data) return [];
   return data.map((row) => ({
     id: row.id,
     user_id: row.user_id,
     name: row.name,
     phase_tags: row.phase_tags ?? [],
-    exercises: (row.exercises as TemplateExercise[]) ?? [],
+    exercises: Array.isArray(row.exercises) ? (row.exercises as TemplateExercise[]) : [],
     created_at: row.created_at,
     updated_at: row.updated_at ?? row.created_at,
   }));
@@ -68,19 +68,19 @@ export async function getTemplates(): Promise<NewWorkoutTemplate[]> {
 export async function getTemplate(id: number): Promise<NewWorkoutTemplate | null> {
   const user = await getUser();
   if (!user) return null;
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("workout_templates")
     .select("id, user_id, name, phase_tags, exercises, created_at, updated_at")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
-  if (!data) return null;
+  if (error || !data) return null;
   return {
     id: data.id,
     user_id: data.user_id,
     name: data.name,
     phase_tags: data.phase_tags ?? [],
-    exercises: (data.exercises as TemplateExercise[]) ?? [],
+    exercises: Array.isArray(data.exercises) ? (data.exercises as TemplateExercise[]) : [],
     created_at: data.created_at,
     updated_at: data.updated_at ?? data.created_at,
   };
@@ -145,7 +145,7 @@ export async function enrichWithLastSession(
   if (!user) return exercises;
 
   // Fetch all completed sessions for this user (limit 50, enough for matching)
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("workouts")
     .select("exercises")
     .eq("user_id", user.id)
@@ -153,7 +153,7 @@ export async function enrichWithLastSession(
     .order("created_at", { ascending: false })
     .limit(50);
 
-  if (!data || data.length === 0) return exercises;
+  if (error || !data || data.length === 0) return exercises;
 
   // Build lookup maps: first occurrence wins (most recent session is first)
   const byId: Record<string, Array<{ reps: string; weight: string }>> = {};
