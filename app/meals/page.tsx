@@ -11,6 +11,8 @@ import MealPhaseBanner           from "@/components/MealPhaseBanner";
 import NutritionFoodSearch       from "@/components/NutritionFoodSearch";
 import NutritionEntryList        from "@/components/NutritionEntryList";
 import MealRecommendationCards   from "@/components/MealRecommendationCards";
+import PhaseCard from "@/components/PhaseCard";
+import MacroRing from "@/components/MacroRing";
 import {
   getTodayMealEntries,
   getTodayNutritionSummary,
@@ -89,8 +91,7 @@ export default function MealsPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
       {/* Toast notification */}
       {toast && (
@@ -110,6 +111,55 @@ export default function MealsPage() {
           </div>
         </header>
 
+        {/* Phase card (design v3) */}
+        <PhaseCard
+          phase={phase}
+          label={phaseData.label}
+          description={phaseData.nutritionDetail?.split(".")[0] ?? "Phase nutrition guidance"}
+          cycleDay={cycleDay}
+          className="mb-3"
+        />
+
+        {/* Macro summary card (design v3) */}
+        <div className="rounded-[22px] p-4 mb-3"
+          style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)" }}>
+          {/* Top row: kcal + ring */}
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="font-accent text-[26px] font-bold text-dark leading-none tracking-tight">
+                {Math.round(nutritionSummary?.kcal ?? 0).toLocaleString()}
+              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.10em] text-text-dim mt-0.5">Calories eaten</p>
+              <p className="text-xs font-semibold text-primary mt-0.5">
+                {Math.max(0, macroTargets.calories - Math.round(nutritionSummary?.kcal ?? 0))} kcal remaining
+              </p>
+            </div>
+            <MacroRing
+              consumed={Math.round(nutritionSummary?.kcal ?? 0)}
+              target={macroTargets.calories}
+            />
+          </div>
+          {/* Macro pills */}
+          <div className="flex gap-2">
+            {[
+              { label: "Protein", consumed: Math.round(nutritionSummary?.protein ?? 0), target: macroTargets.protein, fill: "#E8829A" },
+              { label: "Carbs",   consumed: Math.round(nutritionSummary?.carbs   ?? 0), target: macroTargets.carbs,   fill: "#F4B8C6" },
+              { label: "Fat",     consumed: Math.round(nutritionSummary?.fats    ?? 0), target: macroTargets.fats,    fill: "#C96480" },
+            ].map(m => {
+              const pct = Math.min(m.consumed / Math.max(m.target, 1), 1);
+              return (
+                <div key={m.label} className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "var(--color-ghost)" }}>
+                  <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim mb-1">{m.label}</p>
+                  <p className="font-accent text-xs font-bold text-dark mb-1.5">{m.consumed}g</p>
+                  <div className="h-[3px] rounded-full overflow-hidden" style={{ background: "#F4B8C6" }}>
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct * 100}%`, background: m.fill }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Phase banner — TodayState mealFocus or rotating fallback */}
         <MealPhaseBanner
           phaseData={phaseData}
@@ -124,7 +174,7 @@ export default function MealsPage() {
             <button
               onClick={() => setShowNutritionSearch(true)}
               className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 mb-3 flex items-center justify-center gap-2 shadow-soft"
-              style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+              style={{ background: "linear-gradient(135deg, #E8829A, #C96480)" }}>
               <span className="text-base">🔍</span>
               Search & log food
             </button>
