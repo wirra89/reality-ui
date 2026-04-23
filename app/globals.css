@@ -18,10 +18,11 @@
   --color-track:       #F5DEE2;
   --color-ghost:       #FEF7F8;
   --color-text-rgb:    44, 26, 31;
-  --shadow-soft:       0 2px 10px rgba(180,80,100,0.08);
-  --shadow-card:       0 4px 20px rgba(180,80,100,0.10);
-  --nav-bg:            rgba(255,255,255,0.95);
-  --nav-border:        rgba(245,222,226,0.80);
+  --shadow-soft:       0 4px 24px rgba(232,130,154,0.14);
+  --shadow-card:       0 2px 16px rgba(232,130,154,0.08);
+  --shadow-lg:         0 8px 32px rgba(232,130,154,0.20);
+  --nav-bg:            rgba(255,255,255,0.97);
+  --nav-border:        rgba(244,184,198,0.60);
 }
 
 
@@ -146,4 +147,65 @@ input[type="range"]::-moz-range-thumb {
   color: rgba(46,46,46,0.5);
   border: none;
 }
+
+/* ── Rose glow — Design V3 (stronger, two-layer) ────────────────── */
+.rose-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 300px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse 95% 80% at 50% -5%,
+      rgba(232, 130, 154, 0.44) 0%,
+      rgba(232, 130, 154, 0.14) 52%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 55% 38% at 50% 0%,
+      rgba(255, 195, 210, 0.28) 0%,
+      transparent 58%
+    );
+}
+
+/* ── Animated phase icons ────────────────────────────────────────── */
+@keyframes sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50%       { transform: rotate(3deg); }
+}
+@keyframes leaf-open {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+@keyframes sun-spin { to { transform: rotate(360deg); } }
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.12); opacity: 0.85; }
+}
+@keyframes moon-breath {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.7;  transform: scale(1.15); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50%       { opacity: 1;   transform: scale(1); }
+}
+@keyframes flicker {
+  0%,  100% { transform: scale(1)    rotate(-2deg); filter: drop-shadow(0 0 2px rgba(255,140,60,0.6)); }
+  25%        { transform: scale(1.12) rotate(2deg);  filter: drop-shadow(0 0 6px rgba(255,140,60,0.9)); }
+  50%        { transform: scale(0.95) rotate(-1deg); filter: drop-shadow(0 0 3px rgba(255,140,60,0.5)); }
+  75%        { transform: scale(1.08) rotate(3deg);  filter: drop-shadow(0 0 5px rgba(255,140,60,0.85)); }
+}
+
+.phase-glyph-stem   { transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite; }
+.phase-glyph-leaf-l { transform-origin: 50% 70%;  animation: leaf-open 3.2s ease-in-out infinite; }
+.phase-glyph-leaf-r { transform-origin: 50% 70%;  animation: leaf-open 3.2s ease-in-out infinite 0.6s; }
+.phase-glyph-rays   { transform-origin: 50% 50%;  animation: sun-spin 18s linear infinite; }
+.phase-glyph-core   { transform-origin: 50% 50%;  animation: sun-pulse 2.4s ease-in-out infinite; }
+.phase-glyph-halo   { transform-origin: 50% 50%;  animation: moon-breath 3s ease-in-out infinite; }
+.phase-glyph-star-a { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite; }
+.phase-glyph-star-b { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite 0.8s; }
+.phase-glyph-star-c { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite 1.5s; }
+.flame-icon         { display: inline-block; transform-origin: 50% 90%; animation: flicker 1.6s ease-in-out infinite; }
 
