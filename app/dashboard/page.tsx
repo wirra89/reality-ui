@@ -14,6 +14,8 @@ import AIRecommendationCard from "@/components/AIRecommendationCard";
 import ReadinessCard from "@/components/ReadinessCard";
 import NutritionCard from "@/components/NutritionCard";
 import CycleCalendar from "@/components/CycleCalendar";
+import PhaseCard from "@/components/PhaseCard";
+import FocusCards from "@/components/FocusCards";
 
 // ── Phase visual constants ──────────────────────────────────────────────────
 const PHASE_HERO_GRADIENT: Record<string, string> = {
@@ -263,8 +265,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <div className="fixed top-0 left-0 right-0 h-64 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pb-12 pt-6">
 
@@ -373,84 +374,83 @@ export default function DashboardPage() {
           );
         })()}
 
-        {/* ── 2. PHASE HERO ── */}
-        {(() => {
-          const heroGrad  = PHASE_HERO_GRADIENT[phaseData.phase];
-          const heroText  = PHASE_HERO_TEXT[phaseData.phase];
-          const heroChip  = PHASE_HERO_CHIP[phaseData.phase];
-          const phaseColor = PHASE_COLOR[phaseData.phase];
-          const score     = todayState?.readinessScore ?? phaseData.readinessScore;
-          const scorePct  = score / 100;
-
-          // Build signal chips
-          const chips: string[] = [];
-          if (todayState?.readinessLabel) {
-            chips.push(todayState.readinessLabel.charAt(0).toUpperCase() + todayState.readinessLabel.slice(1) + " energy");
-          } else {
-            chips.push(readinessLabel(score));
+        {/* ── 2. PHASE CARD (design v3) ── */}
+        <PhaseCard
+          phase={phaseData.phase}
+          label={phaseData.label}
+          description={
+            (phaseData.trainingDetail ?? phaseData.aiRecommendation ?? "").split(".")[0]
           }
-          const symptoms = (latestMoodLog?.symptoms as unknown as string[] | undefined) ?? [];
-          if (symptoms.includes("cramps") || symptoms.includes("cramp")) chips.push("Cramps today");
-          else if (symptoms.includes("bloating")) chips.push("Bloating");
-          else if (symptoms.includes("fatigue")) chips.push("Fatigue");
-          if (daysUntilNext > 0 && daysUntilNext <= 7) chips.push(`Period in ${daysUntilNext}d`);
-          else if (phaseData.phase === "menstrual") chips.push("Period week");
+          cycleDay={cycleDay}
+          className="mb-3"
+        />
 
-          // Workout label for quick action
-          const workoutLabel = todayState?.workoutRecommendation?.type ?? phaseData.training;
-
-          return (
-            <div className="rounded-2xl mb-3 overflow-hidden shadow-card" style={{ background: heroGrad, color: heroText, position: "relative" }}>
-              {/* Decorative blob */}
-              <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: phaseColor, opacity: 0.12, filter: "blur(24px)", pointerEvents: "none" }} />
-              <div className="p-4 relative">
-                {/* Eyebrow */}
-                <p className="text-xs font-bold uppercase tracking-widest opacity-65 mb-1">Day {cycleDay} · {phaseData.phase} phase</p>
-                {/* Headline */}
-                <p className="font-display text-xl font-bold leading-tight mb-3">{phaseData.label} {phaseData.emoji}</p>
-                {/* Signal chips */}
-                {chips.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {chips.map(c => (
-                      <span key={c} className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: heroChip }}>{c}</span>
-                    ))}
-                  </div>
-                )}
-                {/* Readiness bar */}
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{ background: "rgba(255,255,255,0.28)" }}>
-                  <span className="text-sm flex-shrink-0">💪</span>
-                  <div className="flex-1">
-                    <p className="text-xs font-bold mb-1.5">Readiness {score} / 100</p>
-                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.4)" }}>
-                      <div className="h-full rounded-full" style={{ width: `${scorePct * 100}%`, background: phaseColor }} />
-                    </div>
-                  </div>
-                </div>
-                {/* Quick actions */}
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => router.push("/mood")}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-left active:scale-95 transition-all"
-                    style={{ background: "rgba(255,255,255,0.3)" }}>
-                    <span className="text-lg">✏️</span>
-                    <div>
-                      <p className="text-xs font-bold">Check-in</p>
-                      <p className="text-xs opacity-65">{todayState?.adaptedFromCheckin ? "Done ✓" : "Personalise today"}</p>
-                    </div>
-                  </button>
-                  <button onClick={() => router.push("/training")}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-left active:scale-95 transition-all"
-                    style={{ background: "rgba(255,255,255,0.3)" }}>
-                    <span className="text-lg">💪</span>
-                    <div>
-                      <p className="text-xs font-bold">Today&apos;s plan</p>
-                      <p className="text-xs opacity-65 truncate">{workoutLabel}</p>
-                    </div>
-                  </button>
-                </div>
+        {/* ── 3. STATS ROW ── */}
+        <div className="flex gap-2 mb-3">
+          {/* Day tile */}
+          <div className="flex-shrink-0 flex flex-col items-center justify-center rounded-[18px] bg-surface border border-[var(--color-border)]"
+            style={{ width: 76, height: 76, boxShadow: "var(--shadow-card)" }}>
+            <span className="font-accent text-2xl font-bold text-primary leading-none">{cycleDay}</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wide text-text-dim mt-0.5">of cycle</span>
+          </div>
+          {/* Mini stats grid */}
+          <div className="flex-1 grid grid-cols-2 gap-2">
+            {[
+              {
+                val: profile?.calculated_calories
+                  ? profile.calculated_calories
+                  : Math.round(phaseData.macros.protein * 4 + phaseData.macros.carbs * 4 + phaseData.macros.fats * 9),
+                lbl: "kcal goal",
+              },
+              { val: streak, lbl: "day streak", flame: streak > 0 },
+              { val: Math.max(0, (profile?.cycle_length ?? 28) - cycleDay), lbl: "days left" },
+              {
+                val: `${profile?.calculated_protein ?? phaseData.macros.protein}g`,
+                lbl: "protein",
+              },
+            ].map((s, i) => (
+              <div key={i} className="bg-surface rounded-[14px] px-2.5 py-2 border border-[var(--color-border)]"
+                style={{ boxShadow: "var(--shadow-card)" }}>
+                <p className="font-accent text-sm font-bold text-dark leading-none mb-0.5">
+                  {s.val}
+                  {s.flame && <span className="flame-icon text-xs ml-0.5">🔥</span>}
+                </p>
+                <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim">{s.lbl}</p>
               </div>
-            </div>
-          );
-        })()}
+            ))}
+          </div>
+        </div>
+
+        {/* ── 4. TODAY'S FOCUS CARDS ── */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2 px-0.5">
+            <h2 className="font-display text-[15px] font-semibold text-dark">Today&apos;s Focus</h2>
+            <button onClick={() => router.push("/mood")}
+              className="text-xs font-semibold text-primary active:opacity-70 transition-opacity">
+              {todayState?.adaptedFromCheckin ? "✓ Checked in" : "Check in"}
+            </button>
+          </div>
+          <FocusCards cards={[
+            {
+              icon: "💪",
+              title: "Train",
+              desc: (todayState?.workoutRecommendation?.type ?? phaseData.training).slice(0, 30),
+              active: true,
+            },
+            {
+              icon: "🥗",
+              title: "Eat",
+              desc: phaseData.nutritionDetail
+                ? phaseData.nutritionDetail.slice(0, 30)
+                : `${profile?.calculated_protein ?? phaseData.macros.protein}g protein`,
+            },
+            {
+              icon: "💧",
+              title: "Hydrate",
+              desc: `${waterGlasses} / ${(phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8} glasses`,
+            },
+          ]} />
+        </div>
 
         {/* ── PERIOD DATE NUDGE — show if not set ── */}
         {!profile?.period_start_date && !newCyclePrompt && (
