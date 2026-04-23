@@ -17,6 +17,7 @@ import { TrainingIntelligenceCard } from "@/components/TrainingIntelligenceCard"
 import type { IntelligenceWorkoutExercise } from "@/components/TrainingIntelligenceCard";
 import { getTemplates, type NewWorkoutTemplate } from "@/lib/workoutSessions";
 import type { WorkoutTypeId } from "@/lib/trainingEngine";
+import PhaseCard from "@/components/PhaseCard";
 
 interface SetRow { id: string; reps: string; weight: string; durationMin?: string; distanceKm?: string; }
 interface ExRow  { id: string; name: string; sets: SetRow[]; exType: InputType; }
@@ -413,8 +414,7 @@ export default function TrainingPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
 
@@ -422,7 +422,7 @@ export default function TrainingPage() {
         <header className="flex items-center justify-between mb-5">
           <div>
             <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Workout</p>
-            <h1 className="font-display text-2xl font-semibold text-dark">Today's Workout</h1>
+            <h1 className="font-display text-2xl font-semibold text-dark">Today&apos;s Workout</h1>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setShowTemplates(!showTemplates)}
@@ -432,6 +432,35 @@ export default function TrainingPage() {
             </button>
           </div>
         </header>
+
+        {/* Phase card (design v3) */}
+        <PhaseCard
+          phase={phaseData.phase}
+          label={phaseData.label}
+          description={phaseData.trainingDetail?.split(".")[0] ?? phaseData.training}
+          cycleDay={cycleDay}
+          className="mb-3"
+        />
+
+        {/* Phase training recommendation banner */}
+        <div
+          className="flex items-start gap-3 rounded-[18px] p-3.5 mb-3"
+          style={{
+            background: "var(--color-surface)",
+            borderTop: "1px solid var(--color-border)",
+            borderRight: "1px solid var(--color-border)",
+            borderBottom: "1px solid var(--color-border)",
+            borderLeft: `4px solid ${phaseColor}`,
+          }}
+        >
+          <span className="text-2xl flex-shrink-0">
+            {phaseData.phase === "menstrual" ? "🌙" : phaseData.phase === "follicular" ? "🌱" : phaseData.phase === "ovulation" ? "⚡" : "🍂"}
+          </span>
+          <div>
+            <p className="text-sm font-bold text-dark mb-0.5">{todayMsg.title}</p>
+            <p className="text-xs leading-snug" style={{ color: "var(--color-text-mid)" }}>{todayMsg.detail.split(".")[0]}.</p>
+          </div>
+        </div>
 
         {/* Templates panel */}
         {showTemplates && (
@@ -706,10 +735,11 @@ export default function TrainingPage() {
         {/* Exercise list */}
         <div className="space-y-3 mb-4">
           {exercises.map((exercise, exIdx) => (
-            <div key={exercise.id} className="bg-surface rounded-2xl shadow-card overflow-hidden">
+            <div key={exercise.id} className="bg-surface rounded-[18px] overflow-hidden"
+              style={{ boxShadow: "var(--shadow-card)", border: "1px solid var(--color-border)" }}>
               <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
                 <span className="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>{exIdx + 1}</span>
+                  style={{ background: "linear-gradient(135deg, #E8829A, #C96480)" }}>{exIdx + 1}</span>
                 <input type="text" placeholder="Exercise name…" value={exercise.name}
                   onChange={(e) => updateExName(exercise.id, e.target.value)}
                   className="flex-1 text-dark font-semibold text-sm outline-none placeholder:text-dark/30 bg-transparent font-body" />
