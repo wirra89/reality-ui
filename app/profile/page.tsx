@@ -18,6 +18,7 @@ import { computeAchievements, type AchievementDef, type AchievementCounts } from
 import TopLiftsCard from "@/components/TopLiftsCard";
 import ProgressPhotosCard from "@/components/ProgressPhotosCard";
 import AchievementsCard from "@/components/AchievementsCard";
+import ProgressTimeline from "@/components/ProgressTimeline";
 
 const avatarColors = [
   "linear-gradient(135deg, #C48A97, #7B6D8D)",
@@ -113,6 +114,7 @@ export default function ProfilePage() {
   const [topPrs, setTopPrs]                 = useState<PersonalRecord[]>([]);
   const [progressPhotos, setProgressPhotos] = useState<ProgressPhoto[]>([]);
   const [achievements, setAchievements]     = useState<AchievementDef[]>([]);
+  const [showTimeline, setShowTimeline]     = useState(false);
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
@@ -556,6 +558,7 @@ export default function ProfilePage() {
         <ProgressPhotosCard
           photos={progressPhotos}
           onPhotoAdded={() => getProgressPhotos().then(setProgressPhotos)}
+          onViewTimeline={() => setShowTimeline(true)}
         />
         {achievements.length > 0 && <AchievementsCard achievements={achievements} />}
 
@@ -974,6 +977,14 @@ export default function ProfilePage() {
         </p>
 
       </main>
+
+      {/* Progress Timeline modal */}
+      {showTimeline && (
+        <ProgressTimeline
+          onClose={() => setShowTimeline(false)}
+          currentPhase={phase}
+        />
+      )}
 
       {/* ════════════════════════════════════════════════════
           Sticky Save — only visible when dirty

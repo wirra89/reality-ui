@@ -5,6 +5,7 @@ import { type ProgressPhoto, uploadProgressPhoto } from "@/lib/progressPhotos";
 interface ProgressPhotosCardProps {
   photos: ProgressPhoto[];
   onPhotoAdded: () => void;
+  onViewTimeline: () => void;
 }
 
 function formatPhotoLabel(isoDate: string, suffix: string): string {
@@ -18,7 +19,7 @@ function monthsBetween(a: string, b: string): number {
   return Math.round((db.getTime() - da.getTime()) / (1000 * 60 * 60 * 24 * 30));
 }
 
-export default function ProgressPhotosCard({ photos, onPhotoAdded }: ProgressPhotosCardProps) {
+export default function ProgressPhotosCard({ photos, onPhotoAdded, onViewTimeline }: ProgressPhotosCardProps) {
   const fileInputRef                      = useRef<HTMLInputElement>(null);
   const [uploading, setUploading]         = useState(false);
   const [uploadError, setUploadError]     = useState<string | null>(null);
@@ -212,6 +213,15 @@ export default function ProgressPhotosCard({ photos, onPhotoAdded }: ProgressPho
           className="hidden"
         />
       </div>
+
+      {/* Timeline CTA */}
+      <button
+        onClick={onViewTimeline}
+        className="w-full py-3 text-xs font-semibold text-center transition-all active:scale-98 border-t flex items-center justify-center gap-1.5"
+        style={{ color: "#A78BFA", borderColor: "var(--color-border)" }}
+      >
+        <span>📅</span> View Progress Timeline →
+      </button>
 
       {/* Full-screen preview */}
       {previewUrl && (
