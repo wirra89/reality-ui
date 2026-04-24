@@ -596,6 +596,47 @@ export async function logRecipe(
   return mapRowToEntry(data as MealLogEntryRow);
 }
 
+export async function logStaticRecipe(
+  recipe: {
+    name:      string;
+    calories:  number;
+    protein_g: number;
+    carbs_g:   number;
+    fat_g:     number;
+  },
+  mealType: MealType,
+  cycleDay: number,
+  phase:    Phase,
+): Promise<MealLogEntry> {
+  const user = await getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const mealLogId = await getOrCreateTodayMealLog(cycleDay, phase);
+
+  const { data, error } = await supabase
+    .from("meal_log_entries")
+    .insert({
+      meal_log_id:        mealLogId,
+      user_id:            user.id,
+      entry_source:       "legacy_snapshot" as EntrySource,
+      food_id:            null,
+      recipe_id:          null,
+      quantity_g:         null,
+      servings_consumed:  1,
+      meal_type:          mealType,
+      snapshot_name:      recipe.name,
+      snapshot_kcal:      recipe.calories,
+      snapshot_protein_g: recipe.protein_g,
+      snapshot_carbs_g:   recipe.carbs_g,
+      snapshot_fats_g:    recipe.fat_g,
+    })
+    .select("*")
+    .single();
+
+  if (error) throw new Error(`logStaticRecipe failed: ${error.message}`);
+  return mapRowToEntry(data as MealLogEntryRow);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // MEAL RECOMMENDATIONS — exported
 // ─────────────────────────────────────────────────────────────────────────────
