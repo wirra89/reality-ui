@@ -7,13 +7,11 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData } from "@/lib/cycle";
 import { type Phase } from "@/lib/cycle";
-import MealPhaseBanner           from "@/components/MealPhaseBanner";
 import NutritionFoodSearch       from "@/components/NutritionFoodSearch";
 import NutritionEntryList        from "@/components/NutritionEntryList";
 import MealRecommendationCards      from "@/components/MealRecommendationCards";
 import RecipeRecommendationPanel    from "@/components/RecipeRecommendationPanel";
 import PhaseCard from "@/components/PhaseCard";
-import MacroRing from "@/components/MacroRing";
 import {
   getTodayMealEntries,
   getTodayNutritionSummary,
@@ -121,53 +119,6 @@ export default function MealsPage() {
           className="mb-3"
         />
 
-        {/* Macro summary card (design v3) */}
-        <div className="rounded-[22px] p-4 mb-3"
-          style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)" }}>
-          {/* Top row: kcal + ring */}
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="font-accent text-[26px] font-bold text-dark leading-none tracking-tight">
-                {Math.round(nutritionSummary?.kcal ?? 0).toLocaleString()}
-              </p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.10em] text-text-dim mt-0.5">Calories eaten</p>
-              <p className="text-xs font-semibold text-primary mt-0.5">
-                {Math.max(0, macroTargets.calories - Math.round(nutritionSummary?.kcal ?? 0))} kcal remaining
-              </p>
-            </div>
-            <MacroRing
-              consumed={Math.round(nutritionSummary?.kcal ?? 0)}
-              target={macroTargets.calories}
-            />
-          </div>
-          {/* Macro pills */}
-          <div className="flex gap-2">
-            {[
-              { label: "Protein", consumed: Math.round(nutritionSummary?.protein ?? 0), target: macroTargets.protein, fill: "#E8829A" },
-              { label: "Carbs",   consumed: Math.round(nutritionSummary?.carbs   ?? 0), target: macroTargets.carbs,   fill: "#F4B8C6" },
-              { label: "Fat",     consumed: Math.round(nutritionSummary?.fats    ?? 0), target: macroTargets.fats,    fill: "#C96480" },
-            ].map(m => {
-              const pct = Math.min(m.consumed / Math.max(m.target, 1), 1);
-              return (
-                <div key={m.label} className="flex-1 rounded-xl p-2.5 text-center" style={{ background: "var(--color-ghost)" }}>
-                  <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim mb-1">{m.label}</p>
-                  <p className="font-accent text-xs font-bold text-dark mb-1.5">{m.consumed}g</p>
-                  <div className="h-[3px] rounded-full overflow-hidden" style={{ background: "#F4B8C6" }}>
-                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct * 100}%`, background: m.fill }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Phase banner — TodayState mealFocus or rotating fallback */}
-        <MealPhaseBanner
-          phaseData={phaseData}
-          cycleDay={cycleDay}
-          mealFocus={todayState?.mealFocus ?? null}
-          adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
-        />
 
         {/* Search & log food — expands to show recipe recommendations + food search */}
         <div className="mb-3">
@@ -181,12 +132,6 @@ export default function MealsPage() {
             </button>
           ) : (
             <>
-              {/* Engine-scored recipe panel — shown inside the expanded search area */}
-              <RecipeRecommendationPanel
-                phase={phase}
-                dailySignals={dailySignals}
-                macroTargets={macroTargets}
-              />
               <NutritionFoodSearch
                 cycleDay={cycleDay}
                 phase={phase}
@@ -197,6 +142,18 @@ export default function MealsPage() {
                 }}
                 onCancel={() => {
                   setShowNutritionSearch(false);
+                }}
+              />
+              {/* Engine-scored recipe panel — below the search input */}
+              <RecipeRecommendationPanel
+                phase={phase}
+                dailySignals={dailySignals}
+                macroTargets={macroTargets}
+                cycleDay={cycleDay}
+                onLogged={() => {
+                  setShowNutritionSearch(false);
+                  showToast("✓ Meal logged");
+                  refreshNutrition();
                 }}
               />
             </>
