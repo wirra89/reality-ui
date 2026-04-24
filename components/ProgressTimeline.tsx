@@ -26,13 +26,12 @@ const PHASE_LABEL: Record<string, string> = {
 
 const PHASE_COLOR: Record<string, string> = {
   menstrual: "#F87171", follicular: "#34D399",
-  ovulation: "#FBBF24", luteal:     "#A78BFA",
+  ovulation: "#FBBF24", luteal: "#A78BFA",
 };
 
 function formatDate(iso: string): string {
   return new Date(iso + "T00:00:00")
-    .toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-    .toUpperCase();
+    .toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 interface ProgressTimelineProps {
@@ -42,28 +41,52 @@ interface ProgressTimelineProps {
 
 type View = "list" | "add";
 
-export default function ProgressTimeline({ onClose, currentPhase }: ProgressTimelineProps) {
-  const [view, setView]           = useState<View>("list");
-  const [entries, setEntries]     = useState<ProgressEntry[]>([]);
-  const [loadState, setLoadState] = useState<"loading" | "ready">("loading");
+// Shared header back button — visible on light theme
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
+      style={{
+        background: "var(--color-surface-2)",
+        border: "1px solid var(--color-border)",
+        color: "var(--color-text)",
+        fontSize: "1.1rem",
+      }}
+    >
+      ←
+    </button>
+  );
+}
 
-  // Add-entry form state
+// Shared field label
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-mid)" }}>
+      {children}
+    </p>
+  );
+}
+
+export default function ProgressTimeline({ onClose, currentPhase }: ProgressTimelineProps) {
+  const [view, setView]             = useState<View>("list");
+  const [entries, setEntries]       = useState<ProgressEntry[]>([]);
+  const [loadState, setLoadState]   = useState<"loading" | "ready">("loading");
+
   const today = new Date().toISOString().split("T")[0];
-  const [formDate, setFormDate]     = useState(today);
-  const [formWeight, setFormWeight] = useState("");
-  const [formMood, setFormMood]     = useState("");
-  const [formNote, setFormNote]     = useState("");
-  const [formPhase]                 = useState(currentPhase);
-  const [formFile, setFormFile]     = useState<File | null>(null);
+  const [formDate, setFormDate]       = useState(today);
+  const [formWeight, setFormWeight]   = useState("");
+  const [formMood, setFormMood]       = useState("");
+  const [formNote, setFormNote]       = useState("");
+  const [formPhase]                   = useState(currentPhase);
+  const [formFile, setFormFile]       = useState<File | null>(null);
   const [formPreview, setFormPreview] = useState<string | null>(null);
-  const [saving, setSaving]         = useState(false);
-  const [saveError, setSaveError]   = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [saving, setSaving]           = useState(false);
+  const [saveError, setSaveError]     = useState<string | null>(null);
+  const [deletingId, setDeletingId]   = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   async function load() {
     setLoadState("loading");
@@ -83,7 +106,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
   }
 
   async function handleSave() {
-    if (!formFile) { setSaveError("Please select a photo."); return; }
+    if (!formFile) { setSaveError("Please add a photo."); return; }
     const parsedWeight = formWeight ? parseFloat(formWeight) : null;
     if (parsedWeight !== null && (isNaN(parsedWeight) || parsedWeight < 20 || parsedWeight > 400)) {
       setSaveError("Enter a valid weight (20–400 kg).");
@@ -104,7 +127,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
       resetForm();
       setView("list");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Save failed.");
+      setSaveError(err instanceof Error ? err.message : "Save failed. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -120,17 +143,20 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
     }
   }
 
-  function resetForm(previewToRevoke?: string | null) {
-    const urlToRevoke = previewToRevoke !== undefined ? previewToRevoke : formPreview;
-    if (urlToRevoke) URL.revokeObjectURL(urlToRevoke);
+  function clearPreview() {
+    if (formPreview) URL.revokeObjectURL(formPreview);
+    setFormPreview(null);
+    setFormFile(null);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function resetForm() {
+    clearPreview();
     setFormDate(today);
     setFormWeight("");
     setFormMood("");
     setFormNote("");
-    setFormFile(null);
-    setFormPreview(null);
     setSaveError(null);
-    if (fileRef.current) fileRef.current.value = "";
   }
 
   function openAdd() {
@@ -138,43 +164,45 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
     setView("add");
   }
 
-  // ── Add-entry form ──────────────────────────────────────────────────────────
+  // ── ADD ENTRY FORM ──────────────────────────────────────────────────────────
   if (view === "add") {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "var(--color-background)" }}>
+      <div
+        className="fixed inset-0 z-50 flex flex-col bg-background"
+        style={{ overscrollBehavior: "contain" }}
+      >
         {/* Header */}
         <div
-          className="flex items-center gap-3 px-4 pt-6 pb-4 border-b flex-shrink-0"
-          style={{ borderColor: "var(--color-border)" }}
+          className="flex items-center gap-3 px-4 pt-6 pb-4 flex-shrink-0"
+          style={{
+            background: "var(--color-surface)",
+            borderBottom: "1px solid var(--color-border)",
+          }}
         >
-          <button
-            onClick={() => { resetForm(); setView("list"); }}
-            className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90"
-            style={{ background: "rgba(255,255,255,0.06)" }}
-          >
-            ←
-          </button>
+          <BackButton onClick={() => { resetForm(); setView("list"); }} />
           <div className="flex-1">
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>
               New Entry
             </p>
-            <p className="text-base font-semibold text-dark leading-tight">Add progress check-in</p>
+            <p className="text-base font-semibold text-dark leading-tight mt-0.5">
+              Add progress check-in
+            </p>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4">
-          {/* Photo picker */}
+        {/* Scrollable form */}
+        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+
+          {/* Photo */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-dim)" }}>
-              Photo *
-            </p>
+            <Label>Photo *</Label>
             {formPreview ? (
-              <div className="relative w-full rounded-2xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
+              <div className="relative w-full rounded-2xl overflow-hidden shadow-card" style={{ aspectRatio: "4/3" }}>
                 <img src={formPreview} alt="Preview" className="w-full h-full object-cover" />
                 <button
-                  onClick={() => { if (formPreview) URL.revokeObjectURL(formPreview); setFormFile(null); setFormPreview(null); if (fileRef.current) fileRef.current.value = ""; }}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white"
-                  style={{ background: "rgba(0,0,0,0.5)" }}
+                  onClick={clearPreview}
+                  className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-lg"
+                  style={{ background: "rgba(0,0,0,0.55)" }}
                 >
                   ×
                 </button>
@@ -182,11 +210,15 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
             ) : (
               <button
                 onClick={() => fileRef.current?.click()}
-                className="w-full py-10 rounded-2xl flex flex-col items-center gap-2 transition-all active:scale-98"
-                style={{ border: "1.5px dashed rgba(167,139,250,0.35)", background: "rgba(167,139,250,0.04)" }}
+                className="w-full py-10 rounded-2xl flex flex-col items-center gap-2 transition-all active:scale-[0.98]"
+                style={{
+                  border: "1.5px dashed rgba(167,139,250,0.5)",
+                  background: "rgba(167,139,250,0.06)",
+                }}
               >
-                <span className="text-2xl">📸</span>
+                <span className="text-3xl">📸</span>
                 <span className="text-sm font-semibold" style={{ color: "#A78BFA" }}>Tap to add photo</span>
+                <span className="text-xs" style={{ color: "var(--color-text-mid)" }}>JPG, PNG or WEBP · max 10 MB</span>
               </button>
             )}
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
@@ -194,76 +226,83 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
 
           {/* Date */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-dim)" }}>
-              Date
-            </p>
+            <Label>Date</Label>
             <input
               type="date"
               value={formDate}
               max={today}
               onChange={e => setFormDate(e.target.value)}
               className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-dark outline-none"
-              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+              style={{
+                background: "var(--color-surface)",
+                border: "1.5px solid var(--color-border)",
+              }}
             />
           </div>
 
-          {/* Phase (auto-filled, read-only) */}
+          {/* Phase */}
           {formPhase && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-dim)" }}>
-                Phase
-              </p>
+              <Label>Phase</Label>
               <div
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold"
                 style={{
-                  background: `${PHASE_COLOR[formPhase] ?? "#C48A97"}14`,
+                  background: `${PHASE_COLOR[formPhase] ?? "#C48A97"}18`,
                   color: PHASE_COLOR[formPhase] ?? "#C48A97",
-                  border: `1px solid ${PHASE_COLOR[formPhase] ?? "#C48A97"}30`,
+                  border: `1.5px solid ${PHASE_COLOR[formPhase] ?? "#C48A97"}40`,
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: PHASE_COLOR[formPhase] ?? "#C48A97" }} />
-                {PHASE_LABEL[formPhase] ?? formPhase} · auto-filled
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: PHASE_COLOR[formPhase] ?? "#C48A97" }} />
+                {PHASE_LABEL[formPhase] ?? formPhase}
+                <span className="text-xs font-normal opacity-60 ml-0.5">· auto-filled</span>
               </div>
             </div>
           )}
 
           {/* Weight */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-dim)" }}>
-              Weight <span className="normal-case font-normal">(optional)</span>
-            </p>
+            <Label>Weight <span className="normal-case font-normal text-xs opacity-70">(optional)</span></Label>
             <div className="relative">
               <input
                 type="number"
-                placeholder="66"
-                min={30} max={300}
+                inputMode="decimal"
+                placeholder="e.g. 66"
+                min={20} max={400}
                 value={formWeight}
                 onChange={e => setFormWeight(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-dark outline-none pr-12"
-                style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+                className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-dark outline-none pr-14"
+                style={{
+                  background: "var(--color-surface)",
+                  border: "1.5px solid var(--color-border)",
+                }}
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold" style={{ color: "var(--color-text-dim)" }}>kg</span>
+              <span
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold"
+                style={{ color: "var(--color-text-mid)" }}
+              >kg</span>
             </div>
           </div>
 
           {/* Mood */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-dim)" }}>
-              Mood <span className="normal-case font-normal">(optional)</span>
-            </p>
-            <div className="flex gap-2">
+            <Label>Mood <span className="normal-case font-normal text-xs opacity-70">(optional)</span></Label>
+            <div className="grid grid-cols-5 gap-2">
               {MOOD_OPTIONS.map(m => (
                 <button
                   key={m.value}
                   onClick={() => setFormMood(prev => prev === m.value ? "" : m.value)}
-                  className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all active:scale-95"
+                  className="flex flex-col items-center gap-1 py-3 rounded-xl transition-all active:scale-95"
                   style={{
-                    background: formMood === m.value ? "rgba(167,139,250,0.15)" : "var(--color-surface)",
-                    border: `1.5px solid ${formMood === m.value ? "rgba(167,139,250,0.4)" : "var(--color-border)"}`,
+                    background: formMood === m.value ? "rgba(167,139,250,0.18)" : "var(--color-surface)",
+                    border: `1.5px solid ${formMood === m.value ? "#A78BFA" : "var(--color-border)"}`,
+                    boxShadow: formMood === m.value ? "0 0 0 2px rgba(167,139,250,0.15)" : "none",
                   }}
                 >
-                  <span className="text-xl">{m.emoji}</span>
-                  <span className="text-[9px] font-semibold" style={{ color: formMood === m.value ? "#A78BFA" : "var(--color-text-dim)" }}>
+                  <span className="text-2xl leading-none">{m.emoji}</span>
+                  <span
+                    className="text-[10px] font-semibold leading-none"
+                    style={{ color: formMood === m.value ? "#A78BFA" : "var(--color-text-mid)" }}
+                  >
                     {m.label}
                   </span>
                 </button>
@@ -273,9 +312,10 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
 
           {/* Note */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--color-text-dim)" }}>
-              Note <span className="normal-case font-normal">(optional · {120 - formNote.length} left)</span>
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <Label>Note <span className="normal-case font-normal text-xs opacity-70">(optional)</span></Label>
+              <span className="text-xs" style={{ color: "var(--color-text-mid)" }}>{120 - formNote.length} left</span>
+            </div>
             <textarea
               placeholder="Felt strong today…"
               maxLength={120}
@@ -283,19 +323,32 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
               onChange={e => setFormNote(e.target.value)}
               rows={3}
               className="w-full rounded-xl px-4 py-3 text-sm text-dark outline-none resize-none font-body"
-              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+              style={{
+                background: "var(--color-surface)",
+                border: "1.5px solid var(--color-border)",
+              }}
             />
           </div>
 
           {saveError && (
-            <p className="text-xs text-red-400 text-center font-body">{saveError}</p>
+            <div className="rounded-xl px-4 py-3 text-sm font-semibold text-center"
+              style={{ background: "rgba(248,113,113,0.10)", color: "#DC2626", border: "1px solid rgba(248,113,113,0.25)" }}>
+              {saveError}
+            </div>
           )}
+
+          {/* Bottom spacer so content isn't hidden behind save button */}
+          <div style={{ height: "1rem" }} />
         </div>
 
-        {/* Save button */}
+        {/* Save button — sticky footer */}
         <div
-          className="px-4 pt-3 flex-shrink-0 border-t"
-          style={{ borderColor: "var(--color-border)", paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+          className="px-4 pt-3 flex-shrink-0"
+          style={{
+            background: "var(--color-surface)",
+            borderTop: "1px solid var(--color-border)",
+            paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+          }}
         >
           <button
             onClick={handleSave}
@@ -318,65 +371,68 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
     );
   }
 
-  // ── Timeline list ───────────────────────────────────────────────────────────
+  // ── TIMELINE LIST ───────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "var(--color-background)" }}>
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-background"
+      style={{ overscrollBehavior: "contain" }}
+    >
       {/* Header */}
       <div
-        className="flex items-center gap-3 px-4 pt-6 pb-4 border-b flex-shrink-0"
-        style={{ borderColor: "var(--color-border)" }}
+        className="flex items-center gap-3 px-4 pt-6 pb-4 flex-shrink-0"
+        style={{
+          background: "var(--color-surface)",
+          borderBottom: "1px solid var(--color-border)",
+        }}
       >
-        <button
-          onClick={onClose}
-          className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90"
-          style={{ background: "rgba(255,255,255,0.06)" }}
-        >
-          ←
-        </button>
+        <BackButton onClick={onClose} />
         <div className="flex-1">
-          <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>
+          <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>
             Progress
           </p>
-          <p className="text-base font-semibold text-dark leading-tight">Timeline</p>
+          <p className="text-base font-semibold text-dark leading-tight mt-0.5">Timeline</p>
         </div>
         <button
           onClick={openAdd}
-          className="px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all active:scale-95"
+          className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 flex-shrink-0"
           style={{ background: "linear-gradient(135deg, #A78BFA, #7B6D8D)" }}
         >
-          + Add Entry
+          + Add
         </button>
       </div>
 
+      {/* Body */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
+
         {/* Loading */}
         {loadState === "loading" && (
-          <div className="flex items-center justify-center py-20">
-            <svg className="w-6 h-6 animate-spin" viewBox="0 0 24 24" fill="none" style={{ color: "#A78BFA" }}>
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <svg className="w-8 h-8 animate-spin" viewBox="0 0 24 24" fill="none" style={{ color: "#A78BFA" }}>
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
+            <p className="text-sm font-body" style={{ color: "var(--color-text-mid)" }}>Loading your timeline…</p>
           </div>
         )}
 
         {/* Empty state */}
         {loadState === "ready" && entries.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="flex flex-col items-center justify-center py-20 gap-5 text-center">
             <div
-              className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
-              style={{ background: "rgba(167,139,250,0.1)" }}
+              className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl shadow-card"
+              style={{ background: "var(--color-surface)" }}
             >
               📸
             </div>
-            <div className="text-center">
-              <p className="text-sm font-semibold text-dark">No progress entries yet</p>
-              <p className="text-xs font-body mt-1" style={{ color: "var(--color-text-dim)" }}>
-                Add your first check-in to start your timeline.
+            <div>
+              <p className="text-base font-semibold text-dark">No entries yet</p>
+              <p className="text-sm font-body mt-1.5 leading-relaxed" style={{ color: "var(--color-text-mid)" }}>
+                Add your first check-in photo to<br />start tracking your progress.
               </p>
             </div>
             <button
               onClick={openAdd}
-              className="px-5 py-3 rounded-2xl text-sm font-semibold text-white transition-all active:scale-95"
+              className="px-6 py-3.5 rounded-2xl text-sm font-semibold text-white transition-all active:scale-95 shadow-lg"
               style={{ background: "linear-gradient(135deg, #A78BFA, #7B6D8D)" }}
             >
               + Add first entry
@@ -384,40 +440,45 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
           </div>
         )}
 
-        {/* Entries */}
+        {/* Entry list */}
         {loadState === "ready" && entries.length > 0 && (
-          <div className="space-y-3 pb-4">
+          <div className="space-y-3 pb-6">
             {entries.map((entry) => {
-              const phaseColor = PHASE_COLOR[entry.phase ?? ""] ?? "#A78BFA";
+              const pc = PHASE_COLOR[entry.phase ?? ""] ?? "#A78BFA";
               return (
                 <div
                   key={entry.id}
-                  className="rounded-2xl overflow-hidden"
+                  className="rounded-2xl overflow-hidden shadow-card"
                   style={{
                     background: "var(--color-surface)",
                     border: "1px solid var(--color-border)",
-                    boxShadow: "var(--shadow-soft)",
                   }}
                 >
-                  <div className="flex gap-3 p-3">
-                    {/* Thumbnail */}
-                    <div className="w-20 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                      <img src={entry.imageUrl} alt="Entry" className="w-full h-full object-cover" />
+                  <div className="flex gap-0">
+                    {/* Photo */}
+                    <div className="w-24 flex-shrink-0" style={{ minHeight: "120px" }}>
+                      <img
+                        src={entry.imageUrl}
+                        alt="Progress"
+                        className="w-full h-full object-cover"
+                        style={{ minHeight: "120px" }}
+                      />
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                    {/* Info */}
+                    <div className="flex-1 min-w-0 p-3 flex flex-col justify-between">
+                      {/* Top row: date + delete */}
+                      <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="text-xs font-bold tracking-wider text-dark">
+                          <p className="text-sm font-bold text-dark leading-tight">
                             {formatDate(entry.date)}
                           </p>
                           {entry.phase && (
                             <span
-                              className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full mt-0.5"
-                              style={{ background: `${phaseColor}18`, color: phaseColor }}
+                              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full mt-1"
+                              style={{ background: `${pc}18`, color: pc, border: `1px solid ${pc}35` }}
                             >
-                              <span className="w-1 h-1 rounded-full" style={{ background: phaseColor }} />
+                              <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: pc }} />
                               {PHASE_LABEL[entry.phase] ?? entry.phase}
                             </span>
                           )}
@@ -425,37 +486,42 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
                         <button
                           onClick={() => handleDelete(entry)}
                           disabled={deletingId === entry.id}
-                          className="w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0 transition-all active:scale-90 disabled:opacity-40"
-                          style={{ background: "rgba(248,113,113,0.08)", color: "#F87171" }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all active:scale-90 disabled:opacity-40"
+                          style={{
+                            background: "rgba(248,113,113,0.10)",
+                            color: "#EF4444",
+                            border: "1px solid rgba(248,113,113,0.2)",
+                            fontSize: "0.85rem",
+                          }}
                         >
-                          {deletingId === entry.id ? "…" : "🗑"}
+                          {deletingId === entry.id ? "…" : "✕"}
                         </button>
                       </div>
 
-                      <div className="space-y-1">
+                      {/* Stats row */}
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
                         {entry.weight !== null && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px]">⚖️</span>
-                            <span className="text-xs font-semibold text-dark">{entry.weight} kg</span>
-                          </div>
+                          <span className="text-xs font-semibold text-dark flex items-center gap-1">
+                            <span>⚖️</span> {entry.weight} kg
+                          </span>
                         )}
                         {entry.mood && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px]">{MOOD_EMOJI[entry.mood] ?? "😊"}</span>
-                            <span className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>
-                              {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
-                            </span>
-                          </div>
-                        )}
-                        {entry.note && (
-                          <p
-                            className="text-xs font-body leading-snug mt-1"
-                            style={{ color: "var(--color-text-dim)" }}
-                          >
-                            "{entry.note}"
-                          </p>
+                          <span className="text-xs font-semibold text-dark flex items-center gap-1">
+                            <span>{MOOD_EMOJI[entry.mood] ?? "😊"}</span>
+                            {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
+                          </span>
                         )}
                       </div>
+
+                      {/* Note */}
+                      {entry.note && (
+                        <p
+                          className="text-xs font-body leading-snug mt-2 italic"
+                          style={{ color: "var(--color-text-mid)" }}
+                        >
+                          "{entry.note}"
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
