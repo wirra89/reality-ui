@@ -109,6 +109,14 @@ type SwapOffsets = Record<MealType, number>;
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+function getDefaultMealType(): MealType {
+  const h = new Date().getHours();
+  if (h < 10) return "breakfast";
+  if (h < 15) return "lunch";
+  if (h < 18) return "snack";
+  return "dinner";
+}
+
 export default function MealRecommendationCards({
   phase,
   cycleDay,
@@ -134,7 +142,7 @@ export default function MealRecommendationCards({
   });
 
   // ── Shared state ──
-  const [expanded, setExpanded]         = useState<MealType | null>(null);
+  const [expanded, setExpanded]         = useState<MealType | null>(getDefaultMealType);
   const [logging, setLogging]           = useState<MealType | null>(null);
   const [saving, setSaving]             = useState<number | null>(null);
   const [loggedSlots, setLoggedSlots]   = useState<Set<MealType>>(
