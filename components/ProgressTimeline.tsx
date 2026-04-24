@@ -84,13 +84,18 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
 
   async function handleSave() {
     if (!formFile) { setSaveError("Please select a photo."); return; }
+    const parsedWeight = formWeight ? parseFloat(formWeight) : null;
+    if (parsedWeight !== null && (isNaN(parsedWeight) || parsedWeight < 20 || parsedWeight > 400)) {
+      setSaveError("Enter a valid weight (20–400 kg).");
+      return;
+    }
     setSaving(true);
     setSaveError(null);
     try {
       const entry = await createProgressEntry({
         file:   formFile,
         date:   formDate,
-        weight: formWeight ? parseFloat(formWeight) : null,
+        weight: parsedWeight,
         mood:   formMood  || null,
         note:   formNote  || null,
         phase:  formPhase || null,
@@ -115,13 +120,14 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
     }
   }
 
-  function resetForm() {
+  function resetForm(previewToRevoke?: string | null) {
+    const urlToRevoke = previewToRevoke !== undefined ? previewToRevoke : formPreview;
+    if (urlToRevoke) URL.revokeObjectURL(urlToRevoke);
     setFormDate(today);
     setFormWeight("");
     setFormMood("");
     setFormNote("");
     setFormFile(null);
-    if (formPreview) URL.revokeObjectURL(formPreview);
     setFormPreview(null);
     setSaveError(null);
     if (fileRef.current) fileRef.current.value = "";
@@ -138,7 +144,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
       <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "var(--color-background)" }}>
         {/* Header */}
         <div
-          className="flex items-center gap-3 px-4 pt-safe-top pb-4 pt-6 border-b flex-shrink-0"
+          className="flex items-center gap-3 px-4 pt-6 pb-4 border-b flex-shrink-0"
           style={{ borderColor: "var(--color-border)" }}
         >
           <button
@@ -166,7 +172,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
               <div className="relative w-full rounded-2xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
                 <img src={formPreview} alt="Preview" className="w-full h-full object-cover" />
                 <button
-                  onClick={() => { setFormFile(null); if (formPreview) URL.revokeObjectURL(formPreview); setFormPreview(null); if (fileRef.current) fileRef.current.value = ""; }}
+                  onClick={() => { if (formPreview) URL.revokeObjectURL(formPreview); setFormFile(null); setFormPreview(null); if (fileRef.current) fileRef.current.value = ""; }}
                   className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white"
                   style={{ background: "rgba(0,0,0,0.5)" }}
                 >
@@ -287,7 +293,10 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
         </div>
 
         {/* Save button */}
-        <div className="px-4 pb-8 pt-3 flex-shrink-0 border-t" style={{ borderColor: "var(--color-border)" }}>
+        <div
+          className="px-4 pt-3 flex-shrink-0 border-t"
+          style={{ borderColor: "var(--color-border)", paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+        >
           <button
             onClick={handleSave}
             disabled={saving || !formFile}
