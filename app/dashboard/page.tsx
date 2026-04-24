@@ -16,6 +16,7 @@ import NutritionCard from "@/components/NutritionCard";
 import CycleCalendar from "@/components/CycleCalendar";
 import PhaseCard from "@/components/PhaseCard";
 import FocusCards from "@/components/FocusCards";
+import { PHASE_DOT_COLOR } from "@/lib/phaseColors";
 
 // ── Phase visual constants ──────────────────────────────────────────────────
 const PHASE_HERO_GRADIENT: Record<string, string> = {
@@ -30,9 +31,7 @@ const PHASE_HERO_TEXT: Record<string, string> = {
 const PHASE_HERO_CHIP: Record<string, string> = {
   menstrual: "rgba(0,0,0,0.08)", follicular: "rgba(0,0,0,0.07)", ovulation: "rgba(0,0,0,0.07)", luteal: "rgba(0,0,0,0.07)",
 };
-const PHASE_COLOR: Record<string, string> = {
-  menstrual: "#F87171", follicular: "#34D399", ovulation: "#FBBF24", luteal: "#A78BFA",
-};
+const PHASE_COLOR = PHASE_DOT_COLOR;
 const PHASE_EMOJIS_DASH: Record<string, string> = {
   menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
 };

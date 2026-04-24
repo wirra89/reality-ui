@@ -309,8 +309,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
       {/* Toast */}
       {toast && (
@@ -388,7 +387,7 @@ export default function ProfilePage() {
               onClick={() => fileInputRef.current?.click()}
               disabled={avatarUploading}
               className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-white shadow-soft transition-all active:scale-90"
-              style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+              style={{ background: "linear-gradient(135deg, #C96480, #A84468)" }}>
               {avatarUploading ? (
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--color-surface)" strokeWidth="4"/>
@@ -454,6 +453,21 @@ export default function ProfilePage() {
               <p className="text-xs text-dark/25 font-body text-center mt-2">{completeCount} of {completenessItems.length} complete</p>
             </div>
           )}
+        </div>
+
+        {/* Stat tiles */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          {[
+            { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "—",    sub: "days" },
+            { label: "Workouts", value: workoutCount ?? "—",                   sub: "logged" },
+            { label: "PRs",      value: prCount ?? "—",                        sub: "set" },
+          ].map(s => (
+            <div key={s.label} className="rounded-[18px] p-3 text-center"
+              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)" }}>
+              <p className="font-accent text-lg font-bold text-dark leading-none">{s.value}</p>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.10em] mt-1" style={{ color: "var(--color-text-dim)" }}>{s.label}</p>
+            </div>
+          ))}
         </div>
 
         {/* ════════════════════════════════════════════════════

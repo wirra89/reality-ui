@@ -18,6 +18,7 @@ import type { IntelligenceWorkoutExercise } from "@/components/TrainingIntellige
 import { getTemplates, type NewWorkoutTemplate } from "@/lib/workoutSessions";
 import type { WorkoutTypeId } from "@/lib/trainingEngine";
 import PhaseCard from "@/components/PhaseCard";
+import { PHASE_DOT_COLOR } from "@/lib/phaseColors";
 
 interface SetRow { id: string; reps: string; weight: string; durationMin?: string; distanceKm?: string; }
 interface ExRow  { id: string; name: string; sets: SetRow[]; exType: InputType; }
@@ -138,9 +139,7 @@ const suggestedExercises: Record<string, string[]> = {
   luteal:     ["Goblet Squat", "Hip Thrust", "Lat Pulldown", "Pilates", "Zone 2 Cardio"],
 };
 
-const PHASE_COLORS: Record<string, string> = {
-  menstrual: "#F87171", follicular: "#34D399", ovulation: "#FBBF24", luteal: "#A78BFA",
-};
+const PHASE_COLORS = PHASE_DOT_COLOR;
 
 const newSet = (): SetRow => ({ id: crypto.randomUUID(), reps: "", weight: "" });
 const newEx  = (name = "", exType: InputType = "weight_reps"): ExRow =>
@@ -739,7 +738,7 @@ export default function TrainingPage() {
               style={{ boxShadow: "var(--shadow-card)", border: "1px solid var(--color-border)" }}>
               <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
                 <span className="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, #E8829A, #C96480)" }}>{exIdx + 1}</span>
+                  style={{ background: "linear-gradient(135deg, #C96480, #A84468)" }}>{exIdx + 1}</span>
                 <input type="text" placeholder="Exercise name…" value={exercise.name}
                   onChange={(e) => updateExName(exercise.id, e.target.value)}
                   className="flex-1 text-dark font-semibold text-sm outline-none placeholder:text-dark/30 bg-transparent font-body" />

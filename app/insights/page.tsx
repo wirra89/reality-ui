@@ -15,13 +15,10 @@ import { getPRs, type PersonalRecord } from "@/lib/supabase";
 import type { Workout, MealLog, MoodLog } from "@/lib/supabase";
 import type { DataMaturityStage } from "@/lib/dailyPlan";
 import { getPhaseData, getDayInPhase } from "@/lib/cycle";
-
-const PHASE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  menstrual:  { bg: "rgba(248,113,113,0.12)",  text: "#F87171",  dot: "#F87171" },
-  follicular: { bg: "rgba(52,211,153,0.12)",   text: "#34D399",  dot: "#34D399" },
-  ovulation:  { bg: "rgba(251,191,36,0.12)",   text: "#FBBF24",  dot: "#FBBF24" },
-  luteal:     { bg: "rgba(167,139,250,0.12)",  text: "#A78BFA",  dot: "#A78BFA" },
-};
+import PhaseCard from "@/components/PhaseCard";
+import CycleRing from "@/components/CycleRing";
+import Sparkline from "@/components/Sparkline";
+import { PHASE_FULL as PHASE_COLORS } from "@/lib/phaseColors";
 const PHASE_EMOJIS: Record<string, string> = {
   menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
 };
@@ -65,6 +62,7 @@ function phrasePattern(stage: DataMaturityStage, phrase: string): string {
 
 export default function InsightsPage() {
   const { user, loading, logCount, todayState, cycleDay, cycleParams, profile } = useApp();
+  const phaseData = getPhaseData(cycleDay, cycleParams);
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<InsightTab>("overview");
@@ -163,8 +161,7 @@ export default function InsightsPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <div className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-12">
 
@@ -173,6 +170,15 @@ export default function InsightsPage() {
           <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Insights</p>
           <h1 className="font-display text-2xl font-semibold text-dark">Cycle Insights</h1>
         </header>
+
+        {/* Phase card */}
+        <PhaseCard
+          phase={phaseData.phase}
+          label={phaseData.label}
+          description={(phaseData.aiRecommendation ?? phaseData.trainingDetail ?? "").split(".")[0]}
+          cycleDay={cycleDay}
+          className="mb-3"
+        />
 
         {/* Tab bar */}
         <div className="flex rounded-2xl bg-surface p-1 shadow-card mb-4 gap-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
@@ -186,7 +192,7 @@ export default function InsightsPage() {
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               className="flex-shrink-0 flex-1 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1"
               style={{
-                background: activeTab === t.id ? "linear-gradient(135deg, #C48A97, #7B6D8D)" : "transparent",
+                background: activeTab === t.id ? "linear-gradient(135deg, #C96480, #A84468)" : "transparent",
                 color: activeTab === t.id ? "var(--color-surface)" : "var(--color-text-dim)",
                 minWidth: 56,
               }}>
@@ -227,7 +233,7 @@ export default function InsightsPage() {
             </div>
             <button onClick={() => router.push("/mood")}
               className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
-              style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+              style={{ background: "linear-gradient(135deg, #C96480, #A84468)" }}>
               Start with mood check-in →
             </button>
           </div>
@@ -265,6 +271,36 @@ export default function InsightsPage() {
             {/* ── OVERVIEW ── */}
             {activeTab === "overview" && (
               <div className="space-y-4">
+
+                {/* Cycle ring + sparkline row */}
+                <div className="flex gap-3 items-stretch">
+                  <div className="rounded-[22px] p-4 flex flex-col items-center justify-center gap-1"
+                    style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)", minWidth: 0, flex: "0 0 auto" }}>
+                    <CycleRing
+                      cycleDay={cycleDay}
+                      cycleLength={cycleParams?.cycleLength ?? 28}
+                      periodLength={cycleParams?.periodLength ?? 5}
+                      ovulationLength={2}
+                      size={110}
+                    />
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.10em] mt-1" style={{ color: "var(--color-text-dim)" }}>Cycle</p>
+                  </div>
+                  {moods.length >= 2 && (
+                    <div className="flex-1 min-w-0">
+                      <Sparkline
+                        values={moods.slice(0, 7).reverse().map(m => (m.energy as unknown as number) ?? 0)}
+                        labels={moods.slice(0, 7).reverse().map(m => {
+                          const d = new Date(m.date as string);
+                          return ["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()];
+                        })}
+                        todayIndex={moods.slice(0, 7).length - 1}
+                        title="Energy"
+                        delta={moods.length > 0 ? `${(moods[0].energy as unknown as number) ?? 0}/5` : undefined}
+                        height={60}
+                      />
+                    </div>
+                  )}
+                </div>
 
                 {/* ── Today's insight — same source as Dashboard, richer layout ── */}
                 {maturity !== "generic" && todayState?.insightTitle && (

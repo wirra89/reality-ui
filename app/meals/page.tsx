@@ -174,7 +174,7 @@ export default function MealsPage() {
             <button
               onClick={() => setShowNutritionSearch(true)}
               className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm tracking-wide transition-all duration-300 active:scale-95 mb-3 flex items-center justify-center gap-2 shadow-soft"
-              style={{ background: "linear-gradient(135deg, #E8829A, #C96480)" }}>
+              style={{ background: "linear-gradient(135deg, #C96480, #A84468)" }}>
               <span className="text-base">🔍</span>
               Search & log food
             </button>

@@ -1,6 +1,7 @@
 "use client";
 
 // components/CycleRing.tsx
+import { PHASE_DOT_COLOR } from "@/lib/phaseColors";
 
 type CycleRingProps = {
   cycleDay: number;
@@ -10,12 +11,7 @@ type CycleRingProps = {
   size?: number;
 };
 
-const PHASE_COLORS = {
-  menstrual:  "#F87171",
-  follicular: "#34D399",
-  ovulation:  "#FBBF24",
-  luteal:     "#A78BFA",
-};
+const PHASE_COLORS = PHASE_DOT_COLOR;
 
 export default function CycleRing({
   cycleDay,
@@ -41,17 +37,16 @@ export default function CycleRing({
     { key: "luteal",     days: lutealEnd - ovulationEnd,     color: PHASE_COLORS.luteal,     from: ovulationEnd },
   ];
 
-  // Today marker position
   const todayAngle = ((cycleDay - 1) / cycleLength) * 360 - 90;
   const todayRad   = (todayAngle * Math.PI) / 180;
   const todayX     = cx + r * Math.cos(todayRad);
   const todayY     = cy + r * Math.sin(todayRad);
 
   let currentPhaseColor = PHASE_COLORS.follicular;
-  if (cycleDay <= menstrualEnd)  currentPhaseColor = PHASE_COLORS.menstrual;
-  else if (cycleDay <= follicularEnd) currentPhaseColor = PHASE_COLORS.follicular;
-  else if (cycleDay <= ovulationEnd)  currentPhaseColor = PHASE_COLORS.ovulation;
-  else currentPhaseColor = PHASE_COLORS.luteal;
+  if (cycleDay <= menstrualEnd)           currentPhaseColor = PHASE_COLORS.menstrual;
+  else if (cycleDay <= follicularEnd)     currentPhaseColor = PHASE_COLORS.follicular;
+  else if (cycleDay <= ovulationEnd)      currentPhaseColor = PHASE_COLORS.ovulation;
+  else                                    currentPhaseColor = PHASE_COLORS.luteal;
 
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
@@ -84,7 +79,6 @@ export default function CycleRing({
           strokeWidth="2"
         />
       </svg>
-      {/* center label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         <span className="font-accent text-2xl font-bold text-dark leading-none tracking-tight">{cycleDay}</span>
         <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-text-dim mt-0.5">of {cycleLength}</span>

@@ -209,3 +209,10 @@ input[type="range"]::-moz-range-thumb {
 .phase-glyph-star-c { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite 1.5s; }
 .flame-icon         { display: inline-block; transform-origin: 50% 90%; animation: flicker 1.6s ease-in-out infinite; }
 
+@media (prefers-reduced-motion: reduce) {
+  .phase-glyph-stem, .phase-glyph-leaf-l, .phase-glyph-leaf-r,
+  .phase-glyph-rays, .phase-glyph-core, .phase-glyph-halo,
+  .phase-glyph-star-a, .phase-glyph-star-b, .phase-glyph-star-c,
+  .flame-icon { animation: none; }
+}
+

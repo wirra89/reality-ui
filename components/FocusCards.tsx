@@ -23,7 +23,7 @@ export default function FocusCards({ cards }: FocusCardsProps) {
           style={
             card.active
               ? {
-                  background: "linear-gradient(135deg, #E8829A, #C96480)",
+                  background: "linear-gradient(135deg, #C96480, #A84468)",
                   border: "1px solid transparent",
                   boxShadow: "0 6px 20px rgba(232,130,154,0.40)",
                 }

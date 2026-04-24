@@ -9,10 +9,7 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-dvh bg-background">
-      <div
-        className="fixed top-0 left-0 right-0 h-48 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }}
-      />
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
       <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-16">
         <Link
           href="/dashboard"
