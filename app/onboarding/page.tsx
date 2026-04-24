@@ -1,123 +1,172 @@
 "use client";
 import PageSkeleton from "@/components/PageSkeleton";
 
-// app/onboarding/page.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { calculateMacros, ACTIVITY_LABELS, GOAL_LABELS, type ActivityLevel, type BodyGoal } from "@/lib/macros";
-import { calcCycleDayFromDate } from "@/lib/cycle";
+import { calcCycleDayFromDate, getPhaseData } from "@/lib/cycle";
 
-const avatarColors = [
-  "linear-gradient(135deg, #C48A97, #7B6D8D)",
-  "linear-gradient(135deg, #7B6D8D, #4F4665)",
-  "linear-gradient(135deg, #F87171, #C48A97)",
-  "linear-gradient(135deg, #34D399, #7B6D8D)",
-  "linear-gradient(135deg, #FBBF24, #C48A97)",
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const TOTAL_STEPS = 4; // 0=Welcome 1=Cycle 2=Goals 3=You're set
+
+const GOAL_OPTIONS = [
+  { value: "Train smarter",  icon: "💪", title: "Train smarter",  desc: "Phase-based workouts" },
+  { value: "Eat for phase",  icon: "🥗", title: "Eat for phase",  desc: "Macro guidance by day" },
+  { value: "Track energy",   icon: "⚡", title: "Track energy",   desc: "Mood + stamina trends" },
+  { value: "Better sleep",   icon: "💤", title: "Better sleep",   desc: "Recovery insights" },
+  { value: "Ease symptoms",  icon: "🩺", title: "Ease symptoms",  desc: "Cramps, bloating, mood" },
+  { value: "Conceive",       icon: "🌸", title: "Conceive",       desc: "Fertile window tracking" },
 ];
 
-const fitnessGoals = [
-  { label: "Build muscle",        emoji: "💪" },
-  { label: "Lose fat",            emoji: "🔥" },
-  { label: "Improve endurance",   emoji: "🏃‍♀️" },
-  { label: "Reduce PMS symptoms", emoji: "🌸" },
-  { label: "Better sleep",        emoji: "😴" },
-  { label: "More energy",         emoji: "⚡" },
-];
+const PHASE_COLORS: Record<string, { bg: string; text: string; border: string; icon: string }> = {
+  menstrual:  { bg: "#FFF1F2", text: "#9F1239", border: "#FECDD3", icon: "🌙" },
+  follicular: { bg: "#F0FDF4", text: "#1B8A60", border: "#A7F3D0", icon: "🌱" },
+  ovulation:  { bg: "#FFFBEB", text: "#B45309", border: "#FDE68A", icon: "☀️" },
+  luteal:     { bg: "#F5F3FF", text: "#6D28D9", border: "#DDD6FE", icon: "🌕" },
+};
 
-const TOTAL_STEPS = 4;
+const PHASE_LABELS: Record<string, string> = {
+  menstrual:  "Menstrual",
+  follicular: "Follicular",
+  ovulation:  "Ovulation",
+  luteal:     "Luteal",
+};
+
+const PHASE_HIGHLIGHTS: Record<string, [string, string][]> = {
+  menstrual:  [["🧘", "Gentle movement"], ["🥬", "Iron + omega-3"], ["🌡️", "Rest well"]],
+  follicular: [["💪", "Heavy strength"],  ["🥩", "Iron + protein"],  ["💧", "2.5L water"]],
+  ovulation:  [["🏋️", "Peak power"],      ["⚡", "High protein"],    ["🧘", "Mobility too"]],
+  luteal:     [["🚶", "Moderate load"],   ["🫚", "Magnesium rich"],  ["😴", "Prioritise sleep"]],
+};
+
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["S","M","T","W","T","F","S"];
+
+// ── Calendar helpers ─────────────────────────────────────────────────────────
+
+interface CalCell { day: number; dateStr: string; dim: boolean }
+
+function buildCalendar(year: number, month: number): CalCell[] {
+  const firstDow  = new Date(year, month, 1).getDay();
+  const daysInMo  = new Date(year, month + 1, 0).getDate();
+  const daysInPrev= new Date(year, month, 0).getDate();
+  const cells: CalCell[] = [];
+
+  for (let i = firstDow - 1; i >= 0; i--) {
+    const d = daysInPrev - i;
+    const m = month === 0 ? 11 : month - 1;
+    const y = month === 0 ? year - 1 : year;
+    cells.push({ day: d, dateStr: `${y}-${String(m + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, dim: true });
+  }
+  for (let d = 1; d <= daysInMo; d++) {
+    cells.push({ day: d, dateStr: `${year}-${String(month + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, dim: false });
+  }
+  const rem = 35 - cells.length;
+  for (let d = 1; d <= rem; d++) {
+    const m = month === 11 ? 0 : month + 1;
+    const y = month === 11 ? year + 1 : year;
+    cells.push({ day: d, dateStr: `${y}-${String(m + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`, dim: true });
+  }
+  return cells;
+}
+
+function isPeriodDay(dateStr: string, periodStart: string, periodLength: number): boolean {
+  if (!periodStart) return false;
+  const s = new Date(periodStart + "T00:00:00").getTime();
+  const e = s + (periodLength - 1) * 86400000;
+  const d = new Date(dateStr + "T00:00:00").getTime();
+  return d >= s && d <= e;
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
 
 export default function OnboardingPage() {
   const { user, loading, refreshProfile } = useApp();
   const router = useRouter();
 
-  const [step, setStep]   = useState(0);
+  const [step, setStep]     = useState(0);
   const [saving, setSaving] = useState(false);
 
-  // Step 1 — Profile — prefill from Google if available
-  const googleName = user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? "";
-  const [name, setName]               = useState(googleName);
-  const [avatarIndex, setAvatarIndex] = useState(0);
-
-  // Sync name if user loads after component mounts (Google OAuth)
-  useEffect(() => {
-    if (!name && user?.user_metadata?.full_name) {
-      setName(user.user_metadata.full_name);
-    }
-  }, [user]);
-
-  // Step 2 — Cycle
+  // Step 1 — Cycle
   const [cycleLength, setCycleLength]   = useState(28);
   const [periodLength, setPeriodLength] = useState(5);
   const [periodStartDate, setPeriodStartDate] = useState("");
+
+  // Calendar state
+  const now = new Date();
+  const [calYear,  setCalYear]  = useState(now.getFullYear());
+  const [calMonth, setCalMonth] = useState(now.getMonth());
+
+  // Step 2 — Goals
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
-  // Step 3 — Macros (optional)
-  const [heightCm, setHeightCm]         = useState("");
-  const [weightKg, setWeightKg]         = useState("");
-  const [age, setAge]                   = useState("");
-  const [activityLevel, setActivityLevel] = useState<ActivityLevel>("moderate");
-  const [bodyGoal, setBodyGoal]         = useState<BodyGoal>("recomposition");
-  const [macroResult, setMacroResult]   = useState<ReturnType<typeof calculateMacros> | null>(null);
-  const [skipMacros, setSkipMacros]     = useState(false);
+  // Derived: cycle day + phase (for step 3 preview)
+  const cycleDay = periodStartDate ? calcCycleDayFromDate(periodStartDate, cycleLength) : 0;
+  const phaseData = getPhaseData(cycleDay || 1, { cycleLength, periodLength });
+  const phase = phaseData.phase;
+  const phaseStyle = PHASE_COLORS[phase] ?? PHASE_COLORS.follicular;
+  const userName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.user_metadata?.name?.split(" ")[0] ?? "";
 
-  useEffect(() => {
-    if (!loading && !user) router.replace("/auth");
-  }, [user, loading, router]);
+  useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
-  function toggleGoal(g: string) {
-    setSelectedGoals(p => p.includes(g) ? p.filter(x => x !== g) : [...p, g]);
+  const calCells = buildCalendar(calYear, calMonth);
+  const todayStr = now.toISOString().split("T")[0];
+
+  function prevMonth() {
+    if (calMonth === 0) { setCalYear(y => y - 1); setCalMonth(11); }
+    else setCalMonth(m => m - 1);
+  }
+  function nextMonth() {
+    const maxDate = new Date(todayStr + "T00:00:00");
+    const proposed = new Date(calYear, calMonth + 1, 1);
+    if (proposed > maxDate) return;
+    if (calMonth === 11) { setCalYear(y => y + 1); setCalMonth(0); }
+    else setCalMonth(m => m + 1);
+  }
+
+  function selectDate(dateStr: string) {
+    if (dateStr > todayStr) return;
+    setPeriodStartDate(dateStr);
+  }
+
+  function toggleGoal(v: string) {
+    setSelectedGoals(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
   }
 
   function canProceed() {
-    if (step === 1) return name.trim().length > 0;
+    if (step === 1) return true; // period date optional but encouraged
     return true;
   }
 
-  function handleCalculate() {
-    const h = parseFloat(heightCm), w = parseFloat(weightKg), a = parseInt(age);
-    if (!h || !w || !a) return;
-    setMacroResult(calculateMacros({ heightCm: h, weightKg: w, age: a, activityLevel, bodyGoal }));
+  function next() {
+    if (step < TOTAL_STEPS - 1) setStep(s => s + 1);
+    else handleFinish();
+  }
+
+  function back() { if (step > 0) setStep(s => s - 1); }
+
+  function skip() {
+    if (user) localStorage.setItem(`herphase_onboarded_${user.id}`, "true");
+    router.replace("/dashboard");
   }
 
   async function handleFinish() {
     if (!user) return;
     setSaving(true);
-
     try {
       const updates: Record<string, unknown> = {
-        name: name.trim() || "User",
-        avatar_index: avatarIndex,
+        goals: selectedGoals,
         cycle_length: cycleLength,
         period_length: periodLength,
-        goals: selectedGoals,
         updated_at: new Date().toISOString(),
       };
-
-      // Save period start date if provided — sets accurate cycle day from day 1
       if (periodStartDate) {
         updates.period_start_date = periodStartDate;
         updates.cycle_day = calcCycleDayFromDate(periodStartDate, cycleLength);
       }
-
-      // Save macros if calculated
-      if (macroResult && !skipMacros) {
-        updates.height_cm          = parseFloat(heightCm);
-        updates.weight_kg          = parseFloat(weightKg);
-        updates.age                = parseInt(age);
-        updates.activity_level     = activityLevel;
-        updates.body_goal          = bodyGoal;
-        updates.calculated_calories = macroResult.targetCalories;
-        updates.calculated_protein  = macroResult.protein;
-        updates.calculated_carbs    = macroResult.carbs;
-        updates.calculated_fats     = macroResult.fats;
-      }
-
       await supabase.from("profiles").update(updates).eq("id", user.id);
-
-      // If period start date was set during onboarding, seed cycle history
-      // ON CONFLICT DO NOTHING = safe to run even if backfill already inserted this date
       if (periodStartDate) {
         await supabase.from("user_cycle_history").upsert([{
           user_id:                user.id,
@@ -136,343 +185,365 @@ export default function OnboardingPage() {
     }
   }
 
-  function next() {
-    if (step < TOTAL_STEPS - 1) setStep(s => s + 1);
-    else handleFinish();
-  }
-
-  function back() { if (step > 0) setStep(s => s - 1); }
-
-  function skip() {
-    if (user) localStorage.setItem(`herphase_onboarded_${user.id}`, "true");
-    router.replace("/dashboard");
-  }
-
-  if (loading || !user) return (
-    <PageSkeleton />
-  );
-
-  const canCalc = heightCm && weightKg && age && parseFloat(heightCm) > 0 && parseFloat(weightKg) > 0 && parseInt(age) > 0;
+  if (loading || !user) return <PageSkeleton />;
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
-      <div className="fixed top-0 left-0 right-0 h-72 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,130,154,0.12) 0%, transparent 70%)" }} />
+      {/* Rose glow */}
+      <div className="fixed top-0 left-0 right-0 pointer-events-none z-0"
+        style={{ height: "300px", background: "radial-gradient(ellipse 95% 80% at 50% -5%, rgba(232,130,154,0.44) 0%, rgba(255,195,210,0.28) 30%, transparent 70%)" }} />
 
-      <main className="relative z-10 flex flex-col flex-1 mx-auto w-full max-w-app px-4 pt-10 pb-8">
+      <main className="relative z-10 flex flex-col flex-1 mx-auto w-full max-w-app px-5 pt-10 pb-8">
 
-        {/* Progress bar */}
-        <div className="flex gap-1.5 mb-10">
-          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-            <div key={i} className="flex-1 h-1 rounded-full overflow-hidden bg-accent">
-              <div className="h-full rounded-full transition-all duration-500"
-                style={{ width: i <= step ? "100%" : "0%", background: "linear-gradient(90deg, #C48A97, #7B6D8D)" }} />
-            </div>
-          ))}
-        </div>
+        {/* Progress dots */}
+        {step > 0 && (
+          <div className="flex justify-center gap-1.5 mb-8">
+            {Array.from({ length: TOTAL_STEPS - 1 }).map((_, i) => {
+              const dotStep = i + 1;
+              const done    = step > dotStep;
+              const active  = step === dotStep;
+              return (
+                <div key={i}
+                  className="h-1.5 rounded-full transition-all duration-300"
+                  style={{
+                    width: active ? "22px" : "6px",
+                    background: done || active ? "#E8829A" : "rgba(232,130,154,0.25)",
+                    opacity: done ? 0.75 : 1,
+                  }} />
+              );
+            })}
+          </div>
+        )}
 
-        {/* ── Step 0: Welcome + What to expect ── */}
+        {/* ── Step 0: Welcome ── */}
         {step === 0 && (
-          <div className="flex flex-col flex-1 animate-fade-up">
-            <div className="flex-1 flex flex-col items-center text-center pt-4">
-              <div className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-5 shadow-soft"
-                style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-                🌸
-              </div>
-              <h1 className="font-display text-3xl font-semibold text-dark mb-2 leading-tight">
-                Welcome to<br />HerPhase
-              </h1>
-              <p className="text-secondary font-body text-sm leading-relaxed max-w-xs mb-8">
-                Your fitness app that adapts to your cycle — smarter training, better nutrition, every day.
-              </p>
+          <div className="flex flex-col flex-1 items-center text-center animate-fade-up">
+            {/* Animated bloom */}
+            <div className="relative my-6" style={{ width: 180, height: 180 }}>
+              <svg viewBox="0 0 180 180" width="180" height="180">
+                <defs>
+                  <radialGradient id="bloomG" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#FDE8ED"/>
+                    <stop offset="100%" stopColor="#E8829A"/>
+                  </radialGradient>
+                </defs>
+                <g style={{ transformOrigin: "50% 50%", animation: "petalPulse 5s ease-in-out infinite" }}>
+                  <ellipse cx="90" cy="50" rx="22" ry="38" fill="url(#bloomG)" opacity="0.85"/>
+                  <ellipse cx="90" cy="130" rx="22" ry="38" fill="url(#bloomG)" opacity="0.85"/>
+                  <ellipse cx="50" cy="90" rx="38" ry="22" fill="url(#bloomG)" opacity="0.85"/>
+                  <ellipse cx="130" cy="90" rx="38" ry="22" fill="url(#bloomG)" opacity="0.85"/>
+                  <ellipse cx="62" cy="62" rx="26" ry="30" fill="url(#bloomG)" opacity="0.7" transform="rotate(-45 62 62)"/>
+                  <ellipse cx="118" cy="62" rx="26" ry="30" fill="url(#bloomG)" opacity="0.7" transform="rotate(45 118 62)"/>
+                  <ellipse cx="62" cy="118" rx="26" ry="30" fill="url(#bloomG)" opacity="0.7" transform="rotate(45 62 118)"/>
+                  <ellipse cx="118" cy="118" rx="26" ry="30" fill="url(#bloomG)" opacity="0.7" transform="rotate(-45 118 118)"/>
+                </g>
+                <circle cx="90" cy="90" r="18" fill="#C96480"/>
+                <circle cx="90" cy="90" r="10" fill="#F4B8C6"/>
+              </svg>
+              <style>{`@keyframes petalPulse{0%,100%{transform:scale(1) rotate(0deg);opacity:.9}50%{transform:scale(1.08) rotate(8deg);opacity:1}}`}</style>
+            </div>
 
-              {/* What you'll get */}
-              <div className="w-full space-y-3 text-left mb-6">
-                {[
-                  {
-                    emoji: "🏋️",
-                    title: "Training that fits your energy",
-                    desc: "Lift heavy in follicular, go easy in menstrual. The app tells you exactly what to do each day.",
-                  },
-                  {
-                    emoji: "🥗",
-                    title: "Food recommendations by phase",
-                    desc: "Iron during menstrual, protein in ovulation, magnesium in luteal. Phase-aware food every day.",
-                  },
-                  {
-                    emoji: "🏆",
-                    title: "Track PRs and see your pattern",
-                    desc: "After a few cycles you'll see exactly which phase makes you strongest.",
-                  },
-                  {
-                    emoji: "💭",
-                    title: "Understand your mood and energy",
-                    desc: "Log daily, and HerPhase shows you why you felt that way — and what's coming next.",
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-3 bg-surface rounded-2xl px-4 py-3.5 shadow-card">
-                    <span className="text-xl flex-shrink-0 mt-0.5">{item.emoji}</span>
-                    <div>
-                      <p className="text-sm font-semibold text-dark leading-tight">{item.title}</p>
-                      <p className="text-xs text-dark/45 font-body mt-0.5 leading-snug">{item.desc}</p>
-                    </div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#E8829A" }}>Herphase</p>
+            <h1 className="font-display text-3xl font-semibold text-dark leading-tight mb-3" style={{ letterSpacing: "-0.015em" }}>
+              Train with your <em style={{ fontStyle: "italic", color: "#C96480" }}>cycle</em>,<br/>not against it.
+            </h1>
+            <p className="text-sm font-body leading-relaxed max-w-xs mb-10" style={{ color: "var(--color-text-mid)" }}>
+              Personalized training, nutrition and recovery that adapt to every phase of your cycle.
+            </p>
+
+            <div className="w-full mt-auto space-y-3">
+              <button onClick={next}
+                className="w-full py-4 rounded-2xl font-semibold text-white text-base tracking-wide transition-all active:scale-95 shadow-soft"
+                style={{ background: "linear-gradient(135deg, #E8829A, #C96480)", boxShadow: "0 8px 22px rgba(201,100,128,0.38)" }}>
+                Get started
+              </button>
+              <button onClick={skip} className="w-full text-center text-xs font-body py-2" style={{ color: "var(--color-text-dim)" }}>
+                Skip for now
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 1: Cycle ── */}
+        {step === 1 && (
+          <div className="flex flex-col flex-1 animate-fade-up overflow-y-auto">
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 1 of 3</p>
+              <h2 className="font-display text-2xl font-semibold text-dark leading-tight" style={{ letterSpacing: "-0.015em" }}>
+                When did your last<br/>period <em style={{ fontStyle: "italic", color: "#C96480" }}>start?</em>
+              </h2>
+              <p className="text-sm font-body mt-1" style={{ color: "var(--color-text-mid)" }}>
+                We'll use this to show you where you are in your cycle today.
+              </p>
+            </div>
+
+            {/* Mini calendar */}
+            <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
+              {/* Month nav */}
+              <div className="flex items-center justify-between mb-3">
+                <button onClick={prevMonth}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all active:scale-90"
+                  style={{ background: "rgba(232,130,154,0.1)", color: "#C96480" }}>
+                  ‹
+                </button>
+                <p className="text-xs font-bold uppercase tracking-widest text-dark">
+                  {MONTH_NAMES[calMonth]} {calYear}
+                </p>
+                <button onClick={nextMonth}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all active:scale-90"
+                  style={{
+                    background: "rgba(232,130,154,0.1)", color: "#C96480",
+                    opacity: `${calYear}-${String(calMonth + 1).padStart(2,"0")}-01` > todayStr ? 0.3 : 1,
+                  }}>
+                  ›
+                </button>
+              </div>
+
+              {/* Day-of-week headers */}
+              <div className="grid grid-cols-7 mb-1">
+                {DOW.map((d, i) => (
+                  <div key={i} className="text-center py-1" style={{ fontSize: "9px", fontWeight: 700, color: "var(--color-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    {d}
                   </div>
                 ))}
               </div>
 
-              <p className="text-xs text-dark/30 font-body">Setup takes about 2 minutes</p>
-            </div>
-          </div>
-        )}
+              {/* Day cells */}
+              <div className="grid grid-cols-7 gap-y-1">
+                {calCells.map((cell, i) => {
+                  const isToday   = cell.dateStr === todayStr;
+                  const isPeriod  = isPeriodDay(cell.dateStr, periodStartDate, periodLength);
+                  const isSelected= cell.dateStr === periodStartDate;
+                  const isFuture  = cell.dateStr > todayStr;
 
-        {/* ── Step 1: Name + Avatar ── */}
-        {step === 1 && (
-          <div className="flex flex-col flex-1 animate-fade-up">
-            <div className="mb-8">
-              <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Step 1 of 3</p>
-              <h2 className="font-display text-2xl font-semibold text-dark">Let's get to know you</h2>
-              <p className="text-secondary text-sm font-body mt-1">Choose your avatar and tell us your name.</p>
-            </div>
-            <div className="flex flex-col items-center mb-8">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-4xl font-display font-bold mb-4 shadow-soft transition-all duration-300"
-                style={{ background: avatarColors[avatarIndex] }}>
-                {name.charAt(0).toUpperCase() || "?"}
-              </div>
-              <div className="flex gap-3">
-                {avatarColors.map((grad, i) => (
-                  <button key={i} onClick={() => setAvatarIndex(i)}
-                    className="w-9 h-9 rounded-full transition-all duration-200 active:scale-90"
-                    style={{ background: grad, transform: avatarIndex === i ? "scale(1.2)" : "scale(1)", border: avatarIndex === i ? "3px solid #2E2E2E" : "3px solid transparent" }} />
-                ))}
-              </div>
-            </div>
-            <div className="bg-surface rounded-2xl px-4 py-4 shadow-card">
-              <label className="text-xs font-semibold text-dark/50 uppercase tracking-wide block mb-2">Your name</label>
-              <input type="text" placeholder="e.g. Ana, Maria, Sara…" value={name}
-                onChange={(e) => setName(e.target.value)} autoFocus
-                className="w-full text-dark font-display font-semibold text-2xl outline-none placeholder:text-dark/20 bg-transparent" />
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 2: Cycle + Goals ── */}
-        {step === 2 && (
-          <div className="flex flex-col flex-1 animate-fade-up overflow-y-auto">
-            <div className="mb-6">
-              <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Step 2 of 3</p>
-              <h2 className="font-display text-2xl font-semibold text-dark">Your cycle & goals</h2>
-              <p className="text-secondary text-sm font-body mt-1">Helps us personalise everything for you.</p>
-            </div>
-
-            <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <div><p className="text-sm font-semibold text-dark">Cycle length</p>
-                <p className="text-xs text-dark/40 font-body">Average days between periods</p></div>
-                <span className="text-lg font-display font-bold text-primary">{cycleLength}d</span>
-              </div>
-              <input type="range" min={21} max={35} value={cycleLength} onChange={(e) => setCycleLength(Number(e.target.value))} className="w-full" />
-              <div className="flex justify-between text-xs text-dark/30 mt-1"><span>21</span><span>28</span><span>35</span></div>
-            </div>
-
-            <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <div><p className="text-sm font-semibold text-dark">Period length</p>
-                <p className="text-xs text-dark/40 font-body">How many days it lasts</p></div>
-                <span className="text-lg font-display font-bold text-primary">{periodLength}d</span>
-              </div>
-              <input type="range" min={2} max={8} value={periodLength} onChange={(e) => setPeriodLength(Number(e.target.value))} className="w-full" />
-              <div className="flex justify-between text-xs text-dark/30 mt-1"><span>2</span><span>5</span><span>8</span></div>
-            </div>
-
-            {/* Period start date — new field */}
-            <div className="bg-surface rounded-2xl p-4 shadow-card mb-4"
-              style={{ border: periodStartDate ? "1.5px solid rgba(196,138,151,0.35)" : "1.5px solid rgba(248,113,113,0.25)", background: periodStartDate ? "var(--color-surface)" : "rgba(248,113,113,0.03)" }}>
-              <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm font-semibold text-dark">When did your last period start?</p>
-                {!periodStartDate && <span className="text-xs font-bold text-rose-400 bg-rose-50 px-1.5 py-0.5 rounded-full">Important</span>}
-              </div>
-              <p className="text-xs text-dark/40 font-body mb-3">
-                {periodStartDate
-                  ? "Perfect — all recommendations will be personalised to your phase."
-                  : "Without this, your training and nutrition advice won't match your actual cycle. You can update it later but results will be generic until then."}
-              </p>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🩸</span>
-                <input
-                  type="date"
-                  value={periodStartDate}
-                  max={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => setPeriodStartDate(e.target.value)}
-                  className="flex-1 bg-background rounded-xl px-3 py-2.5 text-sm text-dark outline-none font-body border border-transparent focus:border-primary/30 transition-colors"
-                />
-              </div>
-              {periodStartDate && (
-                <p className="text-xs text-primary font-semibold mt-2">
-                  → You're on Day {calcCycleDayFromDate(periodStartDate, cycleLength)} of your cycle 🌸
-                </p>
-              )}
-            </div>
-
-            <div className="bg-surface rounded-2xl p-4 shadow-card mb-4">
-              <p className="text-sm font-semibold text-dark mb-1">What are your goals?</p>
-              <p className="text-xs text-dark/40 font-body mb-3">Select all that apply</p>
-              <div className="grid grid-cols-2 gap-2">
-                {fitnessGoals.map((g) => {
-                  const active = selectedGoals.includes(g.label);
                   return (
-                    <button key={g.label} onClick={() => toggleGoal(g.label)}
-                      className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-sm font-medium text-left transition-all active:scale-95"
-                      style={{ background: active ? "rgba(196,138,151,0.12)" : "var(--color-ghost)", color: active ? "#C48A97" : "var(--color-text-mid)", border: `1.5px solid ${active ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
-                      <span className="text-base">{g.emoji}</span>
-                      <span className="font-semibold text-xs leading-tight">{g.label}</span>
+                    <button
+                      key={i}
+                      onClick={() => !isFuture && !cell.dim && selectDate(cell.dateStr)}
+                      disabled={isFuture || cell.dim}
+                      className="flex items-center justify-center rounded-lg transition-all active:scale-90"
+                      style={{
+                        height: "30px",
+                        fontSize: "11px",
+                        fontWeight: isSelected || isToday ? 700 : 400,
+                        color: isSelected ? "white"
+                             : isToday    ? "white"
+                             : isPeriod   ? "#9F1239"
+                             : cell.dim   ? "rgba(var(--color-text-rgb),0.2)"
+                             : isFuture   ? "rgba(var(--color-text-rgb),0.2)"
+                             : "var(--color-text-mid)",
+                        background: isSelected
+                          ? "linear-gradient(135deg, #E8829A, #C96480)"
+                          : isToday
+                          ? "linear-gradient(135deg, #C96480, #9B3060)"
+                          : isPeriod
+                          ? "#FECDD3"
+                          : "transparent",
+                        cursor: (isFuture || cell.dim) ? "default" : "pointer",
+                      }}>
+                      {cell.day}
                     </button>
                   );
                 })}
               </div>
+
+              {periodStartDate && (
+                <p className="text-xs font-semibold mt-3 text-center" style={{ color: "#E8829A" }}>
+                  → You're on Day {cycleDay} of your cycle 🌸
+                </p>
+              )}
+            </div>
+
+            {/* Cycle length + Period length steppers */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {[
+                { label: "Cycle length", value: cycleLength, min: 21, max: 35, set: setCycleLength, unit: "days" },
+                { label: "Period length", value: periodLength, min: 2, max: 8, set: setPeriodLength, unit: "days" },
+              ].map((f) => (
+                <div key={f.label} className="bg-surface rounded-2xl p-4 shadow-card">
+                  <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--color-text-dim)", fontSize: "9px", letterSpacing: "0.12em" }}>{f.label}</p>
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() => f.set(v => Math.max(f.min, v - 1))}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-base transition-all active:scale-90"
+                      style={{ background: "rgba(232,130,154,0.1)", color: "#C96480" }}>
+                      −
+                    </button>
+                    <div className="text-center">
+                      <p className="font-display font-bold text-xl text-dark">{f.value}</p>
+                      <p className="text-xs font-body" style={{ color: "var(--color-text-dim)", fontSize: "10px" }}>{f.unit}</p>
+                    </div>
+                    <button
+                      onClick={() => f.set(v => Math.min(f.max, v + 1))}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-base transition-all active:scale-90"
+                      style={{ background: "rgba(232,130,154,0.1)", color: "#C96480" }}>
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {!periodStartDate && (
+              <p className="text-xs font-body text-center mb-2" style={{ color: "var(--color-text-dim)" }}>
+                Tap a day on the calendar to set your period start date
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ── Step 2: Goals ── */}
+        {step === 2 && (
+          <div className="flex flex-col flex-1 animate-fade-up">
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 2 of 3</p>
+              <h2 className="font-display text-2xl font-semibold text-dark leading-tight" style={{ letterSpacing: "-0.015em" }}>
+                What matters to<br/>you <em style={{ fontStyle: "italic", color: "#C96480" }}>right now?</em>
+              </h2>
+              <p className="text-sm font-body mt-1 mb-5" style={{ color: "var(--color-text-mid)" }}>
+                Pick all that apply — we'll tune your daily focus accordingly.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 flex-1">
+              {GOAL_OPTIONS.map((g) => {
+                const sel = selectedGoals.includes(g.value);
+                return (
+                  <button key={g.value} onClick={() => toggleGoal(g.value)}
+                    className="relative text-left rounded-2xl p-3.5 transition-all active:scale-95 shadow-card"
+                    style={{
+                      background: sel ? "linear-gradient(180deg, #FFFDFE, #FDE8ED)" : "var(--color-surface)",
+                      border: `1px solid ${sel ? "#E8829A" : "var(--color-border)"}`,
+                      boxShadow: sel ? "0 4px 14px rgba(232,130,154,0.25)" : "var(--shadow-card)",
+                    }}>
+                    {sel && (
+                      <div className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center text-white"
+                        style={{ background: "#E8829A", fontSize: "9px", fontWeight: 700 }}>
+                        ✓
+                      </div>
+                    )}
+                    <span className="text-xl block mb-1.5">{g.icon}</span>
+                    <p className="text-xs font-bold text-dark leading-tight mb-0.5" style={{ letterSpacing: "-0.01em" }}>{g.title}</p>
+                    <p className="text-[10px] font-body leading-snug" style={{ color: "var(--color-text-mid)" }}>{g.desc}</p>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* ── Step 3: Macro Calculator (optional) ── */}
+        {/* ── Step 3: You're set ── */}
         {step === 3 && (
-          <div className="flex flex-col flex-1 animate-fade-up overflow-y-auto">
-            <div className="mb-5">
-              <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Step 3 of 3 · Optional</p>
-              <h2 className="font-display text-2xl font-semibold text-dark">Calculate your macros</h2>
-              <p className="text-secondary text-sm font-body mt-1">
-                Get personalised daily calorie and macro targets. You can always do this later in Profile.
+          <div className="flex flex-col flex-1 animate-fade-up">
+            <div className="mb-5 text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#E8829A" }}>
+                All set{userName ? `, ${userName}` : ""}
+              </p>
+              <h2 className="font-display text-2xl font-semibold text-dark leading-tight" style={{ letterSpacing: "-0.015em" }}>
+                {periodStartDate
+                  ? <>You're on <em style={{ fontStyle: "italic", color: "#C96480" }}>day {cycleDay}.</em></>
+                  : <>You're <em style={{ fontStyle: "italic", color: "#C96480" }}>ready.</em></>}
+              </h2>
+              <p className="text-sm font-body mt-1" style={{ color: "var(--color-text-mid)" }}>
+                Here's what we'll focus on today.
               </p>
             </div>
 
-            {!skipMacros && (
-              <>
-                {/* Body metrics */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
-                  {[
-                    { label: "Height", placeholder: "170", value: heightCm, onChange: setHeightCm, unit: "cm" },
-                    { label: "Weight", placeholder: "65", value: weightKg, onChange: setWeightKg, unit: "kg" },
-                    { label: "Age",    placeholder: "28", value: age,      onChange: setAge,      unit: "yr" },
-                  ].map((f) => (
-                    <div key={f.label}>
-                      <label className="text-xs font-semibold text-dark/40 uppercase tracking-wide block mb-1.5">{f.label}</label>
-                      <div className="relative">
-                        <input type="number" placeholder={f.placeholder} value={f.value}
-                          onChange={(e) => f.onChange(e.target.value)}
-                          className="w-full bg-surface rounded-xl px-3 py-2.5 text-sm text-dark outline-none font-body border border-transparent focus:border-primary/30 transition-colors pr-8 shadow-card" />
-                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-dark/30 font-semibold">{f.unit}</span>
-                      </div>
-                    </div>
+            {/* Phase preview card */}
+            <div className="relative rounded-2xl p-5 mb-4 text-center overflow-hidden"
+              style={{
+                background: `linear-gradient(180deg, white, ${phaseStyle.bg})`,
+                border: `1px solid ${phaseStyle.border}`,
+                boxShadow: "0 8px 24px rgba(201,100,128,0.12)",
+              }}>
+              {/* Decorative glow */}
+              <div className="absolute top-0 right-0 w-28 h-28 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(52,211,153,0.2) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
+
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 relative z-10"
+                style={{ background: phaseStyle.bg, boxShadow: `0 4px 12px ${phaseStyle.border}88` }}>
+                {phaseStyle.icon}
+              </div>
+              <p className="text-xs font-bold uppercase tracking-widest mb-1 relative z-10" style={{ color: phaseStyle.text, letterSpacing: "0.08em" }}>
+                {PHASE_LABELS[phase]}{periodStartDate ? ` · Day ${cycleDay}` : ""}
+              </p>
+              <p className="font-display text-xl font-semibold text-dark mb-2 relative z-10" style={{ fontStyle: "italic" }}>
+                {phaseData.label}
+              </p>
+              <p className="text-xs font-body leading-relaxed relative z-10 max-w-xs mx-auto" style={{ color: "var(--color-text-mid)" }}>
+                {phaseData.trainingDetail?.split(".")[0]}.
+              </p>
+            </div>
+
+            {/* Highlight tiles */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {(PHASE_HIGHLIGHTS[phase] ?? PHASE_HIGHLIGHTS.follicular).map(([ico, lbl]) => (
+                <div key={lbl} className="bg-surface rounded-xl py-3 px-2 text-center shadow-card"
+                  style={{ border: "1px solid var(--color-border)" }}>
+                  <span className="text-sm block mb-1">{ico}</span>
+                  <p className="font-bold leading-tight" style={{ fontSize: "8px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--color-text-dim)" }}>
+                    {lbl}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {selectedGoals.length > 0 && (
+              <div className="bg-surface rounded-2xl px-4 py-3 shadow-card mb-3"
+                style={{ border: "1px solid var(--color-border)" }}>
+                <p className="text-xs font-semibold mb-2" style={{ color: "var(--color-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", fontSize: "9px" }}>
+                  Your focus
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedGoals.map(g => (
+                    <span key={g} className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                      style={{ background: "rgba(232,130,154,0.1)", color: "#C96480" }}>
+                      {g}
+                    </span>
                   ))}
                 </div>
-
-                {/* Activity */}
-                <div className="mb-4">
-                  <label className="text-xs font-semibold text-dark/40 uppercase tracking-wide block mb-2">Activity level</label>
-                  <div className="space-y-1.5">
-                    {(Object.entries(ACTIVITY_LABELS) as [ActivityLevel, string][]).map(([key, label]) => (
-                      <button key={key} onClick={() => setActivityLevel(key)}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all"
-                        style={{ background: activityLevel === key ? "rgba(196,138,151,0.12)" : "var(--color-surface)", border: `1.5px solid ${activityLevel === key ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
-                        <span className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                          style={{ borderColor: activityLevel === key ? "#C48A97" : "#D1D5DB" }}>
-                          {activityLevel === key && <span className="w-2 h-2 rounded-full bg-primary" />}
-                        </span>
-                        <span className="text-xs font-medium" style={{ color: activityLevel === key ? "#C48A97" : "var(--color-text-mid)" }}>{label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Body goal */}
-                <div className="mb-4">
-                  <label className="text-xs font-semibold text-dark/40 uppercase tracking-wide block mb-2">Body goal</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(Object.entries(GOAL_LABELS) as [BodyGoal, typeof GOAL_LABELS[BodyGoal]][]).map(([key, g]) => (
-                      <button key={key} onClick={() => setBodyGoal(key)}
-                        className="flex flex-col items-center gap-1 px-2 py-3 rounded-2xl transition-all active:scale-95"
-                        style={{ background: bodyGoal === key ? "rgba(196,138,151,0.12)" : "var(--color-surface)", border: `1.5px solid ${bodyGoal === key ? "rgba(196,138,151,0.35)" : "transparent"}` }}>
-                        <span className="text-xl">{g.emoji}</span>
-                        <span className="text-xs font-bold" style={{ color: bodyGoal === key ? "#C48A97" : "var(--color-text)" }}>{g.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Calculate button */}
-                <button onClick={handleCalculate} disabled={!canCalc}
-                  className="w-full py-3 rounded-2xl text-sm font-semibold text-white mb-3 disabled:opacity-40 active:scale-95"
-                  style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-                  Calculate 🧮
-                </button>
-
-                {/* Results */}
-                {macroResult && (
-                  <div className="rounded-2xl p-4 mb-3" style={{ background: "var(--color-surface)", borderTop: "3px solid var(--color-primary)" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <p className="text-[var(--color-text-dim)] text-xs">Daily target</p>
-                        <p className="text-dark font-display font-bold text-2xl">{macroResult.targetCalories} kcal</p>
-                      </div>
-                      <div className="text-right text-xs text-[var(--color-text-dim)] font-body">
-                        {macroResult.deficit && <p>−{macroResult.deficit} kcal deficit</p>}
-                        {macroResult.surplus && <p>+{macroResult.surplus} kcal surplus</p>}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { label: "Protein", value: macroResult.protein, color: "#C48A97" },
-                        { label: "Carbs",   value: macroResult.carbs,   color: "#EDD5DB" },
-                        { label: "Fats",    value: macroResult.fats,    color: "#A78BFA" },
-                      ].map((m) => (
-                        <div key={m.label} className="bg-ghost rounded-xl p-2.5 text-center">
-                          <p className="font-display font-bold text-lg text-dark">{m.value}g</p>
-                          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: m.color }}>{m.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
+              </div>
             )}
-
-            {/* Skip macros option */}
-            <button onClick={() => setSkipMacros(!skipMacros)}
-              className="text-center text-xs text-dark/40 font-body w-full mb-2">
-              {skipMacros ? "↑ Set up macros instead" : "Skip macros for now →"}
-            </button>
           </div>
         )}
 
         {/* Navigation */}
-        <div className="flex gap-3 mt-6 flex-shrink-0">
-          {step > 0 && (
+        <div className="flex gap-3 mt-5 flex-shrink-0">
+          {step > 0 && step < TOTAL_STEPS - 1 && (
             <button onClick={back}
-              className="w-14 py-4 rounded-2xl font-semibold text-dark/40 bg-surface shadow-card transition-all active:scale-95">
+              className="w-12 py-4 rounded-2xl font-semibold bg-surface shadow-card transition-all active:scale-95"
+              style={{ color: "var(--color-text-dim)" }}>
               ←
             </button>
           )}
-          <button onClick={next} disabled={!canProceed() || saving}
-            className="flex-1 py-4 rounded-2xl font-semibold text-white text-base tracking-wide transition-all duration-300 active:scale-95 disabled:opacity-40 shadow-soft"
-            style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-            {saving ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--color-surface)" strokeWidth="4"/>
-                  <path className="opacity-75" fill="var(--color-surface)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                </svg>
-                Setting up…
-              </span>
-            ) : step === 0 ? "Get Started →"
-              : step === TOTAL_STEPS - 1 ? "Start My Journey 🌸"
-              : "Continue →"}
-          </button>
+
+          {step > 0 && (
+            <button onClick={next} disabled={saving}
+              className="flex-1 py-4 rounded-2xl font-semibold text-white text-base tracking-wide transition-all active:scale-95 disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg, #E8829A, #C96480)", boxShadow: "0 8px 22px rgba(201,100,128,0.38)" }}>
+              {saving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
+                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  Setting up…
+                </span>
+              ) : step === 2 && selectedGoals.length > 0
+                ? `Continue · ${selectedGoals.length} selected`
+                : step === TOTAL_STEPS - 1
+                ? "Enter Herphase →"
+                : "Continue →"}
+            </button>
+          )}
         </div>
 
-        {step === 0 && (
-          <button onClick={skip} className="text-center text-xs text-dark/30 mt-4 font-body w-full">
-            Skip for now
+        {step > 0 && step < TOTAL_STEPS - 1 && (
+          <button onClick={skip} className="text-center text-xs font-body mt-3 w-full" style={{ color: "var(--color-text-dim)" }}>
+            Skip
           </button>
         )}
+
       </main>
     </div>
   );
