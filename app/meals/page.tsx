@@ -169,14 +169,7 @@ export default function MealsPage() {
           adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
         />
 
-        {/* Engine-scored recipe recommendations */}
-        <RecipeRecommendationPanel
-          phase={phase}
-          dailySignals={dailySignals}
-          macroTargets={macroTargets}
-        />
-
-        {/* Search & log food */}
+        {/* Search & log food — expands to show recipe recommendations + food search */}
         <div className="mb-3">
           {!showNutritionSearch ? (
             <button
@@ -187,16 +180,26 @@ export default function MealsPage() {
               Search & log food
             </button>
           ) : (
-            <NutritionFoodSearch
-              cycleDay={cycleDay}
-              phase={phase}
-              onLogged={() => {
-                setShowNutritionSearch(false);
-                showToast("✓ Food logged");
-                refreshNutrition();
-              }}
-              onCancel={() => setShowNutritionSearch(false)}
-            />
+            <>
+              {/* Engine-scored recipe panel — shown inside the expanded search area */}
+              <RecipeRecommendationPanel
+                phase={phase}
+                dailySignals={dailySignals}
+                macroTargets={macroTargets}
+              />
+              <NutritionFoodSearch
+                cycleDay={cycleDay}
+                phase={phase}
+                onLogged={() => {
+                  setShowNutritionSearch(false);
+                  showToast("✓ Food logged");
+                  refreshNutrition();
+                }}
+                onCancel={() => {
+                  setShowNutritionSearch(false);
+                }}
+              />
+            </>
           )}
 
           <NutritionEntryList

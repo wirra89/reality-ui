@@ -319,6 +319,26 @@ export async function searchFoods(query: string): Promise<Food[]> {
 }
 
 /**
+ * Fetches all global foods for category browsing (no query required).
+ * Called once when the search panel opens; results are cached in component state.
+ */
+export async function getAllFoods(limit = 150): Promise<Food[]> {
+  const { data, error } = await supabase
+    .from("foods")
+    .select("*")
+    .eq("is_global", true)
+    .order("name", { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    console.error("getAllFoods error:", error.message);
+    return [];
+  }
+
+  return (data as FoodRow[]).map(mapRowToFood);
+}
+
+/**
  * Returns the user's own private foods, ordered by most recently created.
  * Used for "My foods" tab in future UI slices.
  */

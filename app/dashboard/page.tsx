@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { getPhaseData, formatPeriodStartDate, getDayInPhase } from "@/lib/cycle";
-import { supabase, getCheckinStreak, getRecentWorkouts, getTodayMealLog } from "@/lib/supabase";
+import { supabase, getCheckinStreak } from "@/lib/supabase";
 import { getTodayNutritionSummary, type NutritionSummary } from "@/lib/nutrition";
 import CycleSlider from "@/components/CycleSlider";
 import WorkoutCard from "@/components/WorkoutCard";
@@ -15,8 +15,7 @@ import ReadinessCard from "@/components/ReadinessCard";
 import NutritionCard from "@/components/NutritionCard";
 import CycleCalendar from "@/components/CycleCalendar";
 import PhaseCard from "@/components/PhaseCard";
-import FocusCards from "@/components/FocusCards";
-import { PHASE_DOT_COLOR } from "@/lib/phaseColors";
+import WaterBottleCard from "@/components/WaterBottleCard";
 
 // ── Phase visual constants ──────────────────────────────────────────────────
 const PHASE_HERO_GRADIENT: Record<string, string> = {
@@ -28,10 +27,6 @@ const PHASE_HERO_GRADIENT: Record<string, string> = {
 const PHASE_HERO_TEXT: Record<string, string> = {
   menstrual: "#7F1D1D", follicular: "#064E3B", ovulation: "#78350F", luteal: "#3B1D8B",
 };
-const PHASE_HERO_CHIP: Record<string, string> = {
-  menstrual: "rgba(0,0,0,0.08)", follicular: "rgba(0,0,0,0.07)", ovulation: "rgba(0,0,0,0.07)", luteal: "rgba(0,0,0,0.07)",
-};
-const PHASE_COLOR = PHASE_DOT_COLOR;
 const PHASE_EMOJIS_DASH: Record<string, string> = {
   menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
 };
@@ -41,13 +36,6 @@ function getGreeting() {
   if (h < 12) return "Good morning";
   if (h < 18) return "Good afternoon";
   return "Good evening";
-}
-
-function readinessLabel(score: number) {
-  if (score >= 80) return "High energy";
-  if (score >= 60) return "Good energy";
-  if (score >= 40) return "Moderate energy";
-  return "Low energy";
 }
 
 // ── MacroCard ──────────────────────────────────────────────────────────────
@@ -154,8 +142,6 @@ export default function DashboardPage() {
 
   const [showCalendar, setShowCalendar]     = useState(false);
   const [streak, setStreak]                 = useState(0);
-  const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
-  const [todayCalories, setTodayCalories]   = useState(0);
   const [nutritionSummary, setNutritionSummary] = useState<NutritionSummary | null>(null);
   const [waterGlasses, setWaterGlasses]     = useState(0);
   const [hydrationLoading, setHydrationLoading] = useState(true);
@@ -209,22 +195,8 @@ export default function DashboardPage() {
   const fetchDashboardData = useCallback(async () => {
     if (!user) return;
     getCheckinStreak().then(setStreak);
-    getRecentWorkouts(7).then(ws => {
-      const ago = new Date(); ago.setDate(ago.getDate() - 7);
-      setWeeklyWorkouts(ws.filter(w => w.created_at && new Date(w.created_at) >= ago).length);
-    });
-    const [log, summary] = await Promise.all([
-      getTodayMealLog(),
-      getTodayNutritionSummary(),
-    ]);
+    const summary = await getTodayNutritionSummary();
     setNutritionSummary(summary);
-    if (summary.entryCount > 0) {
-      setTodayCalories(Math.round(summary.kcal));
-    } else if (log?.meals) {
-      const legacyKcal = (log.meals as unknown as { calories: string }[])
-        .reduce((a, m) => a + (parseFloat(m.calories) || 0), 0);
-      setTodayCalories(legacyKcal);
-    }
   }, [user]);
 
   useEffect(() => {
@@ -239,6 +211,7 @@ export default function DashboardPage() {
 
   const phaseData     = getPhaseData(cycleDay, cycleParams);
   const dayInPhase    = getDayInPhase(cycleDay, cycleParams);
+  const waterTarget   = (phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8;
 
   if (loading || !user) return (
     <PageSkeleton />
@@ -319,10 +292,6 @@ export default function DashboardPage() {
 
         {/* ── 2. PHASE TRANSITION CARD — only on day 1 of a new phase ── */}
         {dayInPhase === 1 && (() => {
-          const prevPhaseMap: Record<string, string> = {
-            menstrual: "luteal", follicular: "menstrual", ovulation: "follicular", luteal: "ovulation",
-          };
-          const prevPhase = prevPhaseMap[phaseData.phase] ?? "previous";
           const trainingDiff: Record<string, { from: string; to: string }> = {
             menstrual:  { from: "Strength training",  to: "Rest & light movement" },
             follicular: { from: "Rest & recovery",    to: "Strength + HIIT" },
@@ -392,31 +361,25 @@ export default function DashboardPage() {
             <span className="font-accent text-2xl font-bold text-primary leading-none">{cycleDay}</span>
             <span className="text-[9px] font-semibold uppercase tracking-wide text-text-dim mt-0.5">of cycle</span>
           </div>
-          {/* Mini stats grid */}
-          <div className="flex-1 grid grid-cols-2 gap-2">
-            {[
-              {
-                val: profile?.calculated_calories
-                  ? profile.calculated_calories
-                  : Math.round(phaseData.macros.protein * 4 + phaseData.macros.carbs * 4 + phaseData.macros.fats * 9),
-                lbl: "kcal goal",
-              },
-              { val: streak, lbl: "day streak", flame: streak > 0 },
-              { val: Math.max(0, (profile?.cycle_length ?? 28) - cycleDay), lbl: "days left" },
-              {
-                val: `${profile?.calculated_protein ?? phaseData.macros.protein}g`,
-                lbl: "protein",
-              },
-            ].map((s, i) => (
-              <div key={i} className="bg-surface rounded-[14px] px-2.5 py-2 border border-[var(--color-border)]"
-                style={{ boxShadow: "var(--shadow-card)" }}>
-                <p className="font-accent text-sm font-bold text-dark leading-none mb-0.5">
-                  {s.val}
-                  {s.flame && <span className="flame-icon text-xs ml-0.5">🔥</span>}
-                </p>
-                <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim">{s.lbl}</p>
-              </div>
-            ))}
+          {/* Mini stats */}
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="bg-surface rounded-[14px] px-2.5 py-2 border border-[var(--color-border)]"
+              style={{ boxShadow: "var(--shadow-card)" }}>
+              <p className="font-accent text-sm font-bold text-dark leading-none mb-0.5">
+                {Math.max(0, (profile?.cycle_length ?? 28) - cycleDay)}
+              </p>
+              <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim">days left</p>
+            </div>
+            <div className="bg-surface rounded-[14px] px-2.5 py-2 border border-[var(--color-border)]"
+              style={{ boxShadow: "var(--shadow-card)" }}>
+              <p className="font-accent text-sm font-bold text-dark leading-none mb-0.5">
+                {streak > 0 ? streak : phaseData.label}
+                {streak > 0 && <span className="flame-icon text-xs ml-0.5">🔥</span>}
+              </p>
+              <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim">
+                {streak > 0 ? "day streak" : "phase"}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -429,26 +392,38 @@ export default function DashboardPage() {
               {todayState?.adaptedFromCheckin ? "✓ Checked in" : "Check in"}
             </button>
           </div>
-          <FocusCards cards={[
-            {
-              icon: "💪",
-              title: "Train",
-              desc: (todayState?.workoutRecommendation?.type ?? phaseData.training).slice(0, 30),
-              active: true,
-            },
-            {
-              icon: "🥗",
-              title: "Eat",
-              desc: phaseData.nutritionDetail
-                ? phaseData.nutritionDetail.slice(0, 30)
-                : `${profile?.calculated_protein ?? phaseData.macros.protein}g protein`,
-            },
-            {
-              icon: "💧",
-              title: "Hydrate",
-              desc: `${waterGlasses} / ${(phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8} glasses`,
-            },
-          ]} />
+          <div className="flex gap-2">
+            {/* Train */}
+            <div className="flex-1 rounded-[18px] px-2.5 py-3"
+              style={{ background: "linear-gradient(135deg, #C96480, #A84468)", border: "1px solid transparent", boxShadow: "0 6px 20px rgba(232,130,154,0.40)" }}>
+              <span className="text-xl mb-1.5 block">💪</span>
+              <p className="text-xs font-bold mb-0.5 leading-tight" style={{ color: "white" }}>Train</p>
+              <p className="text-[10px] leading-snug" style={{ color: "rgba(255,255,255,0.85)" }}>
+                {(todayState?.workoutRecommendation?.type ?? phaseData.training).slice(0, 30)}
+              </p>
+            </div>
+            {/* Eat */}
+            <div className="flex-1 rounded-[18px] px-2.5 py-3"
+              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "0 2px 10px rgba(180,80,100,0.08)" }}>
+              <span className="text-xl mb-1.5 block">🥗</span>
+              <p className="text-xs font-bold mb-0.5 leading-tight" style={{ color: "var(--color-text)" }}>Eat</p>
+              <p className="text-[10px] leading-snug" style={{ color: "var(--color-text-mid)" }}>
+                {phaseData.nutritionDetail
+                  ? phaseData.nutritionDetail.slice(0, 30)
+                  : `${profile?.calculated_protein ?? phaseData.macros.protein}g protein`}
+              </p>
+            </div>
+            {/* Hydrate — interactive water bottle */}
+            <WaterBottleCard
+              glasses={waterGlasses}
+              target={waterTarget}
+              loading={hydrationLoading}
+              onTap={(next) => {
+                setWaterGlasses(next);
+                persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+              }}
+            />
+          </div>
         </div>
 
         {/* ── PERIOD DATE NUDGE — show if not set ── */}
@@ -529,126 +504,6 @@ export default function DashboardPage() {
         {/* ── 6. MACROS ── */}
         <MacroCard phaseData={phaseData} profile={profile} nutritionSummary={nutritionSummary} />
 
-        {/* ── 7. WATER TRACKER ── */}
-        {(() => {
-          const waterTarget = (phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8;
-          const pct = Math.min(waterGlasses / waterTarget, 1);
-          const phaseWaterTip: Record<string, string> = {
-            menstrual:  "Higher target — water reduces bloating and cramps",
-            follicular: "Stay hydrated as energy and metabolism rise",
-            ovulation:  "Peak metabolism needs more water for performance",
-            luteal:     "Higher target — water reduces PMS water retention",
-          };
-          function addWater() {
-            const next = Math.min(waterGlasses + 1, 12);
-            setWaterGlasses(next);
-            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
-          }
-          function removeWater() {
-            const next = Math.max(waterGlasses - 1, 0);
-            setWaterGlasses(next);
-            persistHydration(next, waterTarget, phaseData.phase, cycleDay);
-          }
-          return (
-            <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide">Water intake 💧</p>
-                  <p className="text-xs text-dark/35 font-body mt-0.5">{phaseWaterTip[phaseData.phase]}</p>
-                </div>
-                <div className="text-right">
-                  {hydrationLoading ? (
-                    <div className="w-8 h-6 rounded bg-ghost animate-pulse mb-0.5" />
-                  ) : (
-                    <p className="text-lg font-bold font-display text-primary">{waterGlasses}</p>
-                  )}
-                  <p className="text-xs text-dark/30 font-body">/ {waterTarget} glasses</p>
-                </div>
-              </div>
-              {/* Progress bar */}
-              <div className="h-2 rounded-full mb-3 overflow-hidden" style={{ background: "rgba(196,138,151,0.12)" }}>
-                <div className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${pct * 100}%`, background: pct >= 1 ? "linear-gradient(90deg,#34D399,#10B981)" : "linear-gradient(90deg,#C48A97,#7B6D8D)" }} />
-              </div>
-              {/* Glass buttons */}
-              <div className="flex items-center justify-between">
-                <button onClick={removeWater} disabled={waterGlasses === 0 || hydrationLoading}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-dark/40 disabled:opacity-25 active:scale-90 transition-all text-lg"
-                  style={{ background: "var(--color-ghost)" }}>−</button>
-                <div className="flex gap-1.5 flex-wrap justify-center flex-1 px-2">
-                  {Array.from({ length: Math.min(waterTarget, 9) }).map((_, i) => (
-                    <button key={i} onClick={() => {
-                      const next = i + 1;
-                      setWaterGlasses(next);
-                      persistHydration(next, waterTarget, phaseData.phase, cycleDay);
-                    }}
-                      disabled={hydrationLoading}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all active:scale-90 disabled:opacity-40"
-                      style={{
-                        background: i < waterGlasses ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
-                        border: i < waterGlasses ? "1.5px solid rgba(196,138,151,0.4)" : "1.5px solid transparent",
-                      }}>
-                      💧
-                    </button>
-                  ))}
-                </div>
-                <button onClick={addWater} disabled={waterGlasses >= 12 || hydrationLoading}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-white disabled:opacity-25 active:scale-90 transition-all text-lg font-bold"
-                  style={{ background: "linear-gradient(135deg,#C48A97,#7B6D8D)" }}>+</button>
-              </div>
-              {waterGlasses >= waterTarget && (
-                <p className="text-center text-xs text-emerald-500 font-semibold mt-2">✓ Daily goal reached!</p>
-              )}
-            </div>
-          );
-        })()}
-
-        {/* ── 8. WEEKLY STATS / WELCOME ── */}
-        {(weeklyWorkouts > 0 || streak > 0 || todayCalories > 0) ? (
-          <div className="mb-3">
-            <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-1">This week</p>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: "Workouts", value: weeklyWorkouts, sub: "last 7 days", color: "#C48A97", bg: "rgba(196,138,151,0.06)" },
-                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "0", sub: "day check-in", color: streak >= 7 ? "#B45309" : streak >= 3 ? "#059669" : "var(--color-text-dim)", bg: streak >= 7 ? "rgba(251,191,36,0.06)" : streak >= 3 ? "rgba(52,211,153,0.06)" : "rgba(0,0,0,0.02)" },
-                { label: "Calories", value: todayCalories > 0 ? todayCalories : "—", sub: "today", color: "#7B6D8D", bg: "rgba(123,109,141,0.06)" },
-              ].map(s => (
-                <div key={s.label} className="rounded-2xl p-3 text-center" style={{ background: s.bg, border: "1px solid rgba(var(--color-text-rgb),0.04)" }}>
-                  <p className="font-display font-bold text-lg text-dark leading-tight" style={{ color: s.color }}>
-                    {s.value}
-                  </p>
-                  <p className="text-xs text-dark/30 font-body">{s.sub}</p>
-                  <p className="text-xs text-dark/50 font-semibold uppercase tracking-wide mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl flex-shrink-0">🌸</span>
-              <div>
-                <p className="text-sm font-semibold text-dark">Welcome to HerPhase!</p>
-                <p className="text-xs text-dark/40 font-body leading-snug">Start logging to unlock your weekly stats and insights.</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: "Log workout", emoji: "🏋️‍♀️", href: "/training" },
-                { label: "Log meal",    emoji: "🥗",     href: "/meals" },
-                { label: "Log mood",    emoji: "💭",     href: "/mood" },
-              ].map(item => (
-                <button key={item.href}
-                  onClick={() => router.push(item.href)}
-                  className="flex flex-col items-center gap-1 py-2.5 rounded-xl text-xs font-semibold text-dark/60 active:scale-95 transition-all"
-                  style={{ background: "rgba(196,138,151,0.07)" }}>
-                  <span style={{ fontSize: 20 }}>{item.emoji}</span>
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* ── 9. CYCLE DAY + PREDICTION ── */}
         <div className="bg-surface rounded-2xl shadow-card mb-3">
