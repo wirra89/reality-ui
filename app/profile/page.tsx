@@ -12,6 +12,12 @@ import {
   type ActivityLevel, type BodyGoal,
 } from "@/lib/macros";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { getBestPRPerExercise, type PersonalRecord } from "@/lib/supabase";
+import { getProgressPhotos, type ProgressPhoto } from "@/lib/progressPhotos";
+import { computeAchievements, type AchievementDef, type AchievementCounts } from "@/lib/achievements";
+import TopLiftsCard from "@/components/TopLiftsCard";
+import ProgressPhotosCard from "@/components/ProgressPhotosCard";
+import AchievementsCard from "@/components/AchievementsCard";
 
 const avatarColors = [
   "linear-gradient(135deg, #C48A97, #7B6D8D)",
@@ -97,10 +103,16 @@ export default function ProfilePage() {
   const [calcSaved, setCalcSaved]                       = useState(false);
 
   // ── Data counts for My Data section ───────────────────────────────────────
-  const [streak, setStreak]           = useState(0);
-  const [weightCount, setWeightCount] = useState<number | null>(null);
-  const [prCount, setPrCount]         = useState<number | null>(null);
+  const [streak, setStreak]             = useState(0);
+  const [weightCount, setWeightCount]   = useState<number | null>(null);
+  const [prCount, setPrCount]           = useState<number | null>(null);
   const [workoutCount, setWorkoutCount] = useState<number | null>(null);
+
+  // ── New profile additions ─────────────────────────────────────────────────
+  const [weightDelta, setWeightDelta]       = useState<{ latest: number; delta: number } | null>(null);
+  const [topPrs, setTopPrs]                 = useState<PersonalRecord[]>([]);
+  const [progressPhotos, setProgressPhotos] = useState<ProgressPhoto[]>([]);
+  const [achievements, setAchievements]     = useState<AchievementDef[]>([]);
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
@@ -143,6 +155,50 @@ export default function ProfilePage() {
       .eq("user_id", user.id).then(({ count }) => setPrCount(count ?? 0));
     supabase.from("workouts").select("id", { count: "exact", head: true })
       .eq("user_id", user.id).then(({ count }) => setWorkoutCount(count ?? 0));
+
+    // Weight delta for hero trend row
+    supabase.from("weight_logs").select("weight_kg,date")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false })
+      .limit(2)
+      .then(({ data }) => {
+        if (data && data.length === 2) {
+          setWeightDelta({
+            latest: data[0].weight_kg,
+            delta: +(data[0].weight_kg - data[1].weight_kg).toFixed(1),
+          });
+        }
+      });
+
+    // Top lifts
+    getBestPRPerExercise().then(setTopPrs);
+
+    // Progress photos
+    getProgressPhotos().then(setProgressPhotos);
+
+    // Achievement counts
+    Promise.all([
+      supabase.from("workouts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("meal_log_entries").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("personal_records").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("weight_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("personal_records").select("exercise").eq("user_id", user.id),
+    ]).then(([workoutsRes, mealsRes, prsRes, weightRes, exercisesRes]) => {
+      const uniqueExercises = new Set(
+        (exercisesRes.data ?? []).map((r: { exercise: string }) => r.exercise.toLowerCase())
+      ).size;
+      const counts: AchievementCounts = {
+        workouts:        workoutsRes.count  ?? 0,
+        meals:           mealsRes.count     ?? 0,
+        prs:             prsRes.count       ?? 0,
+        weightLogs:      weightRes.count    ?? 0,
+        uniqueExercises,
+        streak:          0,
+      };
+      getCheckinStreak().then((s) => {
+        setAchievements(computeAchievements({ ...counts, streak: s }));
+      });
+    });
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -438,6 +494,31 @@ export default function ProfilePage() {
             ].filter(Boolean).join(" · ") || "Add a photo"}
           </p>
 
+          {/* Weight trend */}
+          {weightDelta !== null && (
+            <div
+              className="flex items-center justify-center gap-2 mt-3 px-4 py-2 rounded-xl"
+              style={{ background: "rgba(52,211,153,0.07)" }}
+            >
+              <span className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>Weight</span>
+              <span className="text-sm font-bold text-dark">{weightDelta.latest} kg</span>
+              <span
+                className="text-xs font-semibold"
+                style={{
+                  color: weightDelta.delta < -0.09 ? "#34D399"
+                       : weightDelta.delta >  0.09 ? "#F87171"
+                       : "var(--color-text-dim)",
+                }}
+              >
+                {weightDelta.delta < -0.09
+                  ? `↓ ${Math.abs(weightDelta.delta)} kg this week`
+                  : weightDelta.delta > 0.09
+                  ? `↑ ${weightDelta.delta} kg this week`
+                  : "→ stable this week"}
+              </span>
+            </div>
+          )}
+
           {/* Profile completeness — hidden when complete */}
           {!isComplete && firstMissing && (
             <div className="w-full mt-4 pt-4 border-t border-[var(--color-border)]">
@@ -469,6 +550,14 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
+
+        {/* New profile cards */}
+        <TopLiftsCard prs={topPrs} />
+        <ProgressPhotosCard
+          photos={progressPhotos}
+          onPhotoAdded={() => getProgressPhotos().then(setProgressPhotos)}
+        />
+        {achievements.length > 0 && <AchievementsCard achievements={achievements} />}
 
         {/* ════════════════════════════════════════════════════
             Section 2 — Cycle
