@@ -13,8 +13,10 @@ import {
   type RecipeFilter,
   type ScoredMeal,
 } from "@/lib/mealEngine";
+import { logStaticRecipe, type MealType } from "@/lib/nutrition";
 import type { DailySignals } from "@/lib/sharedSignals";
 import type { Phase } from "@/lib/cycle";
+import type { MealRecipe } from "@/lib/recipes";
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -27,6 +29,8 @@ interface Props {
     carbs:    number;
     fats:     number;
   };
+  cycleDay:  number;
+  onLogged?: () => void;
 }
 
 // ── Filter config ─────────────────────────────────────────────────────────────
@@ -59,11 +63,36 @@ const TYPE_STYLE = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function RecipeRecommendationPanel({ phase, dailySignals, macroTargets }: Props) {
+export default function RecipeRecommendationPanel({ phase, dailySignals, macroTargets, cycleDay, onLogged }: Props) {
   const [activeFilter, setActiveFilter] = useState<RecipeFilter>("all");
   const [expanded, setExpanded]         = useState<string | null>(null);
+  const [loggingId, setLoggingId]       = useState<string | null>(null);
+  const [loggedIds, setLoggedIds]       = useState<Set<string>>(new Set());
 
   const color = PHASE_COLOR[phase];
+
+  async function handleLog(recipe: MealRecipe) {
+    if (loggedIds.has(recipe.id) || loggingId) return;
+    setLoggingId(recipe.id);
+    try {
+      await logStaticRecipe(
+        {
+          name:      recipe.name,
+          calories:  recipe.macros_per_serving.calories_kcal,
+          protein_g: recipe.macros_per_serving.protein_g,
+          carbs_g:   recipe.macros_per_serving.carbs_g,
+          fat_g:     recipe.macros_per_serving.fat_g,
+        },
+        "snack" as MealType,
+        cycleDay,
+        phase,
+      );
+      setLoggedIds(prev => new Set(prev).add(recipe.id));
+      onLogged?.();
+    } finally {
+      setLoggingId(null);
+    }
+  }
 
   // Bridge signals
   const mealSignals = useMemo(() =>
@@ -219,11 +248,30 @@ export default function RecipeRecommendationPanel({ phase, dailySignals, macroTa
                   ))}
                 </div>
 
-                {/* Recipe toggle */}
+                {/* Actions: log + view recipe */}
                 <div className="flex gap-2 px-4 pb-4">
                   <button
+                    onClick={() => handleLog(recipe)}
+                    disabled={!!loggingId}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-1.5"
+                    style={{
+                      background: loggedIds.has(recipe.id)
+                        ? "rgba(0,0,0,0.04)"
+                        : `linear-gradient(135deg, ${color}, ${color}88)`,
+                      color: loggedIds.has(recipe.id) ? "var(--color-text-dim)" : "white",
+                    }}
+                  >
+                    {loggingId === recipe.id ? (
+                      <><span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" /><span>Logging…</span></>
+                    ) : loggedIds.has(recipe.id) ? (
+                      <span>✓ Logged</span>
+                    ) : (
+                      <span>Log this meal</span>
+                    )}
+                  </button>
+                  <button
                     onClick={() => setExpanded(isOpen ? null : recipe.id)}
-                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
                     style={{
                       background: isOpen ? `${color}22` : "rgba(0,0,0,0.04)",
                       color:      isOpen ? color : "var(--color-text-mid)",
@@ -231,7 +279,7 @@ export default function RecipeRecommendationPanel({ phase, dailySignals, macroTa
                     }}
                   >
                     <span>{isOpen ? "▲" : "▼"}</span>
-                    <span>{isOpen ? "Hide recipe" : "View recipe"}</span>
+                    <span>{isOpen ? "Hide" : "Recipe"}</span>
                   </button>
                 </div>
 
