@@ -168,7 +168,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
   if (view === "add") {
     return (
       <div
-        className="fixed inset-0 z-50 flex flex-col bg-background"
+        className="fixed inset-0 z-[60] flex flex-col bg-background"
         style={{ overscrollBehavior: "contain" }}
       >
         {/* Header */}
@@ -374,7 +374,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
   // ── TIMELINE LIST ───────────────────────────────────────────────────────────
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-background"
+      className="fixed inset-0 z-[60] flex flex-col bg-background"
       style={{ overscrollBehavior: "contain" }}
     >
       {/* Header */}
