@@ -4,7 +4,7 @@
 // V1.1: macro progress card (consumed vs target), "fill my remaining macros"
 // button with inline top-3 suggestions, and today's logged entries list.
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { deleteMealEntry, logFood, type MealLogEntry, type NutritionSummary, type Phase } from "@/lib/nutrition";
 import { getTopMatches, hasMeaningfulRemaining, type MacroRemaining, type ScoredFood } from "@/lib/macroMatcher";
 import { RECIPE_DETAILS } from "@/lib/recipeDetails";
@@ -68,6 +68,9 @@ export default function NutritionEntryList({
   const [expandedId, setExpandedId]               = useState<string | null>(null);
   const [loggingId, setLoggingId]                 = useState<string | null>(null);
   const [loggedIds, setLoggedIds]                 = useState<Set<string>>(new Set());
+  const [showAllEntries, setShowAllEntries]        = useState(false);
+
+  useEffect(() => { setShowAllEntries(false); }, [entries.length]);
 
   // ── Computed values ────────────────────────────────────────────────────────
 
@@ -216,19 +219,26 @@ export default function NutritionEntryList({
           })}
         </div>
 
-        {/* ── "Fill my remaining macros" button ── */}
-        {canSuggest && (
+        {/* ── Macro suggestions — always visible when targets exist ── */}
+        {macroTargets && (
           <button
-            onClick={() => setShowSuggestions(s => !s)}
+            onClick={() => canSuggest && setShowSuggestions(s => !s)}
             className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-2"
             style={{
               background: showSuggestions ? `${phaseColor}22` : "rgba(0,0,0,0.04)",
-              color: showSuggestions ? phaseColor : "var(--color-text-mid)",
+              color: canSuggest
+                ? (showSuggestions ? phaseColor : "var(--color-text-mid)")
+                : "var(--color-text-dim)",
               border: `1px solid ${showSuggestions ? phaseColor + "44" : "var(--color-border)"}`,
+              cursor: canSuggest ? "pointer" : "default",
             }}
           >
             <span>🧠</span>
-            <span>{showSuggestions ? "Hide suggestions" : "Fill my remaining macros"}</span>
+            <span>
+              {canSuggest
+                ? (showSuggestions ? "Hide suggestions" : "Fill my remaining macros")
+                : `${Math.max(0, (macroTargets?.calories ?? 0) - consumed.calories)} kcal remaining`}
+            </span>
           </button>
         )}
 
@@ -372,7 +382,7 @@ export default function NutritionEntryList({
             Logged today ✦
           </p>
           <div className="space-y-2">
-            {entries.map(entry => {
+            {(showAllEntries ? entries : entries.slice(0, 3)).map(entry => {
               const style = MEAL_TYPE_STYLE[entry.mealType] ?? MEAL_TYPE_STYLE.snack;
               const sourceLabel = entry.entrySource === "legacy_snapshot"
                 ? "imported"
@@ -404,6 +414,15 @@ export default function NutritionEntryList({
               );
             })}
           </div>
+          {!showAllEntries && entries.length > 3 && (
+            <button
+              onClick={() => setShowAllEntries(true)}
+              className="w-full mt-2 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+              style={{ background: "rgba(0,0,0,0.04)", color: "var(--color-text-mid)" }}
+            >
+              Show {entries.length - 3} more
+            </button>
+          )}
         </div>
       )}
     </div>
