@@ -8,16 +8,15 @@ module.exports = withSentryConfig(nextConfig, {
   org: "wirralabs",
   project: "herphase",
 
-  // Only print Sentry logs in CI
   silent: !process.env.CI,
 
-  // Upload larger source maps for better stack traces
-  widenClientFileUpload: true,
-
-  // Tree-shake Sentry logger statements to reduce bundle size
-  webpack: {
-    treeshake: {
-      removeDebugLogging: true,
-    },
+  // Skip source map upload — avoids build failures when SENTRY_AUTH_TOKEN is missing/expired
+  sourcemaps: {
+    disable: true,
   },
+
+  // Don't create Sentry releases during build
+  disableLogger: true,
+
+  widenClientFileUpload: false,
 });
