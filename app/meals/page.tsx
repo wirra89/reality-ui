@@ -10,7 +10,8 @@ import { type Phase } from "@/lib/cycle";
 import MealPhaseBanner           from "@/components/MealPhaseBanner";
 import NutritionFoodSearch       from "@/components/NutritionFoodSearch";
 import NutritionEntryList        from "@/components/NutritionEntryList";
-import MealRecommendationCards   from "@/components/MealRecommendationCards";
+import MealRecommendationCards      from "@/components/MealRecommendationCards";
+import RecipeRecommendationPanel    from "@/components/RecipeRecommendationPanel";
 import PhaseCard from "@/components/PhaseCard";
 import MacroRing from "@/components/MacroRing";
 import {
@@ -25,7 +26,7 @@ import { type MacroTargets } from "@/components/NutritionEntryList";
 import { type MacroRemaining } from "@/lib/macroMatcher";
 
 export default function MealsPage() {
-  const { user, profile, cycleDay, cycleParams, loading, todayState, latestMoodLog } = useApp();
+  const { user, profile, cycleDay, cycleParams, loading, todayState, latestMoodLog, dailySignals } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
   const phase = phaseData.phase as Phase;
@@ -166,6 +167,13 @@ export default function MealsPage() {
           cycleDay={cycleDay}
           mealFocus={todayState?.mealFocus ?? null}
           adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+        />
+
+        {/* Engine-scored recipe recommendations */}
+        <RecipeRecommendationPanel
+          phase={phase}
+          dailySignals={dailySignals}
+          macroTargets={macroTargets}
         />
 
         {/* Search & log food */}
