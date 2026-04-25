@@ -145,8 +145,8 @@ export default function OnboardingPage() {
   const phase     = phaseData.phase;
   const phaseStyle= PHASE_COLORS[phase] ?? PHASE_COLORS.follicular;
   const userName  = displayName ||
-    user?.user_metadata?.full_name?.split(" ")[0] ??
-    user?.user_metadata?.name?.split(" ")[0] ?? "";
+    (user?.user_metadata?.full_name?.split(" ")[0] ??
+     user?.user_metadata?.name?.split(" ")[0] ?? "");
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
