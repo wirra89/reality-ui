@@ -14,6 +14,15 @@ import {
 import { RECIPE_DETAILS } from "@/lib/recipeDetails";
 import RecipePreviewModal, { type RecipePreviewData } from "@/components/RecipePreviewModal";
 
+// ── Phase accent colour ───────────────────────────────────────────────────────
+
+const PHASE_COLOR: Record<string, string> = {
+  menstrual:  "#F87171",
+  follicular: "#34D399",
+  ovulation:  "#FBBF24",
+  luteal:     "#A78BFA",
+};
+
 // ── Meal type options ─────────────────────────────────────────────────────────
 
 const MEAL_TYPE_OPTIONS: { value: MealType; label: string }[] = [
@@ -105,6 +114,7 @@ interface Props {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCancel }: Props) {
+  const phaseColor = PHASE_COLOR[phase] ?? "#C48A97";
   const [query, setQuery]               = useState("");
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [allFoods, setAllFoods]         = useState<Food[]>([]);
@@ -223,7 +233,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
     {selected && showModal && (
       <RecipePreviewModal
         recipe={buildRecipePreview(selected)}
-        phaseColor="#C48A97"
+        phaseColor={phaseColor}
         onClose={() => setShowModal(false)}
         onLog={async () => {
           await handleLog();
@@ -234,12 +244,8 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
     <div className="bg-surface rounded-2xl shadow-card p-4 mb-4">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <p className="text-sm font-semibold text-dark">Search & log food</p>
-        <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-          style={{ background: "rgba(196,138,151,0.12)", color: "#C48A97" }}>
-          ✦ New
-        </span>
       </div>
 
       {/* Meal type + search + active-filter chip */}
@@ -429,20 +435,27 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
 
       {/* Action buttons */}
       {selected?.category === "meal" ? (
-        /* Meal recipe — must view recipe before logging */
+        /* Meal recipe — view recipe OR log directly */
         <div className="flex gap-2">
           <button
             onClick={onCancel}
-            className="w-12 flex-shrink-0 py-3 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
+            className="w-10 flex-shrink-0 py-3 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
             ←
           </button>
           <button
             onClick={() => setShowModal(true)}
             disabled={!selected}
-            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)", boxShadow: "0 6px 18px rgba(196,138,151,0.35)" }}>
+            className="flex-1 py-3 rounded-xl text-sm font-semibold active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-1.5"
+            style={{ background: `${phaseColor}18`, color: phaseColor, border: `1px solid ${phaseColor}33` }}>
             <span>📖</span>
-            View recipe & log
+            Recipe
+          </button>
+          <button
+            onClick={handleLog}
+            disabled={!canLog}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-40"
+            style={{ background: `linear-gradient(135deg, ${phaseColor}, ${phaseColor}99)` }}>
+            {logging ? "Logging…" : "Log meal"}
           </button>
         </div>
       ) : (
@@ -457,7 +470,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
             onClick={handleLog}
             disabled={!canLog}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+            style={{ background: `linear-gradient(135deg, ${phaseColor}, ${phaseColor}99)` }}>
             {logging ? "Logging…" : "Log food"}
           </button>
         </div>

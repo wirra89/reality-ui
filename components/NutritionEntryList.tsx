@@ -401,7 +401,7 @@ export default function NutritionEntryList({
                     <p className="text-dark font-semibold text-sm truncate">{entry.name}</p>
                     <p className="text-dark/40 text-xs font-body">
                       {sourceLabel} · {Math.round(entry.kcal)} kcal
-                      {entry.protein > 0 && ` · ${entry.protein}g P`}
+                      {entry.protein > 0 && ` · ${Math.round(entry.protein)}g P`}
                     </p>
                   </div>
                   <button

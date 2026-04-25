@@ -118,7 +118,7 @@ function foodMatchesFilter(food: Food, filter: UnifiedFilter, phase: Phase): boo
   if (filter === "bowls")        return false;
   if (filter === "wraps")        return false;
   if (filter === "high_protein") return foodProtein(food) >= 20;
-  if (filter === "iron_rich")    return !!(food.keyNutrient?.toLowerCase().includes("iron")) || phase === "menstrual";
+  if (filter === "iron_rich")    return !!(food.keyNutrient?.toLowerCase().includes("iron"));
   return true;
 }
 
@@ -170,6 +170,8 @@ export default function UnifiedMealSection({
     ironBoost ? "iron_rich" : "all"
   );
   const [previewItem, setPreviewItem] = useState<MealItem | null>(null);
+  const [loggingId, setLoggingId]     = useState<string | null>(null);
+  const [loggedIds, setLoggedIds]     = useState<Set<string>>(new Set());
 
   const color = PHASE_COLOR[phase];
 
@@ -190,12 +192,14 @@ export default function UnifiedMealSection({
 
   const items = useMemo((): MealItem[] => {
     if (activeFilter === "all") {
-      // One food per meal type, in order: breakfast, lunch, dinner, snack
-      // Look up mealType from FOOD_LIBRARY via externalId
-      return MEAL_TYPE_ORDER
+      // Top 2 engine-scored recipes + up to 2 phase foods (one per meal type)
+      const topStatic = scoredStatic.slice(0, 2).map(s => ({ kind: "static" as const, scored: s }));
+      const topFoods  = MEAL_TYPE_ORDER
         .map(mt => phaseFoods.find(f => FOOD_BY_ID.get(f.externalId ?? "")?.mealType === mt))
         .filter((f): f is Food => f !== undefined)
+        .slice(0, 2)
         .map(f => ({ kind: "food" as const, food: f }));
+      return [...topStatic, ...topFoods].slice(0, 4);
     }
 
     // Filtered views: static recipes first, then foods, cap at 4
@@ -220,7 +224,7 @@ export default function UnifiedMealSection({
         carbs_g:   scored.recipe.macros_per_serving.carbs_g,
         fat_g:     scored.recipe.macros_per_serving.fat_g,
       },
-      "snack" as MealType,
+      "lunch" as MealType,
       cycleDay,
       phase,
     );
@@ -228,8 +232,22 @@ export default function UnifiedMealSection({
   }
 
   async function handleLogFood(food: Food) {
-    await logFood(food.id, food.servingSizeG ?? 100, "snack" as MealType, cycleDay, phase);
+    const meta = FOOD_BY_ID.get(food.externalId ?? "");
+    const mealType: MealType = meta?.mealType ?? "snack";
+    await logFood(food.id, food.servingSizeG ?? 100, mealType, cycleDay, phase);
     onLogged?.();
+  }
+
+  async function handleQuickLog(item: MealItem) {
+    const id = item.kind === "static" ? item.scored.recipe.id : item.food.id;
+    setLoggingId(id);
+    try {
+      if (item.kind === "static") await handleLogStatic(item.scored);
+      else await handleLogFood(item.food);
+      setLoggedIds(prev => new Set(prev).add(id));
+    } finally {
+      setLoggingId(null);
+    }
   }
 
   return (
@@ -244,11 +262,13 @@ export default function UnifiedMealSection({
           phaseColor={color}
           onClose={() => setPreviewItem(null)}
           onLog={async () => {
+            const id = previewItem.kind === "static" ? previewItem.scored.recipe.id : previewItem.food.id;
             if (previewItem.kind === "static") {
               await handleLogStatic(previewItem.scored);
             } else {
               await handleLogFood(previewItem.food);
             }
+            setLoggedIds(prev => new Set(prev).add(id));
             setPreviewItem(null);
           }}
         />
@@ -327,11 +347,14 @@ export default function UnifiedMealSection({
                 ? MEAL_TYPE_LABEL[staticFoodMeta?.mealType ?? "snack"]
                 : null;
 
+              const itemId    = item.kind === "static" ? item.scored.recipe.id : item.food.id;
+              const isLogging = loggingId === itemId;
+              const isLogged  = loggedIds.has(itemId);
+
               return (
-                <button
-                  key={item.kind === "static" ? item.scored.recipe.id : item.food.id}
-                  onClick={() => setPreviewItem(item)}
-                  className="rounded-2xl overflow-hidden text-left transition-all active:scale-[0.98]"
+                <div
+                  key={itemId}
+                  className="rounded-2xl overflow-hidden transition-all"
                   style={{
                     background: "var(--color-surface)",
                     border: "1px solid var(--color-border)",
@@ -339,18 +362,22 @@ export default function UnifiedMealSection({
                     boxShadow: isTop ? `0 4px 16px ${color}22` : "none",
                   }}
                 >
-                  {/* Name + reason */}
-                  <div className="px-4 pt-4 pb-2 flex gap-3 items-start">
-                    {/* Emoji badge */}
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: `${color}15` }}
-                    >
-                      {emoji}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 min-w-0">
+                  {/* Tappable body → opens recipe modal */}
+                  <button
+                    onClick={() => setPreviewItem(item)}
+                    className="w-full text-left transition-colors active:bg-black/[0.02]"
+                  >
+                    {/* Name + reason */}
+                    <div className="px-4 pt-4 pb-2 flex gap-3 items-start">
+                      {/* Emoji badge */}
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                        style={{ background: `${color}15` }}
+                      >
+                        {emoji}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
                           {mealLabel && (
                             <span className="text-[10px] font-bold uppercase tracking-wider flex-shrink-0"
                               style={{ color: `${color}99` }}>
@@ -366,46 +393,71 @@ export default function UnifiedMealSection({
                             </span>
                           )}
                         </div>
-                      </div>
-                      <p className="font-display font-semibold text-sm text-dark leading-snug mt-0.5">
-                        {name}
-                      </p>
-                      {reason && (
-                        <p className="text-xs font-body mt-0.5 leading-snug" style={{ color: `${color}cc` }}>
-                          {reason}
+                        <p className="font-display font-semibold text-sm text-dark leading-snug">
+                          {name}
                         </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Macro strip */}
-                  <div
-                    className="mx-4 mb-3 px-3 py-2 rounded-xl grid grid-cols-4"
-                    style={{ background: "var(--color-ghost)" }}
-                  >
-                    {[
-                      { label: "kcal",    value: `${kcal}`     },
-                      { label: "protein", value: `${protein}g` },
-                      { label: "carbs",   value: `${carbs}g`   },
-                      { label: "fat",     value: `${fats}g`    },
-                    ].map(m => (
-                      <div key={m.label} className="text-center">
-                        <p className="text-dark font-semibold text-xs">{m.value}</p>
-                        <p className="text-[var(--color-text-dim)] text-[10px] mt-0.5">{m.label}</p>
+                        {reason && (
+                          <p className="text-xs font-body mt-0.5 leading-snug" style={{ color: `${color}cc` }}>
+                            {reason}
+                          </p>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    </div>
 
-                  {/* Footer */}
-                  <div className="px-4 pb-3.5 flex items-center justify-between">
-                    <span className="text-xs font-body text-dark/30">
-                      {prepMin ? `${prepMin} min · ${difficulty}` : "Tap to see recipe"}
-                    </span>
-                    <span className="text-xs font-semibold" style={{ color }}>
-                      View recipe →
-                    </span>
+                    {/* Macro strip */}
+                    <div
+                      className="mx-4 mb-3 px-3 py-2 rounded-xl grid grid-cols-4"
+                      style={{ background: "var(--color-ghost)" }}
+                    >
+                      {[
+                        { label: "kcal",    value: `${kcal}`     },
+                        { label: "protein", value: `${protein}g` },
+                        { label: "carbs",   value: `${carbs}g`   },
+                        { label: "fat",     value: `${fats}g`    },
+                      ].map(m => (
+                        <div key={m.label} className="text-center">
+                          <p className="text-dark font-semibold text-xs">{m.value}</p>
+                          <p className="text-[var(--color-text-dim)] text-[10px] mt-0.5">{m.label}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Meta */}
+                    {prepMin && (
+                      <div className="px-4 pb-2">
+                        <span className="text-xs font-body text-dark/30">{prepMin} min · {difficulty}</span>
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Action row */}
+                  <div className="px-3 pb-3.5 flex gap-2">
+                    <button
+                      onClick={() => setPreviewItem(item)}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 flex items-center justify-center gap-1"
+                      style={{
+                        background: `${color}12`,
+                        color: color,
+                        border: `1px solid ${color}30`,
+                      }}
+                    >
+                      📖 View recipe
+                    </button>
+                    <button
+                      onClick={() => handleQuickLog(item)}
+                      disabled={isLogging || isLogged}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-1"
+                      style={{
+                        background: isLogged
+                          ? "rgba(0,0,0,0.05)"
+                          : `linear-gradient(135deg, ${color}, ${color}99)`,
+                        color: isLogged ? "var(--color-text-dim)" : "white",
+                      }}
+                    >
+                      {isLogging ? "…" : isLogged ? "✓ Logged" : "Log meal"}
+                    </button>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
