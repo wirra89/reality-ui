@@ -11,6 +11,8 @@ import {
   type Food,
   type MealType,
 } from "@/lib/nutrition";
+import { RECIPE_DETAILS } from "@/lib/recipeDetails";
+import RecipePreviewModal, { type RecipePreviewData } from "@/components/RecipePreviewModal";
 
 // ── Meal type options ─────────────────────────────────────────────────────────
 
@@ -114,6 +116,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
   const [logging, setLogging]           = useState(false);
   const [error, setError]               = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
+  const [showModal, setShowModal]       = useState(false);
   const debounceRef                     = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load full food pool once on mount for category browsing
@@ -172,11 +175,28 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
     }
   }
 
+  function buildRecipePreview(food: Food): RecipePreviewData {
+    const detail = RECIPE_DETAILS[food.externalId ?? ""];
+    const g = food.servingSizeG ?? quantityG;
+    return {
+      id:          food.id,
+      name:        food.name,
+      phaseReason: detail?.phaseReason ?? food.keyNutrient ?? undefined,
+      ingredients: detail?.ingredients ?? [],
+      steps:       detail?.steps ?? [],
+      kcal:        Math.round(food.kcalPer100g * g / 100),
+      protein:     Math.round(food.proteinPer100g * g / 100),
+      carbs:       Math.round(food.carbsPer100g * g / 100),
+      fats:        Math.round(food.fatsPer100g * g / 100),
+    };
+  }
+
   function handleSelectFood(food: Food) {
     setSelected(food);
     setQuery(food.name);
     setSearchResults([]);
     setGrams(String(food.servingSizeG ?? 100));
+    setShowModal(false);
   }
 
   function handleClearSelection() {
@@ -185,6 +205,7 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
     setSearchResults([]);
     setGrams("100");
     setError(null);
+    setShowModal(false);
   }
 
   // Build the empty-state message based on what's active
@@ -198,6 +219,18 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
   }
 
   return (
+    <>
+    {selected && showModal && (
+      <RecipePreviewModal
+        recipe={buildRecipePreview(selected)}
+        phaseColor="#C48A97"
+        onClose={() => setShowModal(false)}
+        onLog={async () => {
+          await handleLog();
+          setShowModal(false);
+        }}
+      />
+    )}
     <div className="bg-surface rounded-2xl shadow-card p-4 mb-4">
 
       {/* Header */}
@@ -385,6 +418,23 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
               ))}
             </div>
           )}
+
+          {/* View recipe — shown for any meal-category food */}
+          {selected.category === "meal" && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+              style={{
+                background: "rgba(196,138,151,0.10)",
+                color: "#C48A97",
+                border: "1px solid rgba(196,138,151,0.22)",
+              }}
+            >
+              <span>📖</span>
+              <span>View recipe</span>
+              <span style={{ opacity: 0.5 }}>→</span>
+            </button>
+          )}
         </div>
       )}
 
@@ -409,5 +459,6 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
         </button>
       </div>
     </div>
+    </>
   );
 }
