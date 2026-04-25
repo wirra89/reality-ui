@@ -49,6 +49,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <script dangerouslySetInnerHTML={{ __html: `document.documentElement.setAttribute('data-theme','rose');` }} />
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={`${dmSans.variable} ${playfair.variable} ${spaceMono.variable} font-body bg-background text-dark antialiased`}>
         <AppProvider>
