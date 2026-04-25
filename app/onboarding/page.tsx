@@ -1,7 +1,7 @@
 "use client";
 import PageSkeleton from "@/components/PageSkeleton";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,7 @@ import { calcCycleDayFromDate, getPhaseData } from "@/lib/cycle";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 4; // 0=Welcome 1=Cycle 2=Goals 3=You're set
+const TOTAL_STEPS = 5; // 0=Welcome 1=About you 2=Cycle 3=Goals 4=You're set
 
 const GOAL_OPTIONS = [
   { value: "Train smarter",  icon: "💪", title: "Train smarter",  desc: "Phase-based workouts" },
@@ -43,6 +43,17 @@ const PHASE_HIGHLIGHTS: Record<string, [string, string][]> = {
 
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DOW = ["S","M","T","W","T","F","S"];
+
+// ── Macro calculation (Mifflin-St Jeor, moderate activity) ───────────────────
+
+function calcMacros(weightKg: number, heightCm: number, age: number) {
+  const bmr = 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+  const tdee = Math.round(bmr * 1.55);
+  const protein = Math.round(weightKg * 1.6);
+  const fat = Math.max(0, Math.round((tdee * 0.28) / 9));
+  const carbs = Math.max(0, Math.round((tdee - protein * 4 - fat * 9) / 4));
+  return { kcal: tdee, protein, carbs, fat };
+}
 
 // ── Calendar helpers ─────────────────────────────────────────────────────────
 
@@ -89,7 +100,13 @@ export default function OnboardingPage() {
   const [step, setStep]     = useState(0);
   const [saving, setSaving] = useState(false);
 
-  // Step 1 — Cycle
+  // Step 1 — About you
+  const [displayName, setDisplayName] = useState("");
+  const [age, setAge]           = useState<string>("");
+  const [heightCm, setHeightCm] = useState<string>("");
+  const [weightKg, setWeightKg] = useState<string>("");
+
+  // Step 2 — Cycle
   const [cycleLength, setCycleLength]   = useState(28);
   const [periodLength, setPeriodLength] = useState(5);
   const [periodStartDate, setPeriodStartDate] = useState("");
@@ -99,15 +116,37 @@ export default function OnboardingPage() {
   const [calYear,  setCalYear]  = useState(now.getFullYear());
   const [calMonth, setCalMonth] = useState(now.getMonth());
 
-  // Step 2 — Goals
+  // Step 3 — Goals
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
-  // Derived: cycle day + phase (for step 3 preview)
-  const cycleDay = periodStartDate ? calcCycleDayFromDate(periodStartDate, cycleLength) : 0;
+  // Pre-fill name from auth metadata
+  useEffect(() => {
+    if (user && !displayName) {
+      const authName =
+        user.user_metadata?.full_name?.split(" ")[0] ??
+        user.user_metadata?.name?.split(" ")[0] ?? "";
+      if (authName) setDisplayName(authName);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // Derived: macro preview
+  const macros = useMemo(() => {
+    const w = parseFloat(weightKg);
+    const h = parseFloat(heightCm);
+    const a = parseFloat(age);
+    if (!w || !h || !a || w < 30 || h < 100 || a < 14) return null;
+    return calcMacros(w, h, a);
+  }, [weightKg, heightCm, age]);
+
+  // Derived: cycle day + phase (for step 4 preview)
+  const cycleDay  = periodStartDate ? calcCycleDayFromDate(periodStartDate, cycleLength) : 0;
   const phaseData = getPhaseData(cycleDay || 1, { cycleLength, periodLength });
-  const phase = phaseData.phase;
-  const phaseStyle = PHASE_COLORS[phase] ?? PHASE_COLORS.follicular;
-  const userName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.user_metadata?.name?.split(" ")[0] ?? "";
+  const phase     = phaseData.phase;
+  const phaseStyle= PHASE_COLORS[phase] ?? PHASE_COLORS.follicular;
+  const userName  = displayName ||
+    user?.user_metadata?.full_name?.split(" ")[0] ??
+    user?.user_metadata?.name?.split(" ")[0] ?? "";
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
@@ -135,11 +174,6 @@ export default function OnboardingPage() {
     setSelectedGoals(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
   }
 
-  function canProceed() {
-    if (step === 1) return true; // period date optional but encouraged
-    return true;
-  }
-
   function next() {
     if (step < TOTAL_STEPS - 1) setStep(s => s + 1);
     else handleFinish();
@@ -162,6 +196,16 @@ export default function OnboardingPage() {
         period_length: periodLength,
         updated_at: new Date().toISOString(),
       };
+      if (displayName) updates.name = displayName;
+      if (age) updates.age = parseInt(age, 10);
+      if (heightCm) updates.height_cm = parseInt(heightCm, 10);
+      if (weightKg) updates.weight_kg = parseFloat(weightKg);
+      if (macros) {
+        updates.calculated_calories = macros.kcal;
+        updates.calculated_protein  = macros.protein;
+        updates.calculated_carbs    = macros.carbs;
+        updates.calculated_fats     = macros.fat;
+      }
       if (periodStartDate) {
         updates.period_start_date = periodStartDate;
         updates.cycle_day = calcCycleDayFromDate(periodStartDate, cycleLength);
@@ -182,10 +226,15 @@ export default function OnboardingPage() {
     } catch {
       localStorage.setItem(`herphase_onboarded_${user.id}`, "true");
       router.replace("/dashboard");
+    } finally {
+      setSaving(false);
     }
   }
 
   if (loading || !user) return <PageSkeleton />;
+
+  // Progress dots: 4 dots for data steps 1-4, shown on steps 1+
+  const DOT_COUNT = 4;
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
@@ -195,10 +244,10 @@ export default function OnboardingPage() {
 
       <main className="relative z-10 flex flex-col flex-1 mx-auto w-full max-w-app px-5 pt-10 pb-8">
 
-        {/* Progress dots */}
+        {/* Progress dots (steps 1–4) */}
         {step > 0 && (
           <div className="flex justify-center gap-1.5 mb-8">
-            {Array.from({ length: TOTAL_STEPS - 1 }).map((_, i) => {
+            {Array.from({ length: DOT_COUNT }).map((_, i) => {
               const dotStep = i + 1;
               const done    = step > dotStep;
               const active  = step === dotStep;
@@ -218,7 +267,6 @@ export default function OnboardingPage() {
         {/* ── Step 0: Welcome ── */}
         {step === 0 && (
           <div className="flex flex-col flex-1 items-center text-center animate-fade-up">
-            {/* Animated bloom */}
             <div className="relative my-6" style={{ width: 180, height: 180 }}>
               <svg viewBox="0 0 180 180" width="180" height="180">
                 <defs>
@@ -264,11 +312,130 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* ── Step 1: Cycle ── */}
+        {/* ── Step 1: About you ── */}
         {step === 1 && (
+          <div className="flex flex-col flex-1 animate-fade-up">
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 1 of 4</p>
+              <h2 className="font-display text-2xl font-semibold text-dark leading-tight" style={{ letterSpacing: "-0.015em" }}>
+                Tell us a bit<br/>about <em style={{ fontStyle: "italic", color: "#C96480" }}>you.</em>
+              </h2>
+              <p className="text-sm font-body mt-1" style={{ color: "var(--color-text-mid)" }}>
+                We'll use this to calculate your personal macro targets.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {/* Name */}
+              <div className="bg-surface rounded-2xl px-4 py-3 shadow-card" style={{ border: "1px solid var(--color-border)" }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: "var(--color-text-dim)", fontSize: "9px", letterSpacing: "0.12em" }}>
+                  Name
+                </p>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={e => setDisplayName(e.target.value)}
+                  placeholder="Your first name"
+                  className="w-full bg-transparent text-sm font-semibold text-dark outline-none placeholder:font-normal"
+                  style={{ color: "var(--color-text)", caretColor: "#E8829A" }}
+                />
+              </div>
+
+              {/* Age */}
+              <div className="bg-surface rounded-2xl px-4 py-3 shadow-card" style={{ border: "1px solid var(--color-border)" }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: "var(--color-text-dim)", fontSize: "9px", letterSpacing: "0.12em" }}>
+                  Age
+                </p>
+                <input
+                  type="number"
+                  value={age}
+                  onChange={e => setAge(e.target.value)}
+                  placeholder="e.g. 27"
+                  min={14} max={65}
+                  className="w-full bg-transparent text-sm font-semibold text-dark outline-none placeholder:font-normal"
+                  style={{ color: "var(--color-text)", caretColor: "#E8829A" }}
+                />
+              </div>
+
+              {/* Height + Weight side-by-side */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-surface rounded-2xl px-4 py-3 shadow-card" style={{ border: "1px solid var(--color-border)" }}>
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: "var(--color-text-dim)", fontSize: "9px", letterSpacing: "0.12em" }}>
+                    Height (cm)
+                  </p>
+                  <input
+                    type="number"
+                    value={heightCm}
+                    onChange={e => setHeightCm(e.target.value)}
+                    placeholder="e.g. 165"
+                    min={100} max={220}
+                    className="w-full bg-transparent text-sm font-semibold text-dark outline-none placeholder:font-normal"
+                    style={{ color: "var(--color-text)", caretColor: "#E8829A" }}
+                  />
+                </div>
+                <div className="bg-surface rounded-2xl px-4 py-3 shadow-card" style={{ border: "1px solid var(--color-border)" }}>
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: "var(--color-text-dim)", fontSize: "9px", letterSpacing: "0.12em" }}>
+                    Weight (kg)
+                  </p>
+                  <input
+                    type="number"
+                    value={weightKg}
+                    onChange={e => setWeightKg(e.target.value)}
+                    placeholder="e.g. 62"
+                    min={30} max={200}
+                    step={0.5}
+                    className="w-full bg-transparent text-sm font-semibold text-dark outline-none placeholder:font-normal"
+                    style={{ color: "var(--color-text)", caretColor: "#E8829A" }}
+                  />
+                </div>
+              </div>
+
+              {/* Macro preview */}
+              {macros ? (
+                <div className="rounded-2xl p-4" style={{
+                  border: "1.5px dashed rgba(232,130,154,0.45)",
+                  background: "linear-gradient(135deg, rgba(253,232,237,0.6), rgba(244,184,198,0.25))",
+                }}>
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: "#C96480", fontSize: "9px", letterSpacing: "0.12em" }}>
+                    Your estimated daily targets
+                  </p>
+                  <div className="grid grid-cols-4 gap-2 text-center">
+                    {[
+                      { label: "kcal",  value: macros.kcal },
+                      { label: "protein", value: `${macros.protein}g` },
+                      { label: "carbs",  value: `${macros.carbs}g` },
+                      { label: "fats",   value: `${macros.fat}g` },
+                    ].map(({ label, value }) => (
+                      <div key={label}>
+                        <p className="font-bold text-dark" style={{ fontFamily: "var(--font-accent), monospace", fontSize: "13px" }}>
+                          {value}
+                        </p>
+                        <p className="text-[9px] uppercase tracking-wide mt-0.5" style={{ color: "var(--color-text-dim)" }}>
+                          {label}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-2xl p-4 text-center" style={{
+                  border: "1.5px dashed rgba(232,130,154,0.25)",
+                  background: "rgba(253,232,237,0.3)",
+                }}>
+                  <p className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>
+                    Fill in your details to see your macro targets
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 2: Cycle ── */}
+        {step === 2 && (
           <div className="flex flex-col flex-1 animate-fade-up overflow-y-auto">
             <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 1 of 3</p>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 2 of 4</p>
               <h2 className="font-display text-2xl font-semibold text-dark leading-tight" style={{ letterSpacing: "-0.015em" }}>
                 When did your last<br/>period <em style={{ fontStyle: "italic", color: "#C96480" }}>start?</em>
               </h2>
@@ -279,7 +446,6 @@ export default function OnboardingPage() {
 
             {/* Mini calendar */}
             <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
-              {/* Month nav */}
               <div className="flex items-center justify-between mb-3">
                 <button onClick={prevMonth}
                   className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold transition-all active:scale-90"
@@ -299,7 +465,6 @@ export default function OnboardingPage() {
                 </button>
               </div>
 
-              {/* Day-of-week headers */}
               <div className="grid grid-cols-7 mb-1">
                 {DOW.map((d, i) => (
                   <div key={i} className="text-center py-1" style={{ fontSize: "9px", fontWeight: 700, color: "var(--color-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -308,7 +473,6 @@ export default function OnboardingPage() {
                 ))}
               </div>
 
-              {/* Day cells */}
               <div className="grid grid-cols-7 gap-y-1">
                 {calCells.map((cell, i) => {
                   const isToday   = cell.dateStr === todayStr;
@@ -392,11 +556,11 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* ── Step 2: Goals ── */}
-        {step === 2 && (
+        {/* ── Step 3: Goals ── */}
+        {step === 3 && (
           <div className="flex flex-col flex-1 animate-fade-up">
             <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 2 of 3</p>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#E8829A" }}>Step 3 of 4</p>
               <h2 className="font-display text-2xl font-semibold text-dark leading-tight" style={{ letterSpacing: "-0.015em" }}>
                 What matters to<br/>you <em style={{ fontStyle: "italic", color: "#C96480" }}>right now?</em>
               </h2>
@@ -432,8 +596,8 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* ── Step 3: You're set ── */}
-        {step === 3 && (
+        {/* ── Step 4: You're set ── */}
+        {step === 4 && (
           <div className="flex flex-col flex-1 animate-fade-up">
             <div className="mb-5 text-center">
               <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#E8829A" }}>
@@ -456,7 +620,6 @@ export default function OnboardingPage() {
                 border: `1px solid ${phaseStyle.border}`,
                 boxShadow: "0 8px 24px rgba(201,100,128,0.12)",
               }}>
-              {/* Decorative glow */}
               <div className="absolute top-0 right-0 w-28 h-28 rounded-full pointer-events-none"
                 style={{ background: "radial-gradient(circle, rgba(52,211,153,0.2) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
 
@@ -488,6 +651,33 @@ export default function OnboardingPage() {
               ))}
             </div>
 
+            {/* Macro summary if available */}
+            {macros && (
+              <div className="rounded-2xl px-4 py-3 mb-3 shadow-card" style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+              }}>
+                <p className="text-xs font-semibold mb-2" style={{ color: "var(--color-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", fontSize: "9px" }}>
+                  Daily macro targets
+                </p>
+                <div className="grid grid-cols-4 gap-1 text-center">
+                  {[
+                    { label: "kcal", value: macros.kcal },
+                    { label: "protein", value: `${macros.protein}g` },
+                    { label: "carbs", value: `${macros.carbs}g` },
+                    { label: "fats", value: `${macros.fat}g` },
+                  ].map(({ label, value }) => (
+                    <div key={label}>
+                      <p className="font-bold text-dark" style={{ fontFamily: "var(--font-accent), monospace", fontSize: "12px" }}>
+                        {value}
+                      </p>
+                      <p className="text-[9px] uppercase tracking-wide" style={{ color: "var(--color-text-dim)" }}>{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {selectedGoals.length > 0 && (
               <div className="bg-surface rounded-2xl px-4 py-3 shadow-card mb-3"
                 style={{ border: "1px solid var(--color-border)" }}>
@@ -509,7 +699,7 @@ export default function OnboardingPage() {
 
         {/* Navigation */}
         <div className="flex gap-3 mt-5 flex-shrink-0">
-          {step > 0 && step < TOTAL_STEPS - 1 && (
+          {step > 1 && step < TOTAL_STEPS - 1 && (
             <button onClick={back}
               className="w-12 py-4 rounded-2xl font-semibold bg-surface shadow-card transition-all active:scale-95"
               style={{ color: "var(--color-text-dim)" }}>
@@ -529,17 +719,17 @@ export default function OnboardingPage() {
                   </svg>
                   Setting up…
                 </span>
-              ) : step === 2 && selectedGoals.length > 0
-                ? `Continue · ${selectedGoals.length} selected`
-                : step === TOTAL_STEPS - 1
+              ) : step === TOTAL_STEPS - 1
                 ? "Enter Herphase →"
+                : step === 3 && selectedGoals.length > 0
+                ? `Continue · ${selectedGoals.length} selected`
                 : "Continue →"}
             </button>
           )}
         </div>
 
         {step > 0 && step < TOTAL_STEPS - 1 && (
-          <button onClick={skip} className="text-center text-xs font-body mt-3 w-full" style={{ color: "var(--color-text-dim)" }}>
+          <button onClick={skip} className="text-center text-xs font-body mt-3 w-full py-1" style={{ color: "var(--color-text-dim)" }}>
             Skip
           </button>
         )}
