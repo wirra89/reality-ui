@@ -419,22 +419,6 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
             </div>
           )}
 
-          {/* View recipe — shown for any meal-category food */}
-          {selected.category === "meal" && (
-            <button
-              onClick={() => setShowModal(true)}
-              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
-              style={{
-                background: "rgba(196,138,151,0.10)",
-                color: "#C48A97",
-                border: "1px solid rgba(196,138,151,0.22)",
-              }}
-            >
-              <span>📖</span>
-              <span>View recipe</span>
-              <span style={{ opacity: 0.5 }}>→</span>
-            </button>
-          )}
         </div>
       )}
 
@@ -444,20 +428,40 @@ export default function NutritionFoodSearch({ cycleDay, phase, onLogged, onCance
       )}
 
       {/* Action buttons */}
-      <div className="flex gap-2">
-        <button
-          onClick={onCancel}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
-          Cancel
-        </button>
-        <button
-          onClick={handleLog}
-          disabled={!canLog}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-40"
-          style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
-          {logging ? "Logging…" : "Log food"}
-        </button>
-      </div>
+      {selected?.category === "meal" ? (
+        /* Meal recipe — must view recipe before logging */
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="w-12 flex-shrink-0 py-3 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
+            ←
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            disabled={!selected}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+            style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)", boxShadow: "0 6px 18px rgba(196,138,151,0.35)" }}>
+            <span>📖</span>
+            View recipe & log
+          </button>
+        </div>
+      ) : (
+        /* Raw ingredient — direct log */
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-dark/40 bg-ghost active:scale-95 transition-all">
+            Cancel
+          </button>
+          <button
+            onClick={handleLog}
+            disabled={!canLog}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white active:scale-95 transition-all disabled:opacity-40"
+            style={{ background: "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
+            {logging ? "Logging…" : "Log food"}
+          </button>
+        </div>
+      )}
     </div>
     </>
   );
