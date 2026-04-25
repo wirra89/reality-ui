@@ -19,6 +19,7 @@ import PhaseCard from "@/components/PhaseCard";
 import CycleRing from "@/components/CycleRing";
 import Sparkline from "@/components/Sparkline";
 import { PHASE_FULL as PHASE_COLORS } from "@/lib/phaseColors";
+import SleepChart from "@/components/SleepChart";
 const PHASE_EMOJIS: Record<string, string> = {
   menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
 };
@@ -844,6 +845,27 @@ export default function InsightsPage() {
                       </div>
                     </div>
 
+                    {/* Sleep chart */}
+                    {moods.length >= 3 && (
+                      <div className="bg-surface rounded-2xl shadow-card p-4">
+                        <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">
+                          Sleep hours by phase
+                        </p>
+                        <SleepChart
+                          entries={moods.map(m => ({
+                            date:          m.date as string,
+                            phase:         m.phase as string,
+                            sleep_hours:   (m.sleep_hours as unknown as number | null) ?? null,
+                            sleep_quality: (m.sleep_quality as unknown as number | null) ?? null,
+                          }))}
+                        />
+                        <div className="flex justify-between mt-2">
+                          <span className="text-[10px] text-dark/30">Oldest</span>
+                          <span className="text-[10px] text-dark/30">Recent</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Symptom patterns */}
                     <p className="text-xs font-semibold text-secondary uppercase tracking-wide px-1">
                       {maturity === "personalized" ? "Your symptom patterns" : "Symptom patterns so far"}
@@ -879,6 +901,53 @@ export default function InsightsPage() {
                         <p className="text-dark/30 text-xs font-body mt-1">Log symptoms in the Mood tab to see patterns here</p>
                       </div>
                     )}
+
+                    {/* Symptom pattern insight cards — personalized stage only */}
+                    {maturity === "personalized" && (() => {
+                      const patterns: { phase: string; symptom: string; pct: number }[] = [];
+                      symptomsByPhase.forEach(({ phase, total, symptoms }) => {
+                        if (total < 5) return;
+                        symptoms.forEach(({ symptom, pct }) => {
+                          if (pct >= 50) patterns.push({ phase, symptom, pct });
+                        });
+                      });
+                      if (patterns.length === 0) return null;
+                      return (
+                        <div>
+                          <p className="text-xs font-semibold text-secondary uppercase tracking-wide px-1 mb-2">
+                            Your recurring patterns
+                          </p>
+                          <div className="space-y-2">
+                            {patterns.slice(0, 6).map(({ phase, symptom, pct }) => {
+                              const color = PHASE_COLORS[phase]?.dot ?? "#C48A97";
+                              return (
+                                <div
+                                  key={`${phase}-${symptom}`}
+                                  className="rounded-2xl px-4 py-3 flex items-center gap-3"
+                                  style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+                                >
+                                  <span
+                                    className="w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0"
+                                    style={{ background: `${color}18`, color }}
+                                  >
+                                    ✦
+                                  </span>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-semibold text-dark">
+                                      You often report{" "}
+                                      <span style={{ color }}>{symptom}</span>
+                                    </p>
+                                    <p className="text-xs font-body text-dark/40 mt-0.5">
+                                      in your {phase} phase · {pct}% of check-ins
+                                    </p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
               </div>

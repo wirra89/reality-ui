@@ -9,8 +9,7 @@ import { getPhaseData } from "@/lib/cycle";
 import { type Phase } from "@/lib/cycle";
 import NutritionFoodSearch       from "@/components/NutritionFoodSearch";
 import NutritionEntryList        from "@/components/NutritionEntryList";
-import MealRecommendationCards      from "@/components/MealRecommendationCards";
-import RecipeRecommendationPanel    from "@/components/RecipeRecommendationPanel";
+import UnifiedMealSection        from "@/components/UnifiedMealSection";
 import PhaseCard from "@/components/PhaseCard";
 import {
   getTodayMealEntries,
@@ -37,6 +36,8 @@ export default function MealsPage() {
     carbs:    profile?.calculated_carbs    ?? phaseData.macros.carbs,
     fats:     profile?.calculated_fats     ?? phaseData.macros.fats,
   };
+
+  const ironBoost = (latestMoodLog?.flow_intensity === "medium" || latestMoodLog?.flow_intensity === "heavy") && phase === "menstrual";
 
   const [toast, setToast]                             = useState<string | null>(null);
   const [showNutritionSearch, setShowNutritionSearch] = useState(false);
@@ -120,7 +121,7 @@ export default function MealsPage() {
         />
 
 
-        {/* Search & log food — expands to show recipe recommendations + food search */}
+        {/* Search & log food */}
         <div className="mb-3">
           {!showNutritionSearch ? (
             <button
@@ -131,32 +132,16 @@ export default function MealsPage() {
               Search & log food
             </button>
           ) : (
-            <>
-              <NutritionFoodSearch
-                cycleDay={cycleDay}
-                phase={phase}
-                onLogged={() => {
-                  setShowNutritionSearch(false);
-                  showToast("✓ Food logged");
-                  refreshNutrition();
-                }}
-                onCancel={() => {
-                  setShowNutritionSearch(false);
-                }}
-              />
-              {/* Engine-scored recipe panel — below the search input */}
-              <RecipeRecommendationPanel
-                phase={phase}
-                dailySignals={dailySignals}
-                macroTargets={macroTargets}
-                cycleDay={cycleDay}
-                onLogged={() => {
-                  setShowNutritionSearch(false);
-                  showToast("✓ Meal logged");
-                  refreshNutrition();
-                }}
-              />
-            </>
+            <NutritionFoodSearch
+              cycleDay={cycleDay}
+              phase={phase}
+              onLogged={() => {
+                setShowNutritionSearch(false);
+                showToast("✓ Food logged");
+                refreshNutrition();
+              }}
+              onCancel={() => setShowNutritionSearch(false)}
+            />
           )}
 
           <NutritionEntryList
@@ -178,16 +163,16 @@ export default function MealsPage() {
           />
         </div>
 
-        {/* Phase-aware meal recommendation cards */}
-        <MealRecommendationCards
+        {/* Unified phase-aware meal recommendations */}
+        <UnifiedMealSection
           phase={phase}
+          dailySignals={dailySignals}
+          macroTargets={macroTargets}
           cycleDay={cycleDay}
-          moodLog={latestMoodLog}
-          profile={profile}
-          foods={phaseFoods}
-          loggedMealTypes={new Set(nutritionEntries.map(e => e.mealType))}
+          phaseFoods={phaseFoods}
+          ironBoost={ironBoost}
           onLogged={() => {
-            showToast("✓ Food logged");
+            showToast("✓ Meal logged");
             refreshNutrition();
           }}
         />

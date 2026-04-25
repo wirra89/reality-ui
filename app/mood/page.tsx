@@ -176,6 +176,7 @@ export default function MoodPage() {
   const [expandedCraving, setExpandedCraving] = useState<string | null>(null);
   const [sleepHours, setSleepHours] = useState<number>(7);
   const [sleepQuality, setSleepQuality] = useState<number>(3);
+  const [flowIntensity, setFlowIntensity] = useState<"spotting" | "light" | "medium" | "heavy" | null>(null);
 
   useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
 
@@ -190,6 +191,7 @@ export default function MoodPage() {
         setSleepHours(log.sleep_hours ?? 7);
         setSleepQuality(log.sleep_quality ?? 3);
         setSelectedCravings(log.cravings ?? []);
+        setFlowIntensity((log.flow_intensity as "spotting" | "light" | "medium" | "heavy" | null) ?? null);
         setAlreadyLogged(true);
       } else {
         setSelectedMood(null);
@@ -199,6 +201,7 @@ export default function MoodPage() {
         setSleepHours(7);
         setSleepQuality(3);
         setSelectedCravings([]);
+        setFlowIntensity(null);
         setAlreadyLogged(false);
       }
     });
@@ -216,6 +219,7 @@ export default function MoodPage() {
       mood: selectedMood, energy, symptoms: selectedSymptoms, note,
       sleep_hours: sleepHours, sleep_quality: sleepQuality,
       cravings: selectedCravings,
+      flow_intensity: flowIntensity,
     });
     setSaveStatus(result.success ? "success" : "error");
     if (result.success) {
@@ -428,6 +432,35 @@ export default function MoodPage() {
             );
           })()}
         </div>
+
+        {/* Flow intensity — menstrual phase only */}
+        {phaseData.phase === "menstrual" && (
+          <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
+            <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-3">Flow intensity 🩸</p>
+            <div className="grid grid-cols-4 gap-1.5">
+              {(["spotting", "light", "medium", "heavy"] as const).map(level => {
+                const isActive = flowIntensity === level;
+                const labels: Record<string, string> = {
+                  spotting: "Spotting", light: "Light", medium: "Medium", heavy: "Heavy",
+                };
+                return (
+                  <button
+                    key={level}
+                    onClick={() => setFlowIntensity(isActive ? null : level)}
+                    className="py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                    style={{
+                      background: isActive ? "#F8717120" : "var(--color-ghost)",
+                      color: isActive ? "#F87171" : "var(--color-text-dim)",
+                      border: `1px solid ${isActive ? "#F8717144" : "var(--color-border)"}`,
+                    }}
+                  >
+                    {labels[level]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Sleep */}
         <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">

@@ -13,6 +13,7 @@ import WorkoutCard from "@/components/WorkoutCard";
 import AIRecommendationCard from "@/components/AIRecommendationCard";
 import ReadinessCard from "@/components/ReadinessCard";
 import NutritionCard from "@/components/NutritionCard";
+import WeeklySummaryCard from "@/components/WeeklySummaryCard";
 import CycleCalendar from "@/components/CycleCalendar";
 import PhaseCard from "@/components/PhaseCard";
 import WaterBottleCard from "@/components/WaterBottleCard";
@@ -501,7 +502,10 @@ export default function DashboardPage() {
           <NutritionCard phaseData={phaseData} />
         </div>
 
-        {/* ── 6. MACROS ── */}
+        {/* ── 6. WEEKLY SUMMARY ── */}
+        <WeeklySummaryCard />
+
+        {/* ── 7. MACROS ── */}
         <MacroCard phaseData={phaseData} profile={profile} nutritionSummary={nutritionSummary} />
 
 

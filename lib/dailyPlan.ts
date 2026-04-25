@@ -9,6 +9,8 @@ import { type Phase, type CycleParams, getPhaseData } from "@/lib/cycle";
 // INPUT TYPE
 // ─────────────────────────────────────────────────────────────────────────────
 
+export type FlowIntensity = "spotting" | "light" | "medium" | "heavy";
+
 export interface CheckInSnapshot {
   mood: number;          // 1–5
   energy: number;        // 1–5
@@ -16,6 +18,7 @@ export interface CheckInSnapshot {
   sleep_hours?: number;  // e.g. 7.5
   sleep_quality?: number; // 1–5
   cravings?: string[];   // e.g. ["Sweet", "Salty"] — added in Tier 1 migration
+  flow_intensity?: FlowIntensity | null;
 }
 
 export interface DailyPlanInput {
@@ -147,7 +150,9 @@ export function calcReadinessScore(
     moodNorm    * 0.25 +
     sleepScore  * 0.15;
 
-  return Math.round(Math.max(0, Math.min(100, weighted - penalty)));
+  const flowPenalty = checkin.flow_intensity === "heavy" ? 10 : 0;
+
+  return Math.round(Math.max(0, Math.min(100, weighted - penalty - flowPenalty)));
 }
 
 /**

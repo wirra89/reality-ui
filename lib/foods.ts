@@ -613,35 +613,6 @@ export const FOOD_LIBRARY: FoodItem[] = [
     calories: 390, protein: 18, carbs: 58, fats: 7, fiber: 12,
     keyNutrient: "Folate",
   },
-
-  // ── OVULATION — extra foods ────────────────────────────────────────────
-  {
-    id: "ovu-10",
-    name: "Steak & Sweet Potato",
-    emoji: "🥩", phase: "ovulation", mealType: "dinner",
-    reason: "Zinc from red meat supports ovulation; sweet potato carbs refuel peak training sessions",
-    portion: "200g sirloin, 200g sweet potato, salad",
-    calories: 580, protein: 48, carbs: 42, fats: 18, fiber: 6,
-    keyNutrient: "Zinc + complex carbs",
-  },
-  {
-    id: "ovu-11",
-    name: "Pre-Workout Banana & PB Toast",
-    emoji: "🍌", phase: "ovulation", mealType: "snack",
-    reason: "Fast carbs from banana fuel peak-intensity sessions; PB provides sustained energy",
-    portion: "2 slices sourdough, 2 tbsp peanut butter, 1 banana",
-    calories: 480, protein: 14, carbs: 68, fats: 16, fiber: 6,
-    keyNutrient: "Fast + slow carbs",
-  },
-  {
-    id: "ovu-12",
-    name: "Chicken Burrito Bowl",
-    emoji: "🌯", phase: "ovulation", mealType: "lunch",
-    reason: "High protein + carb combo designed for peak performance days — maximum muscle fuel",
-    portion: "200g chicken, 150g rice, beans, salsa, avocado",
-    calories: 620, protein: 52, carbs: 58, fats: 18, fiber: 10,
-    keyNutrient: "Complete protein + carbs",
-  },
   {
     id: "ovu-13",
     name: "Post-Workout Recovery Shake",
@@ -668,17 +639,6 @@ export const FOOD_LIBRARY: FoodItem[] = [
     portion: "3 eggs, 2 slices sourdough, 1 tsp maple syrup",
     calories: 420, protein: 28, carbs: 38, fats: 16, fiber: 3,
     keyNutrient: "Complete protein",
-  },
-
-  // ── LUTEAL — extra foods ───────────────────────────────────────────────
-  {
-    id: "lut-14",
-    name: "Baked Sweet Potato with Cottage Cheese",
-    emoji: "🍠", phase: "luteal", mealType: "lunch",
-    reason: "Sweet potato stabilises blood sugar; cottage cheese provides casein protein that reduces cravings",
-    portion: "200g sweet potato, 150g cottage cheese, chives",
-    calories: 320, protein: 24, carbs: 42, fats: 4, fiber: 5,
-    keyNutrient: "Casein + resistant starch",
   },
   {
     id: "lut-15",
@@ -743,24 +703,6 @@ export const FOOD_LIBRARY: FoodItem[] = [
     calories: 110, protein: 3, carbs: 20, fats: 2, fiber: 0,
     keyNutrient: "Apigenin (calming)",
   },
-
-  // ── MENSTRUAL — extra meals ───────────────────────────────────────────────
-  {
-    id: "men-11", name: "Beef & Vegetable Stew", emoji: "🍲",
-    phase: "menstrual", mealType: "dinner",
-    reason: "Haem iron from beef replaces blood loss; vegetables add anti-inflammatory compounds",
-    portion: "350g stew (1.5 cups)",
-    calories: 390, protein: 32, carbs: 28, fats: 14, fiber: 6,
-    keyNutrient: "Haem Iron",
-  },
-  {
-    id: "men-12", name: "Scrambled Eggs + Spinach on Rye", emoji: "🍳",
-    phase: "menstrual", mealType: "breakfast",
-    reason: "Iron from eggs and spinach; B12 supports energy during blood loss",
-    portion: "3 eggs + 60g spinach + 1 slice rye bread",
-    calories: 320, protein: 24, carbs: 22, fats: 16, fiber: 4,
-    keyNutrient: "Iron · B12",
-  },
   {
     id: "men-13", name: "Miso Soup + Tofu + Seaweed", emoji: "🍜",
     phase: "menstrual", mealType: "lunch",
@@ -768,72 +710,6 @@ export const FOOD_LIBRARY: FoodItem[] = [
     portion: "400ml miso soup + 100g tofu",
     calories: 185, protein: 14, carbs: 12, fats: 8, fiber: 3,
     keyNutrient: "Iodine · Plant Iron",
-  },
-  {
-    id: "men-14", name: "Banana + Almond Butter Oats", emoji: "🥣",
-    phase: "menstrual", mealType: "breakfast",
-    reason: "Magnesium from almonds eases cramps; banana B6 lifts mood; oats provide steady energy",
-    portion: "60g oats + 1 banana + 2 tbsp almond butter",
-    calories: 460, protein: 14, carbs: 62, fats: 18, fiber: 8,
-    keyNutrient: "Magnesium · B6",
-  },
-  {
-    id: "men-15", name: "Pumpkin Soup + Crusty Bread", emoji: "🎃",
-    phase: "menstrual", mealType: "lunch",
-    reason: "Beta-carotene reduces inflammation; warming soup soothes cramps",
-    portion: "350ml soup + 1 slice bread",
-    calories: 280, protein: 6, carbs: 45, fats: 8, fiber: 5,
-    keyNutrient: "Beta-carotene · Magnesium",
-  },
-
-  // ── FOLLICULAR — extra meals ──────────────────────────────────────────────
-  {
-    id: "fol-11", name: "Smoked Salmon + Avocado Toast", emoji: "🥑",
-    phase: "follicular", mealType: "breakfast",
-    reason: "Omega-3 and healthy fats support rising oestrogen; folate in avocado aids egg development",
-    portion: "2 slices sourdough + 80g smoked salmon + ½ avocado",
-    calories: 490, protein: 28, carbs: 38, fats: 22, fiber: 7,
-    keyNutrient: "Omega-3 · Folate",
-  },
-  {
-    id: "fol-12", name: "Chicken & Broccoli Stir Fry + Rice", emoji: "🍱",
-    phase: "follicular", mealType: "dinner",
-    reason: "DIM from broccoli metabolises oestrogen; lean protein supports muscle building",
-    portion: "150g chicken + 200g broccoli + 150g rice",
-    calories: 510, protein: 42, carbs: 55, fats: 8, fiber: 6,
-    keyNutrient: "DIM · Complete protein",
-  },
-  {
-    id: "fol-13", name: "Berry Protein Smoothie Bowl", emoji: "🍓",
-    phase: "follicular", mealType: "breakfast",
-    reason: "Antioxidants protect follicles; protein supports muscle repair after training",
-    portion: "200g mixed berries + 30g protein powder + 100g Greek yogurt",
-    calories: 320, protein: 32, carbs: 35, fats: 4, fiber: 7,
-    keyNutrient: "Antioxidants · Protein",
-  },
-  {
-    id: "fol-14", name: "Lentil & Feta Salad", emoji: "🥗",
-    phase: "follicular", mealType: "lunch",
-    reason: "Plant iron and folate support egg development; feta adds calcium and protein",
-    portion: "200g cooked lentils + 50g feta + mixed greens",
-    calories: 380, protein: 22, carbs: 44, fats: 12, fiber: 14,
-    keyNutrient: "Folate · Plant Iron",
-  },
-  {
-    id: "fol-15", name: "Prawn & Vegetable Pasta", emoji: "🍝",
-    phase: "follicular", mealType: "dinner",
-    reason: "Iodine from prawns supports thyroid; wholemeal pasta gives sustained energy",
-    portion: "150g prawns + 120g wholemeal pasta + vegetables",
-    calories: 485, protein: 36, carbs: 58, fats: 8, fiber: 8,
-    keyNutrient: "Iodine · Selenium",
-  },
-  {
-    id: "fol-16", name: "Mushroom & Spinach Omelette", emoji: "🍳",
-    phase: "follicular", mealType: "breakfast",
-    reason: "Vitamin D from mushrooms supports oestrogen; iron from spinach boosts energy",
-    portion: "3 eggs + 100g mushrooms + 60g spinach",
-    calories: 295, protein: 26, carbs: 6, fats: 18, fiber: 3,
-    keyNutrient: "Vitamin D · Iron",
   },
 
   // ── OVULATION — extra meals ───────────────────────────────────────────────
@@ -876,64 +752,6 @@ export const FOOD_LIBRARY: FoodItem[] = [
     portion: "150g shrimp + 2 corn tortillas + mango salsa",
     calories: 420, protein: 30, carbs: 50, fats: 9, fiber: 5,
     keyNutrient: "Zinc · Vitamin C",
-  },
-
-  // ── LUTEAL — extra meals ──────────────────────────────────────────────────
-  {
-    id: "lut-11", name: "Turkey & Sweet Potato Bowl", emoji: "🥣",
-    phase: "luteal", mealType: "lunch",
-    reason: "Tryptophan in turkey converts to serotonin; sweet potato satisfies carb cravings",
-    portion: "150g turkey mince + 200g sweet potato + greens",
-    calories: 450, protein: 36, carbs: 48, fats: 8, fiber: 7,
-    keyNutrient: "Tryptophan · B6",
-  },
-  {
-    id: "lut-12", name: "Salmon Teriyaki + Brown Rice", emoji: "🍱",
-    phase: "luteal", mealType: "dinner",
-    reason: "Omega-3 reduces PMS inflammation; B vitamins in salmon support mood stability",
-    portion: "150g salmon + 150g brown rice + vegetables",
-    calories: 520, protein: 36, carbs: 55, fats: 16, fiber: 5,
-    keyNutrient: "Omega-3 · B vitamins",
-  },
-  {
-    id: "lut-13", name: "Chickpea & Spinach Curry", emoji: "🍛",
-    phase: "luteal", mealType: "dinner",
-    reason: "Chickpea iron and fibre reduce PMS; turmeric in curry is strongly anti-inflammatory",
-    portion: "300g curry + 150g basmati rice",
-    calories: 480, protein: 18, carbs: 72, fats: 10, fiber: 14,
-    keyNutrient: "Iron · Curcumin",
-  },
-  {
-    id: "lut-14", name: "French Toast + Berries", emoji: "🍞",
-    phase: "luteal", mealType: "breakfast",
-    reason: "Satisfies carb and sweet cravings; eggs provide choline for brain fog",
-    portion: "2 slices whole grain + 2 eggs + 100g berries + maple syrup",
-    calories: 420, protein: 18, carbs: 58, fats: 12, fiber: 5,
-    keyNutrient: "Choline · B6",
-  },
-  {
-    id: "lut-15", name: "Stuffed Bell Peppers (Beef & Rice)", emoji: "🫑",
-    phase: "luteal", mealType: "dinner",
-    reason: "Zinc from beef stabilises luteal phase; vitamin C from pepper boosts iron absorption",
-    portion: "2 bell peppers + 100g beef mince + 80g rice",
-    calories: 440, protein: 30, carbs: 45, fats: 14, fiber: 7,
-    keyNutrient: "Zinc · Vitamin C",
-  },
-  {
-    id: "lut-16", name: "Peanut Butter Banana Smoothie", emoji: "🥤",
-    phase: "luteal", mealType: "snack",
-    reason: "Magnesium from peanut butter eases PMS; banana B6 supports serotonin production",
-    portion: "1 banana + 2 tbsp peanut butter + 250ml oat milk",
-    calories: 380, protein: 12, carbs: 52, fats: 16, fiber: 5,
-    keyNutrient: "Magnesium · B6",
-  },
-  {
-    id: "lut-17", name: "Cottage Cheese + Walnuts + Honey", emoji: "🥛",
-    phase: "luteal", mealType: "snack",
-    reason: "Casein protein keeps you full through cravings; walnuts reduce PMS inflammation",
-    portion: "200g cottage cheese + 20g walnuts + 1 tsp honey",
-    calories: 310, protein: 28, carbs: 14, fats: 16, fiber: 1,
-    keyNutrient: "Casein · Omega-3",
   },
 ];
 

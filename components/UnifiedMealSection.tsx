@@ -1,0 +1,355 @@
+"use client";
+
+// components/UnifiedMealSection.tsx
+// Single source of truth for meal recommendations on the Meals page.
+// Merges static engine-scored recipes (mealEngine) with phase Food items.
+// Tapping any card opens RecipePreviewModal — logging only happens from there.
+
+import { useMemo, useState } from "react";
+import { RECIPES } from "@/lib/recipes";
+import {
+  recommendMeals,
+  signalsFromDaily,
+  type ScoredMeal,
+} from "@/lib/mealEngine";
+import { logStaticRecipe, logFood, type MealType, type Food } from "@/lib/nutrition";
+import { RECIPE_DETAILS } from "@/lib/recipeDetails";
+import type { DailySignals } from "@/lib/sharedSignals";
+import type { Phase } from "@/lib/cycle";
+import RecipePreviewModal, { type RecipePreviewData } from "@/components/RecipePreviewModal";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type UnifiedFilter = "all" | "bowls" | "wraps" | "high_protein" | "iron_rich";
+
+type MealItem =
+  | { kind: "static"; scored: ScoredMeal }
+  | { kind: "food";   food: Food };
+
+// ── Filter config ─────────────────────────────────────────────────────────────
+
+const FILTERS: { id: UnifiedFilter; label: string }[] = [
+  { id: "all",          label: "All"          },
+  { id: "bowls",        label: "Bowls"        },
+  { id: "wraps",        label: "Wraps"        },
+  { id: "high_protein", label: "High Protein" },
+  { id: "iron_rich",    label: "Iron-rich"    },
+];
+
+// ── Phase accent colour ───────────────────────────────────────────────────────
+
+const PHASE_COLOR: Record<Phase, string> = {
+  menstrual:  "#F87171",
+  follicular: "#34D399",
+  ovulation:  "#FBBF24",
+  luteal:     "#A78BFA",
+};
+
+// ── Props ─────────────────────────────────────────────────────────────────────
+
+interface Props {
+  phase:         Phase;
+  dailySignals:  DailySignals | null;
+  macroTargets?: { calories: number; protein: number; carbs: number; fats: number };
+  cycleDay:      number;
+  phaseFoods:    Food[];
+  ironBoost?:    boolean;
+  onLogged?:     () => void;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function foodKcal(food: Food): number {
+  const g = food.servingSizeG ?? 100;
+  return Math.round(food.kcalPer100g * g / 100);
+}
+function foodProtein(food: Food): number {
+  const g = food.servingSizeG ?? 100;
+  return Math.round(food.proteinPer100g * g / 100);
+}
+function foodCarbs(food: Food): number {
+  const g = food.servingSizeG ?? 100;
+  return Math.round(food.carbsPer100g * g / 100);
+}
+function foodFats(food: Food): number {
+  const g = food.servingSizeG ?? 100;
+  return Math.round(food.fatsPer100g * g / 100);
+}
+
+function scoreMatchesFilter(scored: ScoredMeal, filter: UnifiedFilter, phase: Phase): boolean {
+  const { recipe } = scored;
+  if (filter === "all")          return true;
+  if (filter === "bowls")        return recipe.type === "bowl";
+  if (filter === "wraps")        return recipe.type === "wrap";
+  if (filter === "high_protein") return recipe.functional_tags.includes("high_protein");
+  if (filter === "iron_rich")    return recipe.functional_tags.includes("iron_rich") || phase === "menstrual";
+  return true;
+}
+
+function foodMatchesFilter(food: Food, filter: UnifiedFilter, phase: Phase): boolean {
+  if (filter === "all")          return true;
+  if (filter === "bowls")        return false;
+  if (filter === "wraps")        return false;
+  if (filter === "high_protein") return foodProtein(food) >= 20;
+  if (filter === "iron_rich")    return !!(food.keyNutrient?.toLowerCase().includes("iron")) || phase === "menstrual";
+  return true;
+}
+
+function buildPreviewFromStatic(scored: ScoredMeal): RecipePreviewData {
+  const { recipe } = scored;
+  return {
+    id:          recipe.id,
+    name:        recipe.name,
+    phaseReason: scored.reasons[0] ?? undefined,
+    ingredients: Object.entries(recipe.ingredients_grams).map(([item, g]) => `${item} (${g}g)`),
+    steps:       recipe.instructions,
+    kcal:        recipe.macros_per_serving.calories_kcal,
+    protein:     recipe.macros_per_serving.protein_g,
+    carbs:       recipe.macros_per_serving.carbs_g,
+    fats:        recipe.macros_per_serving.fat_g,
+    prepMin:     recipe.prep_time_min,
+    difficulty:  recipe.difficulty,
+    tags:        recipe.functional_tags,
+  };
+}
+
+function buildPreviewFromFood(food: Food): RecipePreviewData {
+  const detail = RECIPE_DETAILS[food.externalId ?? ""];
+  return {
+    id:          food.id,
+    name:        food.name,
+    phaseReason: detail?.phaseReason,
+    ingredients: detail?.ingredients ?? [],
+    steps:       detail?.steps ?? [],
+    kcal:        foodKcal(food),
+    protein:     foodProtein(food),
+    carbs:       foodCarbs(food),
+    fats:        foodFats(food),
+  };
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+export default function UnifiedMealSection({
+  phase,
+  dailySignals,
+  macroTargets,
+  cycleDay,
+  phaseFoods,
+  ironBoost,
+  onLogged,
+}: Props) {
+  const [activeFilter, setActiveFilter] = useState<UnifiedFilter>(
+    ironBoost ? "iron_rich" : "all"
+  );
+  const [previewItem, setPreviewItem] = useState<MealItem | null>(null);
+
+  const color = PHASE_COLOR[phase];
+
+  const mealSignals = useMemo(
+    () =>
+      signalsFromDaily(
+        dailySignals,
+        macroTargets
+          ? { calories_kcal: macroTargets.calories, protein_g: macroTargets.protein, carbs_g: macroTargets.carbs, fat_g: macroTargets.fats }
+          : undefined,
+      ),
+    [dailySignals, macroTargets],
+  );
+
+  const scoredStatic = useMemo((): ScoredMeal[] => {
+    return recommendMeals(RECIPES, mealSignals, 4);
+  }, [mealSignals]);
+
+  const items = useMemo((): MealItem[] => {
+    const staticItems: MealItem[] = scoredStatic
+      .filter(s => scoreMatchesFilter(s, activeFilter, phase))
+      .map(s => ({ kind: "static" as const, scored: s }));
+
+    const foodItems: MealItem[] = phaseFoods
+      .filter(f => foodMatchesFilter(f, activeFilter, phase))
+      .slice(0, 4)
+      .map(f => ({ kind: "food" as const, food: f }));
+
+    return [...staticItems, ...foodItems].slice(0, 8);
+  }, [scoredStatic, phaseFoods, activeFilter, phase]);
+
+  async function handleLogStatic(scored: ScoredMeal) {
+    await logStaticRecipe(
+      {
+        name:      scored.recipe.name,
+        calories:  scored.recipe.macros_per_serving.calories_kcal,
+        protein_g: scored.recipe.macros_per_serving.protein_g,
+        carbs_g:   scored.recipe.macros_per_serving.carbs_g,
+        fat_g:     scored.recipe.macros_per_serving.fat_g,
+      },
+      "snack" as MealType,
+      cycleDay,
+      phase,
+    );
+    onLogged?.();
+  }
+
+  async function handleLogFood(food: Food) {
+    await logFood(food.id, food.servingSizeG ?? 100, "snack" as MealType, cycleDay, phase);
+    onLogged?.();
+  }
+
+  return (
+    <>
+      {previewItem && (
+        <RecipePreviewModal
+          recipe={
+            previewItem.kind === "static"
+              ? buildPreviewFromStatic(previewItem.scored)
+              : buildPreviewFromFood(previewItem.food)
+          }
+          phaseColor={color}
+          onClose={() => setPreviewItem(null)}
+          onLog={async () => {
+            if (previewItem.kind === "static") {
+              await handleLogStatic(previewItem.scored);
+            } else {
+              await handleLogFood(previewItem.food);
+            }
+            setPreviewItem(null);
+          }}
+        />
+      )}
+
+      <div className="mb-4">
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display text-base font-semibold text-dark">
+            {ironBoost ? "🩸 Iron-boost meals" : "Recommended for you"}
+          </h2>
+          <span className="text-xs font-body" style={{ color: `${color}bb` }}>
+            Phase-scored
+          </span>
+        </div>
+
+        {/* Filter pills */}
+        <div
+          className="flex gap-1.5 pb-2 mb-3"
+          style={{ overflowX: "auto", scrollbarWidth: "none" }}
+        >
+          {FILTERS.map(f => {
+            const isActive = activeFilter === f.id;
+            return (
+              <button
+                key={f.id}
+                onClick={() => setActiveFilter(f.id)}
+                className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
+                style={
+                  isActive
+                    ? {
+                        background: "linear-gradient(135deg, #C96480, #A84468)",
+                        color: "white",
+                        boxShadow: "0 3px 10px rgba(169,68,104,0.30)",
+                      }
+                    : {
+                        background: "var(--color-ghost)",
+                        color: "var(--color-text-mid)",
+                        border: "1px solid var(--color-border)",
+                      }
+                }
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Meal cards */}
+        {items.length === 0 ? (
+          <div
+            className="rounded-2xl p-4 text-center text-sm text-dark/40 font-body"
+            style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+          >
+            No meals match this filter for the {phase} phase.
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {items.map((item, idx) => {
+              const isTop = idx === 0;
+              const name    = item.kind === "static" ? item.scored.recipe.name : item.food.name;
+              const kcal    = item.kind === "static" ? item.scored.recipe.macros_per_serving.calories_kcal : foodKcal(item.food);
+              const protein = item.kind === "static" ? item.scored.recipe.macros_per_serving.protein_g    : foodProtein(item.food);
+              const carbs   = item.kind === "static" ? item.scored.recipe.macros_per_serving.carbs_g      : foodCarbs(item.food);
+              const fats    = item.kind === "static" ? item.scored.recipe.macros_per_serving.fat_g        : foodFats(item.food);
+              const reason  = item.kind === "static"
+                ? (item.scored.reasons[0] ?? null)
+                : (RECIPE_DETAILS[item.food.externalId ?? ""]?.phaseReason?.split(".")[0] ?? item.food.keyNutrient ?? null);
+              const prepMin    = item.kind === "static" ? item.scored.recipe.prep_time_min : undefined;
+              const difficulty = item.kind === "static" ? item.scored.recipe.difficulty    : undefined;
+
+              return (
+                <button
+                  key={item.kind === "static" ? item.scored.recipe.id : item.food.id}
+                  onClick={() => setPreviewItem(item)}
+                  className="rounded-2xl overflow-hidden text-left transition-all active:scale-[0.98]"
+                  style={{
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    borderTop: isTop ? `3px solid ${color}` : "1px solid var(--color-border)",
+                    boxShadow: isTop ? `0 4px 16px ${color}22` : "none",
+                  }}
+                >
+                  {/* Name + reason */}
+                  <div className="px-4 pt-4 pb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-display font-semibold text-sm text-dark leading-snug flex-1">
+                        {name}
+                      </p>
+                      {isTop && (
+                        <span
+                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                          style={{ background: `${color}18`, color: `${color}cc` }}
+                        >
+                          Top pick
+                        </span>
+                      )}
+                    </div>
+                    {reason && (
+                      <p className="text-xs font-body mt-1 leading-snug" style={{ color: `${color}cc` }}>
+                        {reason}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Macro strip */}
+                  <div
+                    className="mx-4 mb-3 px-3 py-2 rounded-xl grid grid-cols-4"
+                    style={{ background: "var(--color-ghost)" }}
+                  >
+                    {[
+                      { label: "kcal",    value: `${kcal}`     },
+                      { label: "protein", value: `${protein}g` },
+                      { label: "carbs",   value: `${carbs}g`   },
+                      { label: "fat",     value: `${fats}g`    },
+                    ].map(m => (
+                      <div key={m.label} className="text-center">
+                        <p className="text-dark font-semibold text-xs">{m.value}</p>
+                        <p className="text-[var(--color-text-dim)] text-[10px] mt-0.5">{m.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-4 pb-3.5 flex items-center justify-between">
+                    <span className="text-xs font-body text-dark/30">
+                      {prepMin ? `${prepMin} min · ${difficulty}` : "Tap to see recipe"}
+                    </span>
+                    <span className="text-xs font-semibold" style={{ color }}>
+                      View recipe →
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
