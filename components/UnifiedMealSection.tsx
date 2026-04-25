@@ -7,6 +7,7 @@
 
 import { useMemo, useState } from "react";
 import { RECIPES } from "@/lib/recipes";
+import { FOOD_LIBRARY } from "@/lib/foods";
 import {
   recommendMeals,
   signalsFromDaily,
@@ -35,6 +36,32 @@ const FILTERS: { id: UnifiedFilter; label: string }[] = [
   { id: "high_protein", label: "High Protein" },
   { id: "iron_rich",    label: "Iron-rich"    },
 ];
+
+// ── Static food lookup (mealType + emoji by externalId) ───────────────────────
+
+const FOOD_BY_ID = new Map(FOOD_LIBRARY.map(f => [f.id, f]));
+
+// ── Meal type labels & emojis ─────────────────────────────────────────────────
+
+const MEAL_TYPE_ORDER: MealType[] = ["breakfast", "lunch", "dinner", "snack"];
+
+const MEAL_TYPE_LABEL: Record<MealType, string> = {
+  breakfast: "Breakfast",
+  lunch:     "Lunch",
+  dinner:    "Dinner",
+  snack:     "Snack",
+};
+
+const MEAL_TYPE_EMOJI: Record<MealType, string> = {
+  breakfast: "🌅",
+  lunch:     "🥗",
+  dinner:    "🍽️",
+  snack:     "🍎",
+};
+
+function recipeEmoji(type: "bowl" | "wrap"): string {
+  return type === "bowl" ? "🥣" : "🌯";
+}
 
 // ── Phase accent colour ───────────────────────────────────────────────────────
 
@@ -162,6 +189,16 @@ export default function UnifiedMealSection({
   }, [mealSignals]);
 
   const items = useMemo((): MealItem[] => {
+    if (activeFilter === "all") {
+      // One food per meal type, in order: breakfast, lunch, dinner, snack
+      // Look up mealType from FOOD_LIBRARY via externalId
+      return MEAL_TYPE_ORDER
+        .map(mt => phaseFoods.find(f => FOOD_BY_ID.get(f.externalId ?? "")?.mealType === mt))
+        .filter((f): f is Food => f !== undefined)
+        .map(f => ({ kind: "food" as const, food: f }));
+    }
+
+    // Filtered views: static recipes first, then foods, cap at 4
     const staticItems: MealItem[] = scoredStatic
       .filter(s => scoreMatchesFilter(s, activeFilter, phase))
       .map(s => ({ kind: "static" as const, scored: s }));
@@ -171,7 +208,7 @@ export default function UnifiedMealSection({
       .slice(0, 4)
       .map(f => ({ kind: "food" as const, food: f }));
 
-    return [...staticItems, ...foodItems].slice(0, 8);
+    return [...staticItems, ...foodItems].slice(0, 4);
   }, [scoredStatic, phaseFoods, activeFilter, phase]);
 
   async function handleLogStatic(scored: ScoredMeal) {
@@ -271,7 +308,7 @@ export default function UnifiedMealSection({
         ) : (
           <div className="flex flex-col gap-3">
             {items.map((item, idx) => {
-              const isTop = idx === 0;
+              const isTop = idx === 0 && activeFilter !== "all";
               const name    = item.kind === "static" ? item.scored.recipe.name : item.food.name;
               const kcal    = item.kind === "static" ? item.scored.recipe.macros_per_serving.calories_kcal : foodKcal(item.food);
               const protein = item.kind === "static" ? item.scored.recipe.macros_per_serving.protein_g    : foodProtein(item.food);
@@ -282,6 +319,13 @@ export default function UnifiedMealSection({
                 : (RECIPE_DETAILS[item.food.externalId ?? ""]?.phaseReason?.split(".")[0] ?? item.food.keyNutrient ?? null);
               const prepMin    = item.kind === "static" ? item.scored.recipe.prep_time_min : undefined;
               const difficulty = item.kind === "static" ? item.scored.recipe.difficulty    : undefined;
+              const staticFoodMeta = item.kind === "food" ? FOOD_BY_ID.get(item.food.externalId ?? "") : undefined;
+              const emoji      = item.kind === "static"
+                ? recipeEmoji(item.scored.recipe.type)
+                : (item.food.emoji ?? staticFoodMeta?.emoji ?? MEAL_TYPE_EMOJI[staticFoodMeta?.mealType ?? "snack"] ?? "🍽️");
+              const mealLabel  = item.kind === "food"
+                ? MEAL_TYPE_LABEL[staticFoodMeta?.mealType ?? "snack"]
+                : null;
 
               return (
                 <button
@@ -296,25 +340,42 @@ export default function UnifiedMealSection({
                   }}
                 >
                   {/* Name + reason */}
-                  <div className="px-4 pt-4 pb-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="font-display font-semibold text-sm text-dark leading-snug flex-1">
+                  <div className="px-4 pt-4 pb-2 flex gap-3 items-start">
+                    {/* Emoji badge */}
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                      style={{ background: `${color}15` }}
+                    >
+                      {emoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          {mealLabel && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider flex-shrink-0"
+                              style={{ color: `${color}99` }}>
+                              {mealLabel}
+                            </span>
+                          )}
+                          {isTop && (
+                            <span
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                              style={{ background: `${color}18`, color: `${color}cc` }}
+                            >
+                              Top pick
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="font-display font-semibold text-sm text-dark leading-snug mt-0.5">
                         {name}
                       </p>
-                      {isTop && (
-                        <span
-                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-                          style={{ background: `${color}18`, color: `${color}cc` }}
-                        >
-                          Top pick
-                        </span>
+                      {reason && (
+                        <p className="text-xs font-body mt-0.5 leading-snug" style={{ color: `${color}cc` }}>
+                          {reason}
+                        </p>
                       )}
                     </div>
-                    {reason && (
-                      <p className="text-xs font-body mt-1 leading-snug" style={{ color: `${color}cc` }}>
-                        {reason}
-                      </p>
-                    )}
                   </div>
 
                   {/* Macro strip */}
