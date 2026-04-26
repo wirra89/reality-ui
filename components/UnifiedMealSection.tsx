@@ -21,7 +21,7 @@ import RecipePreviewModal, { type RecipePreviewData } from "@/components/RecipeP
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type UnifiedFilter = "all" | "bowls" | "wraps" | "high_protein" | "iron_rich";
+type UnifiedFilter = "all" | "bowls" | "wraps" | "soups" | "breakfasts" | "snacks" | "salads" | "high_protein" | "iron_rich";
 
 type MealItem =
   | { kind: "static"; scored: ScoredMeal }
@@ -33,6 +33,10 @@ const FILTERS: { id: UnifiedFilter; label: string }[] = [
   { id: "all",          label: "All"          },
   { id: "bowls",        label: "Bowls"        },
   { id: "wraps",        label: "Wraps"        },
+  { id: "soups",        label: "Soups"        },
+  { id: "breakfasts",   label: "Breakfast"    },
+  { id: "salads",       label: "Salads"       },
+  { id: "snacks",       label: "Snacks"       },
   { id: "high_protein", label: "High Protein" },
   { id: "iron_rich",    label: "Iron-rich"    },
 ];
@@ -59,8 +63,16 @@ const MEAL_TYPE_EMOJI: Record<MealType, string> = {
   snack:     "🍎",
 };
 
-function recipeEmoji(type: "bowl" | "wrap"): string {
-  return type === "bowl" ? "🥣" : "🌯";
+function recipeEmoji(type: string): string {
+  switch (type) {
+    case "bowl":      return "🥣";
+    case "wrap":      return "🌯";
+    case "soup":      return "🍲";
+    case "breakfast": return "🌅";
+    case "snack":     return "🍎";
+    case "salad":     return "🥗";
+    default:          return "🍽️";
+  }
 }
 
 // ── Phase accent colour ───────────────────────────────────────────────────────
@@ -103,20 +115,28 @@ function foodFats(food: Food): number {
   return Math.round(food.fatsPer100g * g / 100);
 }
 
-function scoreMatchesFilter(scored: ScoredMeal, filter: UnifiedFilter, phase: Phase): boolean {
+function scoreMatchesFilter(scored: ScoredMeal, filter: UnifiedFilter): boolean {
   const { recipe } = scored;
   if (filter === "all")          return true;
   if (filter === "bowls")        return recipe.type === "bowl";
   if (filter === "wraps")        return recipe.type === "wrap";
+  if (filter === "soups")        return recipe.type === "soup";
+  if (filter === "breakfasts")   return recipe.type === "breakfast";
+  if (filter === "salads")       return recipe.type === "salad";
+  if (filter === "snacks")       return recipe.type === "snack";
   if (filter === "high_protein") return recipe.functional_tags.includes("high_protein");
-  if (filter === "iron_rich")    return recipe.functional_tags.includes("iron_rich") || phase === "menstrual";
+  if (filter === "iron_rich")    return recipe.functional_tags.includes("iron_rich");
   return true;
 }
 
-function foodMatchesFilter(food: Food, filter: UnifiedFilter, phase: Phase): boolean {
+function foodMatchesFilter(food: Food, filter: UnifiedFilter): boolean {
   if (filter === "all")          return true;
   if (filter === "bowls")        return false;
   if (filter === "wraps")        return false;
+  if (filter === "soups")        return false;
+  if (filter === "breakfasts")   return false;
+  if (filter === "salads")       return false;
+  if (filter === "snacks")       return false;
   if (filter === "high_protein") return foodProtein(food) >= 20;
   if (filter === "iron_rich")    return !!(food.keyNutrient?.toLowerCase().includes("iron"));
   return true;
@@ -204,11 +224,11 @@ export default function UnifiedMealSection({
 
     // Filtered views: static recipes first, then foods, cap at 4
     const staticItems: MealItem[] = scoredStatic
-      .filter(s => scoreMatchesFilter(s, activeFilter, phase))
+      .filter(s => scoreMatchesFilter(s, activeFilter))
       .map(s => ({ kind: "static" as const, scored: s }));
 
     const foodItems: MealItem[] = phaseFoods
-      .filter(f => foodMatchesFilter(f, activeFilter, phase))
+      .filter(f => foodMatchesFilter(f, activeFilter))
       .slice(0, 4)
       .map(f => ({ kind: "food" as const, food: f }));
 
@@ -341,7 +361,7 @@ export default function UnifiedMealSection({
               const difficulty = item.kind === "static" ? item.scored.recipe.difficulty    : undefined;
               const staticFoodMeta = item.kind === "food" ? FOOD_BY_ID.get(item.food.externalId ?? "") : undefined;
               const emoji      = item.kind === "static"
-                ? recipeEmoji(item.scored.recipe.type)
+                ? recipeEmoji(item.scored.recipe.type as string)
                 : (item.food.emoji ?? staticFoodMeta?.emoji ?? MEAL_TYPE_EMOJI[staticFoodMeta?.mealType ?? "snack"] ?? "🍽️");
               const mealLabel  = item.kind === "food"
                 ? MEAL_TYPE_LABEL[staticFoodMeta?.mealType ?? "snack"]

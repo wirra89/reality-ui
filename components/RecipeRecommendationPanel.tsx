@@ -56,9 +56,13 @@ const PHASE_COLOR: Record<Phase, string> = {
 
 // ── Type badge colors ─────────────────────────────────────────────────────────
 
-const TYPE_STYLE = {
-  bowl: { bg: "rgba(59,130,246,0.10)", color: "#3B82F6" },
-  wrap: { bg: "rgba(16,185,129,0.10)", color: "#10B981" },
+const TYPE_STYLE: Record<string, { bg: string; color: string }> = {
+  bowl:      { bg: "rgba(59,130,246,0.10)",  color: "#3B82F6" },
+  wrap:      { bg: "rgba(16,185,129,0.10)",  color: "#10B981" },
+  soup:      { bg: "rgba(251,146,60,0.10)",  color: "#F97316" },
+  breakfast: { bg: "rgba(250,204,21,0.10)",  color: "#EAB308" },
+  snack:     { bg: "rgba(244,114,182,0.10)", color: "#EC4899" },
+  salad:     { bg: "rgba(52,211,153,0.10)",  color: "#34D399" },
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────

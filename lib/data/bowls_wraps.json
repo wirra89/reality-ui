@@ -39,6 +39,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -156,6 +157,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -270,6 +272,7 @@
       "follicular"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -393,6 +396,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -511,6 +515,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -630,6 +635,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -746,6 +752,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -860,6 +867,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -974,6 +982,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -1089,6 +1098,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -1204,6 +1214,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -1320,6 +1331,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -1555,6 +1567,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -1787,6 +1800,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -1904,6 +1918,7 @@
       "menstrual"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2027,6 +2042,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2140,6 +2156,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2250,6 +2267,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2488,6 +2506,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2611,6 +2630,8 @@
       "ovulatory"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2725,6 +2746,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2840,6 +2862,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -2955,6 +2978,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3063,6 +3087,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3177,6 +3202,8 @@
       "all"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3286,6 +3313,8 @@
       "all"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3393,6 +3422,7 @@
       "menstrual"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3509,6 +3539,7 @@
       "menstrual"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3746,6 +3777,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3864,6 +3896,7 @@
       "follicular"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -3982,6 +4015,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4097,6 +4131,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4212,6 +4247,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4324,6 +4360,7 @@
       "menstrual"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4443,6 +4480,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4552,6 +4590,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4667,6 +4706,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4782,6 +4822,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -4895,6 +4936,7 @@
       "follicular"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5011,6 +5053,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5123,6 +5166,7 @@
       "follicular"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5240,6 +5284,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5356,6 +5401,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5468,6 +5514,7 @@
       "menstrual"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5586,6 +5633,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5702,6 +5750,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -5928,6 +5977,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6043,6 +6093,7 @@
       "menstrual"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6157,6 +6208,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6393,6 +6445,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6508,6 +6561,8 @@
       "ovulatory"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6619,6 +6674,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6736,6 +6792,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6856,6 +6913,8 @@
       "ovulatory"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -6971,6 +7030,7 @@
       "follicular"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -7087,6 +7147,8 @@
       "all"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -7194,8 +7256,9 @@
       "menstrual"
     ],
     "goal_support": [
-      "recomp",
-      "muscle_gain"
+      "fat_loss",
+      "maintenance",
+      "recomp"
     ],
     "meal_role": "main",
     "app_notes": "High-protein wrap; scalable for recomp macros. Adjust rice/tortilla/oil to fit daily targets.",
@@ -7307,6 +7370,8 @@
       "menstrual"
     ],
     "goal_support": [
+      "fat_loss",
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -7427,8 +7492,9 @@
       "menstrual"
     ],
     "goal_support": [
-      "recomp",
-      "muscle_gain"
+      "fat_loss",
+      "maintenance",
+      "recomp"
     ],
     "meal_role": "main",
     "app_notes": "High-protein wrap; scalable for recomp macros. Adjust rice/tortilla/oil to fit daily targets.",
@@ -7541,8 +7607,8 @@
       "menstrual"
     ],
     "goal_support": [
-      "recomp",
-      "muscle_gain"
+      "fat_loss",
+      "recomp"
     ],
     "meal_role": "main",
     "app_notes": "High-protein wrap; scalable for recomp macros. Adjust rice/tortilla/oil to fit daily targets.",
@@ -7658,6 +7724,7 @@
       "all"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -7775,6 +7842,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -7888,6 +7956,7 @@
       "ovulatory"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],
@@ -8002,6 +8071,7 @@
       "luteal"
     ],
     "goal_support": [
+      "maintenance",
       "recomp",
       "muscle_gain"
     ],

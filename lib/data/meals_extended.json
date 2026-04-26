@@ -1,0 +1,3188 @@
+[
+  {
+    "id": "SP001",
+    "name": "Red Lentil Spinach Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "lentils",
+    "ingredients_grams": {
+      "red lentils": 140,
+      "baby spinach": 80,
+      "diced tomatoes": 100,
+      "onion": 70,
+      "garlic": 5,
+      "olive oil": 8,
+      "cumin": 3,
+      "turmeric": 2,
+      "vegetable broth": 400
+    },
+    "instructions": [
+      "Rinse lentils and chop onion and garlic.",
+      "Heat olive oil and sauté onion and garlic for 2-3 minutes.",
+      "Add lentils, tomatoes, spices, and broth; simmer 20 minutes until lentils are soft.",
+      "Stir in spinach, season, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 376,
+      "protein_g": 24,
+      "carbs_g": 52,
+      "fat_g": 8
+    },
+    "tags": [
+      "iron_rich",
+      "plant_based",
+      "warming",
+      "high_carb"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Iron-rich plant-protein soup ideal for early cycle phases. Turmeric provides anti-inflammatory support.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "moderate",
+      "carb_level": "high",
+      "fat_level": "low"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "iron_rich",
+      "plant_protein",
+      "warming",
+      "light_digestion",
+      "high_carb",
+      "fiber_rich",
+      "anti_inflammatory",
+      "meal_prep"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day",
+      "dinner"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "fatigue_support",
+      "low_energy",
+      "bloating_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["red lentils"],
+        "carbs": ["red lentils", "diced tomatoes"],
+        "fat": ["olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase or reduce lentils by 20-40g to adjust protein and carbs together.",
+        "Increase or reduce olive oil by 3-8g to change fats.",
+        "Add 50g cooked chickpeas to boost protein by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP002",
+    "name": "Chicken Vegetable Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "chicken",
+    "ingredients_grams": {
+      "chicken breast": 200,
+      "carrots": 80,
+      "celery": 80,
+      "zucchini": 80,
+      "potato": 80,
+      "onion": 60,
+      "garlic": 5,
+      "olive oil": 8,
+      "chicken broth": 400,
+      "mixed herbs": 3
+    },
+    "instructions": [
+      "Dice chicken and chop all vegetables into bite-sized pieces.",
+      "Heat olive oil and sauté onion and garlic for 2 minutes.",
+      "Add chicken and cook through, then add vegetables, broth, and herbs.",
+      "Simmer 20 minutes, season, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 406,
+      "protein_g": 45,
+      "carbs_g": 34,
+      "fat_g": 10
+    },
+    "tags": [
+      "high_protein",
+      "light",
+      "clean_eating",
+      "meal_prep"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "High-protein lean soup perfect for follicular phase energy. Light on fat, easy to digest.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "high_protein",
+      "light_digestion",
+      "meal_prep",
+      "low_fat",
+      "lean_protein",
+      "clean_eating",
+      "weeknight_fast"
+    ],
+    "best_timing": [
+      "post_workout",
+      "anytime",
+      "dinner"
+    ],
+    "symptom_support": [
+      "low_energy",
+      "protein_appetite_support",
+      "training_fuel",
+      "satiety_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chicken breast"],
+        "carbs": ["potato", "carrots"],
+        "fat": ["olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase or reduce chicken breast by 50-80g to adjust protein.",
+        "Swap or remove potato to lower carbs by ~15g.",
+        "Increase olive oil by 5-10g to add moderate fat."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP003",
+    "name": "Miso Salmon Noodle Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "salmon",
+    "ingredients_grams": {
+      "salmon fillet": 150,
+      "soba noodles dry": 70,
+      "miso paste": 20,
+      "baby spinach": 60,
+      "shiitake mushrooms": 80,
+      "soy sauce": 10,
+      "sesame oil": 5,
+      "green onions": 15,
+      "ginger": 5
+    },
+    "instructions": [
+      "Cook soba noodles per packet, drain and set aside.",
+      "Dissolve miso paste in warm broth; poach salmon in the broth 8-10 minutes.",
+      "Add mushrooms, spinach, soy sauce, and ginger; simmer 3 minutes.",
+      "Plate noodles, ladle broth and salmon over, garnish, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 478,
+      "protein_g": 36,
+      "carbs_g": 52,
+      "fat_g": 14
+    },
+    "tags": [
+      "omega3",
+      "hormone_support",
+      "warming",
+      "japanese"
+    ],
+    "phase_support": [
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Omega-3 rich soup for luteal phase mood and hormone support. Miso provides gut-friendly probiotics.",
+    "version": "meal-engine-v1",
+    "cuisine": "japanese",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "high",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "omega3_rich",
+      "hormone_support",
+      "warming",
+      "moderate_fat",
+      "high_protein",
+      "japanese",
+      "gut_health"
+    ],
+    "best_timing": [
+      "dinner",
+      "anytime"
+    ],
+    "symptom_support": [
+      "mood_support",
+      "hormone_support",
+      "low_energy",
+      "pms_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["salmon fillet"],
+        "carbs": ["soba noodles dry"],
+        "fat": ["sesame oil", "salmon fillet"]
+      },
+      "macro_adjustment_rules": [
+        "Increase or reduce salmon by 30-50g to adjust protein and fat together.",
+        "Swap soba noodles for rice noodles to lower protein or adjust carbs.",
+        "Add or remove sesame oil by 3-5g to fine-tune fats."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP004",
+    "name": "Chickpea & Kale Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "chickpeas cooked": 200,
+      "kale": 100,
+      "diced tomatoes": 100,
+      "onion": 70,
+      "garlic": 5,
+      "olive oil": 10,
+      "lemon juice": 15,
+      "cumin": 3,
+      "vegetable broth": 400
+    },
+    "instructions": [
+      "Chop kale and dice onion and garlic.",
+      "Heat olive oil and sauté onion and garlic for 2-3 minutes.",
+      "Add chickpeas, tomatoes, kale, cumin, and broth; simmer 15 minutes.",
+      "Finish with lemon juice, season, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 420,
+      "protein_g": 20,
+      "carbs_g": 58,
+      "fat_g": 12
+    },
+    "tags": [
+      "plant_based",
+      "iron_rich",
+      "fiber_rich",
+      "anti_inflammatory"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Iron and fibre powerhouse for menstrual phase support. Lemon juice boosts iron absorption.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "moderate",
+      "carb_level": "high",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "plant_protein",
+      "iron_rich",
+      "fiber_rich",
+      "anti_inflammatory",
+      "mediterranean",
+      "meal_prep",
+      "warming"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day",
+      "dinner"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "anti_cramp",
+      "bloating_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chickpeas cooked"],
+        "carbs": ["chickpeas cooked", "diced tomatoes"],
+        "fat": ["olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Add or reduce chickpeas by 40-60g to adjust protein and carbs together.",
+        "Increase olive oil by 5g to add approximately 5g fat.",
+        "Swap kale for spinach for a lighter digestion variant."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP005",
+    "name": "Beef & Barley Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 35,
+    "difficulty": "easy",
+    "protein_source": "beef",
+    "ingredients_grams": {
+      "lean beef chunks": 180,
+      "pearl barley dry": 55,
+      "carrots": 80,
+      "celery": 80,
+      "onion": 60,
+      "tomato paste": 20,
+      "beef broth": 400,
+      "olive oil": 8,
+      "thyme": 2,
+      "garlic": 5
+    },
+    "instructions": [
+      "Brown beef chunks in olive oil for 3-4 minutes; set aside.",
+      "Sauté onion and garlic, then add tomato paste and cook 1 minute.",
+      "Return beef, add barley, vegetables, broth, and thyme; simmer 30 minutes.",
+      "Season, serve hot, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 488,
+      "protein_g": 42,
+      "carbs_g": 44,
+      "fat_g": 16
+    },
+    "tags": [
+      "iron_rich",
+      "high_protein",
+      "comfort_food",
+      "warming"
+    ],
+    "phase_support": [
+      "luteal",
+      "menstrual"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Hearty iron and protein-dense soup for menstrual or heavy luteal days. Batch well — tastes better next day.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "heavy",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "moderate"
+    },
+    "functional_tags": [
+      "soup",
+      "iron_rich",
+      "high_protein",
+      "comfort_food",
+      "warming",
+      "hearty",
+      "meal_prep",
+      "heavy_digestion"
+    ],
+    "best_timing": [
+      "dinner",
+      "rest_day"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "low_energy",
+      "fatigue_support",
+      "pms_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["lean beef chunks"],
+        "carbs": ["pearl barley dry", "carrots"],
+        "fat": ["lean beef chunks", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase or reduce beef by 30-60g to adjust protein and fat.",
+        "Swap barley for quinoa or remove to reduce carbs by ~20g.",
+        "Reduce olive oil to 4g to lower fat by approximately 4g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP006",
+    "name": "Thai Coconut Chicken Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "chicken",
+    "ingredients_grams": {
+      "chicken breast": 150,
+      "coconut milk": 60,
+      "rice noodles dry": 50,
+      "bok choy": 80,
+      "shiitake mushrooms": 80,
+      "lemongrass": 5,
+      "ginger": 8,
+      "lime juice": 15,
+      "fish sauce": 5,
+      "chicken broth": 300
+    },
+    "instructions": [
+      "Soak rice noodles in hot water per packet instructions, drain.",
+      "Simmer broth with lemongrass and ginger for 5 minutes.",
+      "Add chicken, coconut milk, mushrooms, bok choy, and fish sauce; cook 10 minutes.",
+      "Serve over noodles, finish with lime juice, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 466,
+      "protein_g": 38,
+      "carbs_g": 38,
+      "fat_g": 18
+    },
+    "tags": [
+      "hormone_support",
+      "asian",
+      "warming",
+      "omega_fat"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Hormone-supportive MCT fats from coconut milk. Lemongrass and ginger add anti-inflammatory benefits.",
+    "version": "meal-engine-v1",
+    "cuisine": "thai",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "hormone_support",
+      "asian",
+      "warming",
+      "high_protein",
+      "coconut_fat",
+      "anti_inflammatory"
+    ],
+    "best_timing": [
+      "dinner",
+      "anytime"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "low_energy",
+      "mood_support",
+      "training_fuel"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chicken breast"],
+        "carbs": ["rice noodles dry"],
+        "fat": ["coconut milk"]
+      },
+      "macro_adjustment_rules": [
+        "Increase chicken by 40-60g to boost protein by ~10g.",
+        "Reduce or remove rice noodles to lower carbs by ~35g.",
+        "Adjust coconut milk by 20-30ml to change fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP007",
+    "name": "Pumpkin Turkey Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "turkey",
+    "ingredients_grams": {
+      "ground turkey": 150,
+      "pumpkin puree": 200,
+      "coconut milk": 50,
+      "onion": 70,
+      "garlic": 5,
+      "olive oil": 8,
+      "sage": 2,
+      "nutmeg": 1,
+      "vegetable broth": 300
+    },
+    "instructions": [
+      "Brown ground turkey in olive oil, breaking it apart, for 5 minutes.",
+      "Add onion and garlic and cook 2 minutes.",
+      "Stir in pumpkin puree, coconut milk, broth, sage, and nutmeg; simmer 15 minutes.",
+      "Blend partially if desired, season, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 374,
+      "protein_g": 32,
+      "carbs_g": 30,
+      "fat_g": 14
+    },
+    "tags": [
+      "hormone_support",
+      "comfort_food",
+      "warming",
+      "anti_inflammatory"
+    ],
+    "phase_support": [
+      "luteal",
+      "menstrual"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Comforting luteal-phase soup. Pumpkin provides beta-carotene; turkey supports progesterone balance.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "high",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "warming",
+      "comfort_food",
+      "hormone_support",
+      "anti_inflammatory",
+      "light_digestion",
+      "meal_prep"
+    ],
+    "best_timing": [
+      "dinner",
+      "rest_day",
+      "anytime"
+    ],
+    "symptom_support": [
+      "mood_support",
+      "pms_support",
+      "low_energy",
+      "hormone_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["ground turkey"],
+        "carbs": ["pumpkin puree"],
+        "fat": ["coconut milk", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase ground turkey by 30-50g to boost protein by ~8g.",
+        "Add or reduce pumpkin puree by 50g to adjust carbs by ~5g.",
+        "Swap coconut milk for broth to lower fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SP008",
+    "name": "White Bean & Tuna Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "tuna",
+    "ingredients_grams": {
+      "canned tuna in water": 130,
+      "white beans cooked": 150,
+      "baby spinach": 80,
+      "diced tomatoes": 100,
+      "onion": 60,
+      "olive oil": 8,
+      "vegetable broth": 350,
+      "garlic": 5,
+      "lemon juice": 10
+    },
+    "instructions": [
+      "Drain tuna and rinse white beans.",
+      "Sauté onion and garlic in olive oil for 2 minutes.",
+      "Add beans, tomatoes, broth, and tuna; simmer 10 minutes.",
+      "Stir in spinach, finish with lemon juice, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 421,
+      "protein_g": 45,
+      "carbs_g": 40,
+      "fat_g": 9
+    },
+    "tags": [
+      "high_protein",
+      "iron_rich",
+      "quick",
+      "mediterranean"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular",
+      "ovulation",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "All-phase high-protein soup that's fast and macro-friendly. White beans provide resistant starch and iron.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "low"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "soup",
+      "high_protein",
+      "iron_rich",
+      "plant_protein",
+      "omega3",
+      "mediterranean",
+      "light_digestion",
+      "weeknight_fast",
+      "meal_prep"
+    ],
+    "best_timing": [
+      "post_workout",
+      "anytime",
+      "dinner"
+    ],
+    "symptom_support": [
+      "protein_appetite_support",
+      "iron_support",
+      "low_energy",
+      "satiety_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["canned tuna in water", "white beans cooked"],
+        "carbs": ["white beans cooked", "diced tomatoes"],
+        "fat": ["olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase tuna by 30-50g to boost protein by ~8g.",
+        "Add or reduce white beans by 50g to adjust carbs and protein.",
+        "Increase olive oil by 5g to add approximately 5g fat."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF001",
+    "name": "Greek Yogurt Protein Bowl",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "full-fat Greek yogurt": 200,
+      "vanilla protein powder": 20,
+      "banana": 80,
+      "mixed berries": 80,
+      "low-sugar granola": 30,
+      "honey": 10,
+      "chia seeds": 5
+    },
+    "instructions": [
+      "Stir protein powder into Greek yogurt until smooth.",
+      "Slice banana and measure berries.",
+      "Layer yogurt base with fruit and granola.",
+      "Drizzle honey, add chia seeds, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 432,
+      "protein_g": 38,
+      "carbs_g": 52,
+      "fat_g": 8
+    },
+    "tags": [
+      "high_protein",
+      "quick",
+      "no_cook",
+      "gut_health"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "Quick high-protein breakfast ideal for follicular energy surge. Berries support oestrogen metabolism.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "high",
+      "fat_level": "low"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "high_protein",
+      "no_cook",
+      "quick_prep",
+      "gut_health",
+      "high_carb",
+      "weeknight_fast",
+      "pre_workout"
+    ],
+    "best_timing": [
+      "pre_workout",
+      "anytime"
+    ],
+    "symptom_support": [
+      "low_energy",
+      "training_fuel",
+      "protein_appetite_support",
+      "satiety_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["full-fat Greek yogurt", "vanilla protein powder"],
+        "carbs": ["banana", "mixed berries", "low-sugar granola"],
+        "fat": ["full-fat Greek yogurt"]
+      },
+      "macro_adjustment_rules": [
+        "Add 10g protein powder to boost protein by ~8g.",
+        "Reduce granola by 15g to lower carbs by ~10g.",
+        "Swap full-fat yogurt for low-fat to reduce fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF002",
+    "name": "Smoked Salmon Scramble",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "eggs and salmon",
+    "ingredients_grams": {
+      "eggs": 150,
+      "smoked salmon": 80,
+      "baby spinach": 50,
+      "cream cheese": 15,
+      "olive oil": 5,
+      "capers": 10,
+      "red onion": 20
+    },
+    "instructions": [
+      "Whisk eggs and season with black pepper.",
+      "Heat olive oil over medium-low heat and cook eggs slowly, stirring gently.",
+      "Fold in cream cheese, smoked salmon, and spinach in the last minute.",
+      "Plate with capers and red onion; log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 394,
+      "protein_g": 34,
+      "carbs_g": 6,
+      "fat_g": 26
+    },
+    "tags": [
+      "omega3",
+      "hormone_support",
+      "low_carb",
+      "high_fat"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "Omega-3 and choline-rich breakfast for early cycle phases. High fat supports hormone production.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "high",
+      "carb_level": "low",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "omega3_rich",
+      "hormone_support",
+      "low_carb",
+      "high_fat",
+      "high_protein"
+    ],
+    "best_timing": [
+      "anytime",
+      "low_carb_day"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "mood_support",
+      "iron_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["eggs", "smoked salmon"],
+        "carbs": ["red onion"],
+        "fat": ["eggs", "cream cheese", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Add one egg (~50g) to increase protein by ~6g and fat by ~5g.",
+        "Increase smoked salmon by 30g to boost protein by ~7g.",
+        "Omit cream cheese to reduce fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF003",
+    "name": "Protein Pancakes",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "eggs and protein powder",
+    "ingredients_grams": {
+      "oats": 60,
+      "vanilla protein powder": 30,
+      "eggs": 100,
+      "banana": 80,
+      "Greek yogurt": 80,
+      "baking powder": 3,
+      "coconut oil": 8,
+      "berries for topping": 50
+    },
+    "instructions": [
+      "Blend oats, protein powder, eggs, banana, yogurt, and baking powder into a batter.",
+      "Heat coconut oil in a non-stick pan over medium heat.",
+      "Pour small rounds of batter and cook 2 minutes per side.",
+      "Top with berries and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 498,
+      "protein_g": 42,
+      "carbs_g": 60,
+      "fat_g": 10
+    },
+    "tags": [
+      "high_protein",
+      "pre_workout",
+      "meal_prep",
+      "macro_friendly"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "High-carb, high-protein pre-workout breakfast for follicular and ovulatory energy peaks.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "high",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "high_protein",
+      "high_carb",
+      "pre_workout",
+      "meal_prep",
+      "macro_friendly"
+    ],
+    "best_timing": [
+      "pre_workout",
+      "anytime"
+    ],
+    "symptom_support": [
+      "training_fuel",
+      "low_energy",
+      "protein_appetite_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["vanilla protein powder", "eggs"],
+        "carbs": ["oats", "banana"],
+        "fat": ["coconut oil", "eggs"]
+      },
+      "macro_adjustment_rules": [
+        "Add 10g protein powder to increase protein by ~8g.",
+        "Reduce oats by 20g to lower carbs by ~13g.",
+        "Replace coconut oil with cooking spray to reduce fat by ~7g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF004",
+    "name": "Spinach Feta Omelette",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "eggs": 200,
+      "baby spinach": 60,
+      "feta cheese": 40,
+      "cherry tomatoes": 60,
+      "olive oil": 8,
+      "red onion": 30,
+      "dried oregano": 2
+    },
+    "instructions": [
+      "Whisk eggs and season with salt and oregano.",
+      "Heat olive oil and sauté red onion 2 minutes; add spinach and wilt.",
+      "Pour in eggs and cook until nearly set, then add feta and tomatoes to one half.",
+      "Fold omelette, plate, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 412,
+      "protein_g": 28,
+      "carbs_g": 12,
+      "fat_g": 28
+    },
+    "tags": [
+      "hormone_support",
+      "low_carb",
+      "iron_rich",
+      "mediterranean"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular",
+      "ovulation",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "Versatile all-phase omelette. Feta provides calcium for PMS relief; eggs supply choline for hormone synthesis.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "high",
+      "carb_level": "low",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "hormone_support",
+      "low_carb",
+      "iron_rich",
+      "mediterranean",
+      "high_fat",
+      "high_protein"
+    ],
+    "best_timing": [
+      "anytime",
+      "low_carb_day"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "pms_support",
+      "iron_support",
+      "mood_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["eggs", "feta cheese"],
+        "carbs": ["cherry tomatoes"],
+        "fat": ["eggs", "feta cheese", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Add one egg (~50g) to increase protein by ~6g and fat by ~5g.",
+        "Reduce feta to 20g to lower fat and sodium.",
+        "Add 30g cooked quinoa to increase carbs by ~7g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF005",
+    "name": "Chia Berry Pudding",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "chia seeds": 35,
+      "almond milk unsweetened": 200,
+      "Greek yogurt": 100,
+      "mixed berries": 100,
+      "honey": 10,
+      "vanilla extract": 2,
+      "flaxseed": 10
+    },
+    "instructions": [
+      "Mix chia seeds, almond milk, vanilla, and honey; refrigerate overnight.",
+      "In the morning, stir in Greek yogurt until combined.",
+      "Top with mixed berries and flaxseed.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 408,
+      "protein_g": 18,
+      "carbs_g": 48,
+      "fat_g": 16
+    },
+    "tags": [
+      "omega3",
+      "hormone_support",
+      "gut_health",
+      "no_cook"
+    ],
+    "phase_support": [
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "Prep the night before for an effortless luteal-phase breakfast. Flaxseed supports oestrogen metabolism.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "moderate",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "omega3_rich",
+      "hormone_support",
+      "gut_health",
+      "no_cook",
+      "meal_prep",
+      "fiber_rich",
+      "anti_inflammatory"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "bloating_support",
+      "pms_support",
+      "mood_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["Greek yogurt"],
+        "carbs": ["mixed berries", "honey"],
+        "fat": ["chia seeds", "flaxseed"]
+      },
+      "macro_adjustment_rules": [
+        "Increase Greek yogurt by 50g to boost protein by ~5g.",
+        "Reduce honey to 5g or omit to lower carbs by ~5g.",
+        "Increase chia seeds by 5g to add approximately 2.5g fat and 1g protein."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF006",
+    "name": "Avocado Egg Toast",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "sourdough bread": 90,
+      "eggs": 100,
+      "avocado": 80,
+      "cherry tomatoes": 60,
+      "red onion": 20,
+      "lemon juice": 10,
+      "olive oil": 5,
+      "chilli flakes": 1
+    },
+    "instructions": [
+      "Toast sourdough bread slices.",
+      "Fry or poach eggs to your preference in olive oil.",
+      "Mash avocado with lemon juice, salt, and chilli flakes.",
+      "Spread avocado on toast, top with eggs and tomatoes, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 454,
+      "protein_g": 26,
+      "carbs_g": 38,
+      "fat_g": 22
+    },
+    "tags": [
+      "hormone_support",
+      "healthy_fat",
+      "quick",
+      "macro_friendly"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "Classic nutrient-dense breakfast. Avocado provides monounsaturated fats that support oestrogen phase hormones.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "high",
+      "carb_level": "moderate",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "hormone_support",
+      "healthy_fat",
+      "high_fat",
+      "quick_prep",
+      "macro_friendly"
+    ],
+    "best_timing": [
+      "pre_workout",
+      "anytime"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "low_energy",
+      "satiety_support",
+      "training_fuel"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["eggs"],
+        "carbs": ["sourdough bread"],
+        "fat": ["avocado", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Add one egg to increase protein by ~6g and fat by ~5g.",
+        "Add one more slice of bread (~45g) to increase carbs by ~20g.",
+        "Reduce avocado by 30g to lower fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF007",
+    "name": "Quinoa Berry Breakfast Bowl",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "quinoa",
+    "ingredients_grams": {
+      "cooked quinoa": 200,
+      "mixed berries": 100,
+      "almond milk": 80,
+      "almond butter": 20,
+      "honey": 10,
+      "pumpkin seeds": 15,
+      "cinnamon": 2
+    },
+    "instructions": [
+      "Warm cooked quinoa with almond milk and cinnamon for 2-3 minutes.",
+      "Stir in honey and almond butter until combined.",
+      "Top with mixed berries and pumpkin seeds.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 476,
+      "protein_g": 20,
+      "carbs_g": 72,
+      "fat_g": 12
+    },
+    "tags": [
+      "plant_based",
+      "iron_rich",
+      "high_carb",
+      "menstrual_support"
+    ],
+    "phase_support": [
+      "menstrual",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "Magnesium-rich breakfast for menstrual and luteal phases. Pumpkin seeds and quinoa support iron and zinc intake.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "moderate",
+      "carb_level": "very_high",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "plant_protein",
+      "iron_rich",
+      "high_carb",
+      "anti_inflammatory",
+      "menstrual_support",
+      "meal_prep",
+      "quick_prep"
+    ],
+    "best_timing": [
+      "pre_workout",
+      "anytime"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "fatigue_support",
+      "mood_support",
+      "pms_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["cooked quinoa", "pumpkin seeds"],
+        "carbs": ["cooked quinoa", "mixed berries"],
+        "fat": ["almond butter"]
+      },
+      "macro_adjustment_rules": [
+        "Increase quinoa by 50g to add approximately 4g protein and 14g carbs.",
+        "Reduce or remove honey to lower carbs by ~8g.",
+        "Increase almond butter by 10g to add approximately 5g fat."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "BF008",
+    "name": "Cottage Cheese Fruit Bowl",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "cottage cheese",
+    "ingredients_grams": {
+      "low-fat cottage cheese": 200,
+      "pineapple chunks": 80,
+      "mixed berries": 60,
+      "walnuts": 20,
+      "honey": 8,
+      "flaxseed": 8
+    },
+    "instructions": [
+      "Scoop cottage cheese into a bowl.",
+      "Add pineapple, berries, and walnuts.",
+      "Drizzle with honey and sprinkle flaxseed.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 368,
+      "protein_g": 32,
+      "carbs_g": 42,
+      "fat_g": 8
+    },
+    "tags": [
+      "high_protein",
+      "no_cook",
+      "quick",
+      "gut_health"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular",
+      "ovulation",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "breakfast",
+    "app_notes": "All-phase light and easy high-protein breakfast. Cottage cheese is rich in casein, which supports overnight muscle repair.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "high",
+      "carb_level": "moderate",
+      "fat_level": "low"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "breakfast",
+      "high_protein",
+      "no_cook",
+      "quick_prep",
+      "gut_health",
+      "light_digestion",
+      "weeknight_fast"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day"
+    ],
+    "symptom_support": [
+      "protein_appetite_support",
+      "satiety_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["low-fat cottage cheese"],
+        "carbs": ["pineapple chunks", "mixed berries"],
+        "fat": ["walnuts"]
+      },
+      "macro_adjustment_rules": [
+        "Increase cottage cheese by 50g to boost protein by ~8g.",
+        "Reduce pineapple by 30g to lower carbs by ~6g.",
+        "Add or reduce walnuts by 10g to change fat by ~6g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SN001",
+    "name": "Apple & Almond Butter",
+    "type": "snack",
+    "servings": 1,
+    "prep_time_min": 3,
+    "difficulty": "easy",
+    "protein_source": "almond butter",
+    "ingredients_grams": {
+      "apple": 160,
+      "almond butter": 32,
+      "cinnamon": 1
+    },
+    "instructions": [
+      "Slice apple into wedges.",
+      "Portion almond butter into a small bowl.",
+      "Dust with cinnamon.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 330,
+      "protein_g": 8,
+      "carbs_g": 34,
+      "fat_g": 18
+    },
+    "tags": [
+      "no_cook",
+      "hormone_support",
+      "quick",
+      "anti_craving"
+    ],
+    "phase_support": [
+      "luteal",
+      "menstrual"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "snack",
+    "app_notes": "Classic luteal-phase snack. Almond butter provides magnesium and healthy fats to ease PMS cravings.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "low",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "snack",
+      "no_cook",
+      "quick_prep",
+      "hormone_support",
+      "anti_craving",
+      "light_digestion"
+    ],
+    "best_timing": [
+      "anytime",
+      "low_carb_day"
+    ],
+    "symptom_support": [
+      "pms_support",
+      "mood_support",
+      "anti_cramp",
+      "hormone_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["almond butter"],
+        "carbs": ["apple"],
+        "fat": ["almond butter"]
+      },
+      "macro_adjustment_rules": [
+        "Increase almond butter by 8g to add ~3g protein and ~5g fat.",
+        "Reduce apple to 100g to lower carbs by ~8g.",
+        "Weigh ingredients carefully — this snack is calorie-dense per gram."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SN002",
+    "name": "Hummus & Veggie Plate",
+    "type": "snack",
+    "servings": 1,
+    "prep_time_min": 3,
+    "difficulty": "easy",
+    "protein_source": "hummus",
+    "ingredients_grams": {
+      "hummus": 80,
+      "cucumber": 100,
+      "carrot sticks": 80,
+      "bell pepper": 80,
+      "cherry tomatoes": 60
+    },
+    "instructions": [
+      "Wash and cut vegetables into sticks and halves.",
+      "Portion hummus into a small bowl.",
+      "Arrange vegetables around hummus.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 218,
+      "protein_g": 8,
+      "carbs_g": 24,
+      "fat_g": 10
+    },
+    "tags": [
+      "plant_based",
+      "no_cook",
+      "low_calorie",
+      "fiber_rich"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "snack",
+    "app_notes": "Light, fibre-rich snack ideal for follicular phase when appetite is naturally lower.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "low",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "snack",
+      "plant_protein",
+      "no_cook",
+      "quick_prep",
+      "fiber_rich",
+      "light_digestion",
+      "low_calorie"
+    ],
+    "best_timing": [
+      "anytime",
+      "low_carb_day"
+    ],
+    "symptom_support": [
+      "bloating_support",
+      "low_energy",
+      "satiety_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["hummus"],
+        "carbs": ["carrot sticks", "bell pepper"],
+        "fat": ["hummus"]
+      },
+      "macro_adjustment_rules": [
+        "Increase hummus by 30g to add ~3g protein, ~3g carbs, and ~3g fat.",
+        "Add or swap vegetables freely — most non-starchy vegetables are negligible in calories.",
+        "Weigh hummus carefully — fat and calories add up quickly."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SN003",
+    "name": "Greek Yogurt Nut Mix",
+    "type": "snack",
+    "servings": 1,
+    "prep_time_min": 3,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "Greek yogurt": 150,
+      "mixed nuts": 20,
+      "honey": 8,
+      "cinnamon": 1
+    },
+    "instructions": [
+      "Spoon Greek yogurt into a small bowl.",
+      "Top with mixed nuts and drizzle honey.",
+      "Dust with cinnamon.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 302,
+      "protein_g": 18,
+      "carbs_g": 26,
+      "fat_g": 14
+    },
+    "tags": [
+      "high_protein",
+      "no_cook",
+      "quick",
+      "gut_health"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular",
+      "ovulation",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "snack",
+    "app_notes": "All-phase high-protein snack. Greek yogurt feeds gut bacteria and mixed nuts deliver hormone-supporting fats.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "moderate",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "snack",
+      "high_protein",
+      "no_cook",
+      "quick_prep",
+      "gut_health",
+      "light_digestion",
+      "hormone_support"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day"
+    ],
+    "symptom_support": [
+      "satiety_support",
+      "hormone_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["Greek yogurt"],
+        "carbs": ["honey"],
+        "fat": ["mixed nuts"]
+      },
+      "macro_adjustment_rules": [
+        "Increase Greek yogurt by 50g to boost protein by ~5g.",
+        "Remove honey to reduce carbs by ~7g.",
+        "Increase mixed nuts by 10g to add approximately 6g fat and 2g protein."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SN004",
+    "name": "Dark Chocolate Walnut Bite",
+    "type": "snack",
+    "servings": 1,
+    "prep_time_min": 2,
+    "difficulty": "easy",
+    "protein_source": "walnuts",
+    "ingredients_grams": {
+      "dark chocolate 85%": 30,
+      "walnuts": 25,
+      "dried cherries": 20
+    },
+    "instructions": [
+      "Break chocolate into squares and measure walnuts.",
+      "Combine on a small plate with dried cherries.",
+      "Log exact grams before eating.",
+      "Eat mindfully and note how it affects your cravings."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 316,
+      "protein_g": 6,
+      "carbs_g": 28,
+      "fat_g": 20
+    },
+    "tags": [
+      "anti_craving",
+      "magnesium",
+      "hormone_support",
+      "menstrual_support"
+    ],
+    "phase_support": [
+      "menstrual",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "snack",
+    "app_notes": "Dark chocolate is rich in magnesium and antioxidants that directly support PMS symptom relief. Satisfies cravings without sugar spike.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "low",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "snack",
+      "anti_craving",
+      "hormone_support",
+      "magnesium_rich",
+      "anti_inflammatory",
+      "menstrual_support",
+      "no_cook",
+      "quick_prep"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day"
+    ],
+    "symptom_support": [
+      "anti_cramp",
+      "pms_support",
+      "mood_support",
+      "hormone_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["walnuts"],
+        "carbs": ["dried cherries", "dark chocolate 85%"],
+        "fat": ["dark chocolate 85%", "walnuts"]
+      },
+      "macro_adjustment_rules": [
+        "Reduce dark chocolate to 20g to lower fat by ~5g and carbs by ~3g.",
+        "Remove dried cherries to reduce carbs by ~7g.",
+        "Weigh all ingredients precisely — this is a calorie-dense snack."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SN005",
+    "name": "Edamame with Sea Salt",
+    "type": "snack",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "edamame",
+    "ingredients_grams": {
+      "frozen edamame in pods": 220,
+      "sea salt": 2,
+      "lemon juice": 5
+    },
+    "instructions": [
+      "Cook edamame from frozen in boiling water for 4-5 minutes or microwave 3 minutes.",
+      "Drain and pat dry.",
+      "Season with sea salt and a squeeze of lemon juice.",
+      "Log final grams of edamame beans only (discard pods)."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 234,
+      "protein_g": 18,
+      "carbs_g": 18,
+      "fat_g": 10
+    },
+    "tags": [
+      "plant_based",
+      "high_protein",
+      "phytoestrogen",
+      "low_calorie"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "snack",
+    "app_notes": "Edamame is one of the best plant-based protein snacks. Phytoestrogens support follicular and ovulatory phase oestrogen activity.",
+    "version": "meal-engine-v1",
+    "cuisine": "japanese",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "moderate",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "snack",
+      "plant_protein",
+      "phytoestrogen",
+      "low_calorie",
+      "quick_prep",
+      "light_digestion",
+      "japanese"
+    ],
+    "best_timing": [
+      "anytime",
+      "pre_workout"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "low_energy",
+      "satiety_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["frozen edamame in pods"],
+        "carbs": ["frozen edamame in pods"],
+        "fat": ["frozen edamame in pods"]
+      },
+      "macro_adjustment_rules": [
+        "Increase portion by 50g pods to add ~4g protein, ~4g carbs, ~2g fat.",
+        "Season with soy sauce for an umami variant without changing macros significantly.",
+        "Note: log only the bean weight, not the pod weight."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SN006",
+    "name": "Rice Cake Salmon Bites",
+    "type": "snack",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "salmon",
+    "ingredients_grams": {
+      "plain rice cakes": 40,
+      "smoked salmon": 70,
+      "cream cheese light": 20,
+      "cucumber slices": 50,
+      "capers": 5,
+      "lemon juice": 5
+    },
+    "instructions": [
+      "Spread cream cheese onto rice cakes.",
+      "Layer smoked salmon and cucumber slices on top.",
+      "Add capers and a squeeze of lemon juice.",
+      "Log final grams before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 272,
+      "protein_g": 22,
+      "carbs_g": 28,
+      "fat_g": 8
+    },
+    "tags": [
+      "omega3",
+      "iron_rich",
+      "quick",
+      "high_protein"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "recomp"
+    ],
+    "meal_role": "snack",
+    "app_notes": "Light omega-3 rich snack for menstrual phase. Smoked salmon provides haem iron and DHA for mood support.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "light",
+      "protein_density": "moderate",
+      "carb_level": "moderate",
+      "fat_level": "low"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "snack",
+      "omega3_rich",
+      "iron_rich",
+      "quick_prep",
+      "no_cook",
+      "high_protein",
+      "light_digestion"
+    ],
+    "best_timing": [
+      "anytime",
+      "pre_workout"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "mood_support",
+      "low_energy",
+      "hormone_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["smoked salmon"],
+        "carbs": ["plain rice cakes"],
+        "fat": ["cream cheese light", "smoked salmon"]
+      },
+      "macro_adjustment_rules": [
+        "Increase smoked salmon by 20-30g to boost protein by ~5g.",
+        "Add one more rice cake (~10g) to increase carbs by ~8g.",
+        "Swap light cream cheese for full-fat to add ~3g fat per 20g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL001",
+    "name": "Caesar Chicken Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken",
+    "ingredients_grams": {
+      "chicken breast grilled": 180,
+      "romaine lettuce": 120,
+      "parmesan": 20,
+      "caesar dressing": 30,
+      "croutons": 20,
+      "lemon juice": 10
+    },
+    "instructions": [
+      "Grill or pan-cook chicken breast and slice.",
+      "Wash and roughly chop romaine lettuce.",
+      "Toss lettuce with dressing, parmesan, and lemon juice.",
+      "Top with chicken and croutons; log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 422,
+      "protein_g": 38,
+      "carbs_g": 18,
+      "fat_g": 22
+    },
+    "tags": [
+      "high_protein",
+      "classic",
+      "macro_friendly"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Classic high-protein salad that hits macro targets efficiently. Opt for light dressing to reduce fat if needed.",
+    "version": "meal-engine-v1",
+    "cuisine": "american",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "low",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "salad",
+      "high_protein",
+      "macro_friendly",
+      "low_carb",
+      "lean_protein",
+      "post_workout"
+    ],
+    "best_timing": [
+      "post_workout",
+      "anytime",
+      "dinner"
+    ],
+    "symptom_support": [
+      "protein_appetite_support",
+      "satiety_support",
+      "training_fuel"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chicken breast grilled"],
+        "carbs": ["croutons"],
+        "fat": ["caesar dressing", "parmesan"]
+      },
+      "macro_adjustment_rules": [
+        "Increase chicken by 40-60g to boost protein by ~9-14g.",
+        "Remove croutons to cut carbs by ~10g.",
+        "Reduce dressing to 15g to lower fat by ~7g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL002",
+    "name": "Salmon Avocado Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "salmon",
+    "ingredients_grams": {
+      "salmon fillet": 150,
+      "avocado": 80,
+      "mixed greens": 100,
+      "cucumber": 80,
+      "cherry tomatoes": 70,
+      "red onion": 25,
+      "olive oil": 8,
+      "lemon juice": 15,
+      "capers": 10
+    },
+    "instructions": [
+      "Pan-cook or bake salmon fillet and let cool slightly.",
+      "Slice avocado and prep vegetables.",
+      "Whisk olive oil and lemon juice for dressing.",
+      "Toss greens and vegetables with dressing, top with salmon and avocado, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 504,
+      "protein_g": 34,
+      "carbs_g": 20,
+      "fat_g": 32
+    },
+    "tags": [
+      "omega3",
+      "hormone_support",
+      "healthy_fat",
+      "mediterranean"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular",
+      "ovulation",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp",
+      "muscle_gain"
+    ],
+    "meal_role": "main",
+    "app_notes": "The most hormone-supportive salad in the database. Omega-3 and monounsaturated fats from both salmon and avocado.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "high",
+      "carb_level": "low",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "salad",
+      "omega3_rich",
+      "hormone_support",
+      "healthy_fat",
+      "high_fat",
+      "high_protein",
+      "mediterranean",
+      "anti_inflammatory"
+    ],
+    "best_timing": [
+      "dinner",
+      "anytime",
+      "low_carb_day"
+    ],
+    "symptom_support": [
+      "hormone_support",
+      "mood_support",
+      "pms_support",
+      "iron_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["salmon fillet"],
+        "carbs": ["cherry tomatoes", "cucumber"],
+        "fat": ["avocado", "olive oil", "salmon fillet"]
+      },
+      "macro_adjustment_rules": [
+        "Increase salmon by 30-50g to boost protein by ~7-11g.",
+        "Reduce avocado to 50g to lower fat by ~7g.",
+        "Add 50g cooked quinoa to increase carbs by ~12g and protein by ~2g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL003",
+    "name": "Greek Chicken Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken",
+    "ingredients_grams": {
+      "chicken breast grilled": 190,
+      "romaine lettuce": 100,
+      "cucumber": 80,
+      "cherry tomatoes": 80,
+      "kalamata olives": 25,
+      "feta cheese": 40,
+      "red onion": 30,
+      "olive oil": 10,
+      "red wine vinegar": 10,
+      "dried oregano": 2
+    },
+    "instructions": [
+      "Grill chicken breast with oregano and slice.",
+      "Chop all vegetables and halve tomatoes.",
+      "Whisk olive oil and vinegar into a dressing.",
+      "Combine all ingredients, crumble feta on top, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 482,
+      "protein_g": 40,
+      "carbs_g": 22,
+      "fat_g": 26
+    },
+    "tags": [
+      "high_protein",
+      "hormone_support",
+      "mediterranean",
+      "macro_friendly"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Classic Greek salad elevated with grilled chicken. Feta provides calcium for muscle function and PMS support.",
+    "version": "meal-engine-v1",
+    "cuisine": "greek",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "low",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "salad",
+      "high_protein",
+      "mediterranean",
+      "macro_friendly",
+      "lean_protein",
+      "hormone_support",
+      "post_workout"
+    ],
+    "best_timing": [
+      "post_workout",
+      "dinner",
+      "anytime"
+    ],
+    "symptom_support": [
+      "protein_appetite_support",
+      "satiety_support",
+      "training_fuel",
+      "pms_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chicken breast grilled", "feta cheese"],
+        "carbs": ["cherry tomatoes", "cucumber"],
+        "fat": ["kalamata olives", "feta cheese", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase chicken by 40-60g to boost protein by ~9-14g.",
+        "Reduce feta to 20g to lower fat and sodium.",
+        "Remove olives to reduce fat by ~4g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL004",
+    "name": "Quinoa Roasted Veg Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "quinoa",
+    "ingredients_grams": {
+      "cooked quinoa": 180,
+      "sweet potato": 120,
+      "beetroot": 80,
+      "red pepper": 80,
+      "red onion": 60,
+      "baby spinach": 60,
+      "pumpkin seeds": 15,
+      "olive oil": 12,
+      "balsamic vinegar": 10,
+      "feta cheese": 30
+    },
+    "instructions": [
+      "Dice sweet potato, beetroot, red pepper, and onion; toss with half the olive oil.",
+      "Roast at 200°C for 25 minutes until caramelised.",
+      "Whisk remaining olive oil with balsamic vinegar for dressing.",
+      "Toss quinoa and spinach with roasted veg and dressing, crumble feta, add seeds, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 470,
+      "protein_g": 18,
+      "carbs_g": 68,
+      "fat_g": 14
+    },
+    "tags": [
+      "plant_based",
+      "iron_rich",
+      "high_carb",
+      "meal_prep"
+    ],
+    "phase_support": [
+      "menstrual",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Magnesium, iron, and complex carbs for menstrual and luteal phases. Beetroot supports blood flow and energy.",
+    "version": "meal-engine-v1",
+    "cuisine": "international",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "moderate",
+      "carb_level": "very_high",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "moderate"
+    },
+    "functional_tags": [
+      "salad",
+      "plant_protein",
+      "iron_rich",
+      "high_carb",
+      "meal_prep",
+      "anti_inflammatory",
+      "fiber_rich",
+      "menstrual_support"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day",
+      "dinner"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "fatigue_support",
+      "mood_support",
+      "pms_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["cooked quinoa", "feta cheese"],
+        "carbs": ["cooked quinoa", "sweet potato"],
+        "fat": ["olive oil", "pumpkin seeds"]
+      },
+      "macro_adjustment_rules": [
+        "Add 50g cooked chickpeas to boost protein by ~5g.",
+        "Reduce sweet potato by 50g to lower carbs by ~15g.",
+        "Increase olive oil by 5g to add approximately 5g fat."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL005",
+    "name": "Tuna Niçoise Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "tuna",
+    "ingredients_grams": {
+      "canned tuna in water": 130,
+      "eggs hard boiled": 100,
+      "green beans": 80,
+      "cherry tomatoes": 80,
+      "baby potatoes cooked": 80,
+      "kalamata olives": 20,
+      "mixed greens": 60,
+      "olive oil": 10,
+      "dijon mustard": 5,
+      "red wine vinegar": 8
+    },
+    "instructions": [
+      "Boil eggs and steam green beans until tender-crisp; cool.",
+      "Quarter baby potatoes (pre-cooked) and halve tomatoes.",
+      "Whisk olive oil, mustard, and vinegar for dressing.",
+      "Arrange all ingredients on greens, drizzle dressing, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 470,
+      "protein_g": 36,
+      "carbs_g": 32,
+      "fat_g": 22
+    },
+    "tags": [
+      "high_protein",
+      "omega3",
+      "iron_rich",
+      "mediterranean"
+    ],
+    "phase_support": [
+      "menstrual",
+      "follicular",
+      "ovulation",
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Classic French salad providing complete protein from both tuna and eggs, with iron support from greens.",
+    "version": "meal-engine-v1",
+    "cuisine": "french",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "high"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "salad",
+      "high_protein",
+      "omega3",
+      "iron_rich",
+      "mediterranean",
+      "macro_friendly",
+      "post_workout"
+    ],
+    "best_timing": [
+      "post_workout",
+      "dinner",
+      "anytime"
+    ],
+    "symptom_support": [
+      "protein_appetite_support",
+      "iron_support",
+      "satiety_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["canned tuna in water", "eggs hard boiled"],
+        "carbs": ["baby potatoes cooked"],
+        "fat": ["eggs hard boiled", "kalamata olives", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase tuna by 40g to boost protein by ~10g.",
+        "Remove potatoes to reduce carbs by ~16g.",
+        "Increase or reduce olive oil by 5g to change fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL006",
+    "name": "Iron-Rich Chickpea Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "chickpeas cooked": 200,
+      "baby spinach": 100,
+      "roasted pumpkin seeds": 20,
+      "sun-dried tomatoes": 30,
+      "cucumber": 80,
+      "red onion": 30,
+      "olive oil": 10,
+      "lemon juice": 15,
+      "cumin": 2,
+      "turmeric": 2
+    },
+    "instructions": [
+      "Drain and rinse chickpeas.",
+      "Wash and roughly chop spinach; prep remaining vegetables.",
+      "Whisk olive oil, lemon juice, cumin, and turmeric into a dressing.",
+      "Toss all ingredients together, top with pumpkin seeds, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 422,
+      "protein_g": 22,
+      "carbs_g": 52,
+      "fat_g": 14
+    },
+    "tags": [
+      "iron_rich",
+      "plant_based",
+      "no_cook",
+      "menstrual_support"
+    ],
+    "phase_support": [
+      "menstrual"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Highest plant-based iron in the salad category. Lemon juice in dressing maximises non-haem iron absorption.",
+    "version": "meal-engine-v1",
+    "cuisine": "mediterranean",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "moderate",
+      "carb_level": "high",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "salad",
+      "iron_rich",
+      "plant_protein",
+      "no_cook",
+      "quick_prep",
+      "menstrual_support",
+      "anti_inflammatory",
+      "fiber_rich"
+    ],
+    "best_timing": [
+      "anytime",
+      "rest_day",
+      "dinner"
+    ],
+    "symptom_support": [
+      "iron_support",
+      "anti_cramp",
+      "fatigue_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chickpeas cooked", "roasted pumpkin seeds"],
+        "carbs": ["chickpeas cooked", "sun-dried tomatoes"],
+        "fat": ["olive oil", "roasted pumpkin seeds"]
+      },
+      "macro_adjustment_rules": [
+        "Increase chickpeas by 50g to boost protein by ~4g and carbs by ~11g.",
+        "Remove sun-dried tomatoes to reduce carbs and fat by ~3-4g each.",
+        "Add 30g of crumbled feta to increase protein by ~4g and fat by ~5g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL007",
+    "name": "Turkey Harvest Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "turkey",
+    "ingredients_grams": {
+      "turkey breast sliced": 180,
+      "mixed greens": 100,
+      "roasted sweet potato": 100,
+      "dried cranberries": 20,
+      "walnuts": 20,
+      "red onion": 30,
+      "olive oil": 10,
+      "apple cider vinegar": 8,
+      "dijon mustard": 5
+    },
+    "instructions": [
+      "Roast sweet potato cubes at 200°C for 20 minutes.",
+      "Cook turkey breast and slice.",
+      "Whisk olive oil, apple cider vinegar, and mustard for dressing.",
+      "Combine greens, sweet potato, cranberries, walnuts, and turkey; drizzle dressing and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 490,
+      "protein_g": 38,
+      "carbs_g": 44,
+      "fat_g": 18
+    },
+    "tags": [
+      "high_protein",
+      "hormone_support",
+      "seasonal",
+      "macro_friendly"
+    ],
+    "phase_support": [
+      "luteal"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Balanced luteal-phase salad with complex carbs for progesterone support and walnuts for omega-3 and magnesium.",
+    "version": "meal-engine-v1",
+    "cuisine": "american",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "moderate"
+    },
+    "functional_tags": [
+      "salad",
+      "high_protein",
+      "hormone_support",
+      "luteal_support",
+      "macro_friendly",
+      "meal_prep",
+      "post_workout"
+    ],
+    "best_timing": [
+      "dinner",
+      "post_workout",
+      "anytime"
+    ],
+    "symptom_support": [
+      "pms_support",
+      "mood_support",
+      "satiety_support",
+      "hormone_support"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["turkey breast sliced"],
+        "carbs": ["roasted sweet potato", "dried cranberries"],
+        "fat": ["walnuts", "olive oil"]
+      },
+      "macro_adjustment_rules": [
+        "Increase turkey by 40-60g to boost protein by ~9-13g.",
+        "Reduce sweet potato by 50g to lower carbs by ~12g.",
+        "Omit or reduce walnuts to lower fat by ~6g per 10g removed."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  },
+  {
+    "id": "SL008",
+    "name": "Asian Sesame Chicken Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken",
+    "ingredients_grams": {
+      "chicken breast grilled": 190,
+      "shredded cabbage": 100,
+      "edamame shelled": 60,
+      "shredded carrot": 60,
+      "cucumber": 60,
+      "sesame oil": 8,
+      "soy sauce": 10,
+      "rice vinegar": 10,
+      "sesame seeds": 8,
+      "ginger": 5
+    },
+    "instructions": [
+      "Grill chicken breast with a light soy glaze and slice thin.",
+      "Shred cabbage and carrot; slice cucumber.",
+      "Whisk sesame oil, soy sauce, rice vinegar, and ginger for dressing.",
+      "Toss all salad components with dressing, top with chicken and sesame seeds, and log final grams."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 484,
+      "protein_g": 40,
+      "carbs_g": 36,
+      "fat_g": 20
+    },
+    "tags": [
+      "high_protein",
+      "asian",
+      "phytoestrogen",
+      "macro_friendly"
+    ],
+    "phase_support": [
+      "follicular",
+      "ovulation"
+    ],
+    "goal_support": [
+      "fat_loss",
+      "maintenance",
+      "recomp"
+    ],
+    "meal_role": "main",
+    "app_notes": "Follicular and ovulatory phase salad with phytoestrogens from edamame. Sesame seeds provide calcium and zinc.",
+    "version": "meal-engine-v1",
+    "cuisine": "asian",
+    "macro_profile": {
+      "calorie_band": "standard",
+      "protein_density": "very_high",
+      "carb_level": "moderate",
+      "fat_level": "moderate"
+    },
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "functional_tags": [
+      "salad",
+      "high_protein",
+      "asian",
+      "phytoestrogen",
+      "macro_friendly",
+      "lean_protein",
+      "post_workout",
+      "light_digestion"
+    ],
+    "best_timing": [
+      "post_workout",
+      "anytime",
+      "dinner"
+    ],
+    "symptom_support": [
+      "protein_appetite_support",
+      "training_fuel",
+      "hormone_support",
+      "low_energy"
+    ],
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": {
+        "protein": ["chicken breast grilled", "edamame shelled"],
+        "carbs": ["edamame shelled", "shredded carrot"],
+        "fat": ["sesame oil", "sesame seeds"]
+      },
+      "macro_adjustment_rules": [
+        "Increase chicken by 40-60g to boost protein by ~9-13g.",
+        "Increase edamame by 30g to add ~5g protein and ~5g carbs.",
+        "Reduce sesame oil by 4g to lower fat by approximately 4g."
+      ]
+    },
+    "engine_weights": {
+      "phase_match": 30,
+      "symptom_match_each": 8,
+      "energy_match": 12,
+      "goal_match": 10,
+      "timing_match": 10,
+      "macro_fit": 20,
+      "prep_bonus": 5
+    }
+  }
+]

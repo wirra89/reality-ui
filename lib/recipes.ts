@@ -1,9 +1,10 @@
 // lib/recipes.ts
-// Static recipe knowledge base — 70 bowl/wrap recipes.
+// Static recipe knowledge base — 70 bowl/wrap recipes + 30 extended (soups, breakfasts, snacks, salads).
 // Imported as JSON (resolveJsonModule: true) — no Supabase dependency.
 
 import type { Phase } from "@/lib/cycle";
-import RAW_RECIPES from "@/lib/data/bowls_wraps.json";
+import RAW_BOWLS_WRAPS from "@/lib/data/bowls_wraps.json";
+import RAW_EXTENDED from "@/lib/data/meals_extended.json";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -13,7 +14,7 @@ export type MealTiming  = "pre_workout" | "post_workout" | "rest_day" | "dinner"
 export interface MealRecipe {
   id:             string;
   name:           string;
-  type:           "bowl" | "wrap";
+  type:           "bowl" | "wrap" | "soup" | "breakfast" | "snack" | "salad";
   servings:       number;
   prep_time_min:  number;
   difficulty:     "easy" | "medium" | "hard";
@@ -69,4 +70,4 @@ function mapRecipe(raw: any): MealRecipe {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const RECIPES: MealRecipe[] = (RAW_RECIPES as any[]).map(mapRecipe);
+export const RECIPES: MealRecipe[] = ([...RAW_BOWLS_WRAPS, ...RAW_EXTENDED] as any[]).map(mapRecipe);
