@@ -23,14 +23,30 @@ export default function BarcodeScanner({ onDetected, onClose }: Props) {
 
     async function startScanner() {
       try {
-        // Dynamic import — @zxing/browser uses browser-only APIs
-        const { BrowserMultiFormatReader } = await import("@zxing/browser");
+        // Dynamic import — @zxing/browser + @zxing/library use browser-only APIs
+        const [{ BrowserMultiFormatReader }, { BarcodeFormat, DecodeHintType }] = await Promise.all([
+          import("@zxing/browser"),
+          import("@zxing/library"),
+        ]);
         if (!active || !videoRef.current) return;
 
-        const reader = new BrowserMultiFormatReader();
+        // Restrict to common food barcode formats — much faster than scanning all
+        const hints = new Map();
+        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+          BarcodeFormat.EAN_13,
+          BarcodeFormat.EAN_8,
+          BarcodeFormat.UPC_A,
+          BarcodeFormat.UPC_E,
+          BarcodeFormat.CODE_128,
+          BarcodeFormat.CODE_39,
+        ]);
+        hints.set(DecodeHintType.TRY_HARDER, true);
 
-        const controls = await reader.decodeFromVideoDevice(
-          undefined, // use default back camera
+        const reader = new BrowserMultiFormatReader(hints);
+
+        // Force back/environment camera — undefined picks front camera on mobile
+        const controls = await reader.decodeFromConstraints(
+          { video: { facingMode: { ideal: "environment" } } },
           videoRef.current,
           (result, err) => {
             if (!active || detectedRef.current) return;
@@ -39,7 +55,7 @@ export default function BarcodeScanner({ onDetected, onClose }: Props) {
               setScanning(false);
               onDetected(result.getText());
             }
-            // err is thrown for every frame that fails to decode — ignore
+            // err fires every frame that fails to decode — ignore
             void err;
           },
         );
