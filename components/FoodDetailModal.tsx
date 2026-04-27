@@ -3,7 +3,7 @@
 // components/FoodDetailModal.tsx
 // Full-screen modal for adjusting serving size and logging a UnifiedFood entry.
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { UnifiedFood }    from "@/lib/foodSearch";
 import { calcMacros }          from "@/lib/foodSearch";
 import {
@@ -12,6 +12,7 @@ import {
   type MealType,
 } from "@/lib/nutrition";
 import type { Phase } from "@/lib/cycle";
+import { RECIPES } from "@/lib/recipes";
 
 // ── Source colours ────────────────────────────────────────────────────────────
 
@@ -71,6 +72,11 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
   const [logged, setLogged]         = useState(false);
   const [error, setError]           = useState<string | null>(null);
 
+  const fullRecipe = useMemo(
+    () => food.recipeId ? RECIPES.find(r => r.id === food.recipeId) ?? null : null,
+    [food.recipeId],
+  );
+
   const servings = food.availableServings;
   const selectedG = useCustom
     ? Math.max(1, parseFloat(customGrams) || 100)
@@ -117,7 +123,7 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col"
+      className="fixed inset-0 z-[60] flex flex-col"
       style={{ background: "var(--color-bg)" }}
     >
       {/* Header */}
@@ -137,7 +143,7 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
       </div>
 
       {/* Body — scrollable */}
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-6">
 
         {/* Food name + source */}
         <div className="mb-4">
@@ -255,6 +261,55 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
           )}
         </div>
 
+        {/* Recipe: ingredients */}
+        {fullRecipe && Object.keys(fullRecipe.ingredients_grams).length > 0 && (
+          <div
+            className="rounded-2xl p-4 mb-4"
+            style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3"
+              style={{ color: `${phaseColor}99` }}>
+              Ingredients
+            </p>
+            <ul className="space-y-1.5">
+              {Object.entries(fullRecipe.ingredients_grams).map(([name, g]) => (
+                <li key={name} className="flex items-start gap-2 text-sm font-body"
+                  style={{ color: "var(--color-text-mid)" }}>
+                  <span className="mt-1 flex-shrink-0 text-xs" style={{ color: phaseColor }}>•</span>
+                  <span>{name} <span className="text-dark/30">({g}g)</span></span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Recipe: instructions */}
+        {fullRecipe && fullRecipe.instructions.length > 0 && (
+          <div
+            className="rounded-2xl p-4 mb-4"
+            style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3"
+              style={{ color: `${phaseColor}99` }}>
+              Preparation
+            </p>
+            <ol className="space-y-3">
+              {fullRecipe.instructions.map((step, i) => (
+                <li key={i} className="flex items-start gap-3 text-sm font-body"
+                  style={{ color: "var(--color-text-mid)" }}>
+                  <span
+                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold leading-none"
+                    style={{ background: `${phaseColor}22`, color: phaseColor }}
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="leading-relaxed">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
         {/* Meal type selector */}
         <div
           className="rounded-2xl p-4 mb-4"
@@ -287,7 +342,7 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
 
       {/* Sticky log button */}
       <div
-        className="absolute bottom-0 left-0 right-0 px-4 pb-6 pt-3"
+        className="flex-shrink-0 px-4 pb-6 pt-3"
         style={{ background: "var(--color-bg)", borderTop: "1px solid var(--color-border)" }}
       >
         <button
