@@ -21,7 +21,7 @@ import RecipePreviewModal, { type RecipePreviewData } from "@/components/RecipeP
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type UnifiedFilter = "all" | "bowls" | "wraps" | "soups" | "breakfasts" | "snacks" | "salads" | "high_protein" | "iron_rich";
+type UnifiedFilter = "all" | "bowls" | "wraps" | "soups" | "breakfasts" | "snacks" | "salads" | "stir_fries" | "pasta_grains" | "smoothies" | "high_protein" | "iron_rich";
 
 type MealItem =
   | { kind: "static"; scored: ScoredMeal }
@@ -37,6 +37,9 @@ const FILTERS: { id: UnifiedFilter; label: string }[] = [
   { id: "breakfasts",   label: "Breakfast"    },
   { id: "salads",       label: "Salads"       },
   { id: "snacks",       label: "Snacks"       },
+  { id: "stir_fries",   label: "Stir-fries"  },
+  { id: "pasta_grains", label: "Pasta & Grains" },
+  { id: "smoothies",    label: "Smoothies"    },
   { id: "high_protein", label: "High Protein" },
   { id: "iron_rich",    label: "Iron-rich"    },
 ];
@@ -65,13 +68,16 @@ const MEAL_TYPE_EMOJI: Record<MealType, string> = {
 
 function recipeEmoji(type: string): string {
   switch (type) {
-    case "bowl":      return "🥣";
-    case "wrap":      return "🌯";
-    case "soup":      return "🍲";
-    case "breakfast": return "🌅";
-    case "snack":     return "🍎";
-    case "salad":     return "🥗";
-    default:          return "🍽️";
+    case "bowl":        return "🥣";
+    case "wrap":        return "🌯";
+    case "soup":        return "🍲";
+    case "breakfast":   return "🌅";
+    case "snack":       return "🍎";
+    case "salad":       return "🥗";
+    case "stir_fry":    return "🥘";
+    case "pasta_grain": return "🍝";
+    case "smoothie":    return "🥤";
+    default:            return "🍽️";
   }
 }
 
@@ -124,6 +130,9 @@ function scoreMatchesFilter(scored: ScoredMeal, filter: UnifiedFilter): boolean 
   if (filter === "breakfasts")   return recipe.type === "breakfast";
   if (filter === "salads")       return recipe.type === "salad";
   if (filter === "snacks")       return recipe.type === "snack";
+  if (filter === "stir_fries")   return recipe.type === "stir_fry";
+  if (filter === "pasta_grains") return recipe.type === "pasta_grain";
+  if (filter === "smoothies")    return recipe.type === "smoothie";
   if (filter === "high_protein") return recipe.functional_tags.includes("high_protein");
   if (filter === "iron_rich")    return recipe.functional_tags.includes("iron_rich");
   return true;
@@ -137,6 +146,9 @@ function foodMatchesFilter(food: Food, filter: UnifiedFilter): boolean {
   if (filter === "breakfasts")   return false;
   if (filter === "salads")       return false;
   if (filter === "snacks")       return false;
+  if (filter === "stir_fries")   return false;
+  if (filter === "pasta_grains") return false;
+  if (filter === "smoothies")    return false;
   if (filter === "high_protein") return foodProtein(food) >= 20;
   if (filter === "iron_rich")    return !!(food.keyNutrient?.toLowerCase().includes("iron"));
   return true;

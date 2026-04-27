@@ -5,6 +5,14 @@
 import type { Phase } from "@/lib/cycle";
 import RAW_BOWLS_WRAPS from "@/lib/data/bowls_wraps.json";
 import RAW_EXTENDED from "@/lib/data/meals_extended.json";
+import RAW_SNACKS2 from "@/lib/data/snacks_batch2.json";
+import RAW_SMOOTHIES from "@/lib/data/smoothies.json";
+import RAW_STIR_FRIES from "@/lib/data/stir_fries.json";
+import RAW_PASTA_GRAINS from "@/lib/data/pasta_grains.json";
+import RAW_SOUPS2 from "@/lib/data/soups_batch2.json";
+import RAW_BREAKFASTS2 from "@/lib/data/breakfasts_batch2.json";
+import RAW_SALADS2 from "@/lib/data/salads_batch2.json";
+import RAW_BOWLS_WRAPS2 from "@/lib/data/bowls_wraps_batch2.json";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -14,7 +22,7 @@ export type MealTiming  = "pre_workout" | "post_workout" | "rest_day" | "dinner"
 export interface MealRecipe {
   id:             string;
   name:           string;
-  type:           "bowl" | "wrap" | "soup" | "breakfast" | "snack" | "salad";
+  type:           "bowl" | "wrap" | "soup" | "breakfast" | "snack" | "salad" | "stir_fry" | "pasta_grain" | "smoothie";
   servings:       number;
   prep_time_min:  number;
   difficulty:     "easy" | "medium" | "hard";
@@ -70,4 +78,8 @@ function mapRecipe(raw: any): MealRecipe {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const RECIPES: MealRecipe[] = ([...RAW_BOWLS_WRAPS, ...RAW_EXTENDED] as any[]).map(mapRecipe);
+export const RECIPES: MealRecipe[] = ([
+  ...RAW_BOWLS_WRAPS, ...RAW_EXTENDED, ...RAW_SNACKS2, ...RAW_SMOOTHIES,
+  ...RAW_STIR_FRIES, ...RAW_PASTA_GRAINS, ...RAW_SOUPS2,
+  ...RAW_BREAKFASTS2, ...RAW_SALADS2, ...RAW_BOWLS_WRAPS2,
+] as any[]).map(mapRecipe);

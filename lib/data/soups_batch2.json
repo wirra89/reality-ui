@@ -1,0 +1,1076 @@
+[
+  {
+    "id": "SP009",
+    "name": "Roasted Tomato Basil Protein Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "cherry tomatoes": 300,
+      "Greek yogurt": 80,
+      "vegetable stock": 200,
+      "garlic": 5,
+      "olive oil": 8,
+      "basil fresh": 15,
+      "onion": 60,
+      "balsamic vinegar": 10
+    },
+    "instructions": [
+      "Roast tomatoes, garlic, and onion at 200°C for 20 minutes.",
+      "Blend roasted vegetables with stock until smooth.",
+      "Simmer 5 minutes; remove from heat.",
+      "Swirl in yogurt; garnish with fresh basil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 256,
+      "protein_g": 18,
+      "carbs_g": 28,
+      "fat_g": 8
+    },
+    "tags": ["soup", "tomato", "roasted", "light"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["anti_inflammatory", "gut_friendly", "low_calorie", "lycopene_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["inflammation", "bloating"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt"], "carbs": ["cherry tomatoes"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 100g cannellini beans for +10g protein and a heartier texture."]
+    }
+  },
+  {
+    "id": "SP010",
+    "name": "Spiced Red Lentil Coconut Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "red lentils",
+    "ingredients_grams": {
+      "red lentils": 80,
+      "coconut milk light": 100,
+      "vegetable stock": 250,
+      "onion": 60,
+      "garlic": 5,
+      "ginger fresh": 8,
+      "cumin": 3,
+      "turmeric": 2,
+      "coriander ground": 2,
+      "spinach": 50,
+      "olive oil": 8
+    },
+    "instructions": [
+      "Sauté onion, garlic, and ginger in olive oil 3 minutes.",
+      "Add spices; toast 30 seconds.",
+      "Add lentils and stock; simmer 15 minutes.",
+      "Add coconut milk and spinach; cook 3 more minutes.",
+      "Blend partially for texture."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 340,
+      "protein_g": 16,
+      "carbs_g": 42,
+      "fat_g": 12
+    },
+    "tags": ["soup", "lentil", "coconut", "vegan"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "anti_inflammatory", "hormone_support", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["red lentils"], "carbs": ["red lentils"], "fat": ["coconut milk light"] },
+      "macro_adjustment_rules": ["Double the lentils to 160g for a muscle-gain version with ~28g protein."]
+    }
+  },
+  {
+    "id": "SP011",
+    "name": "Chicken Tortilla Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast shredded": 150,
+      "black beans": 80,
+      "diced tomatoes": 100,
+      "chicken stock": 300,
+      "corn": 60,
+      "lime juice": 15,
+      "cumin": 3,
+      "smoked paprika": 2,
+      "garlic": 5,
+      "jalapeño": 10,
+      "corn tortilla strips": 20
+    },
+    "instructions": [
+      "Simmer chicken in stock until cooked, about 12 minutes; shred.",
+      "Add tomatoes, black beans, corn, garlic, and spices.",
+      "Simmer 8 minutes.",
+      "Add lime juice and jalapeño.",
+      "Serve topped with tortilla strips."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 370,
+      "protein_g": 32,
+      "carbs_g": 38,
+      "fat_g": 10
+    },
+    "tags": ["soup", "chicken", "mexican", "hearty"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "gut_friendly", "hormone_support", "anti_inflammatory"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 6,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast shredded"], "carbs": ["black beans", "corn"], "fat": [] },
+      "macro_adjustment_rules": ["Add diced avocado (+~80 kcal) for extra healthy fats and creaminess."]
+    }
+  },
+  {
+    "id": "SP012",
+    "name": "Tom Yum Shrimp Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "shrimp",
+    "ingredients_grams": {
+      "shrimp peeled": 180,
+      "lemongrass": 10,
+      "kaffir lime leaves": 4,
+      "galangal": 8,
+      "chilli fresh": 8,
+      "mushrooms": 80,
+      "cherry tomatoes": 60,
+      "fish sauce": 15,
+      "lime juice": 20,
+      "coconut milk light": 50,
+      "coriander fresh": 10
+    },
+    "instructions": [
+      "Simmer lemongrass, galangal, and lime leaves in 400ml water 5 minutes.",
+      "Add chilli, mushrooms, and tomatoes; cook 3 minutes.",
+      "Add shrimp; cook 2 minutes until pink.",
+      "Season with fish sauce and lime juice.",
+      "Stir in coconut milk; garnish with coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 246,
+      "protein_g": 28,
+      "carbs_g": 20,
+      "fat_g": 6
+    },
+    "tags": ["soup", "thai", "shrimp", "light"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_calorie", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["fatigue", "inflammation", "bloating"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["shrimp peeled"], "carbs": ["mushrooms", "cherry tomatoes"], "fat": ["coconut milk light"] },
+      "macro_adjustment_rules": ["Add 80g rice noodles to create a more filling tom yum noodle soup."]
+    }
+  },
+  {
+    "id": "SP013",
+    "name": "Lighter French Onion Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 40,
+    "difficulty": "medium",
+    "protein_source": "beef stock",
+    "ingredients_grams": {
+      "onions": 300,
+      "beef stock low sodium": 350,
+      "gruyere cheese": 25,
+      "sourdough bread": 40,
+      "olive oil": 8,
+      "thyme": 3,
+      "bay leaf": 1,
+      "white wine": 30,
+      "garlic": 3
+    },
+    "instructions": [
+      "Caramelise onions in olive oil over low heat 25 minutes.",
+      "Add garlic, thyme, white wine; cook 3 minutes.",
+      "Add beef stock; simmer 10 minutes.",
+      "Ladle into oven-safe bowl; top with bread and grated gruyere.",
+      "Grill 3–4 minutes until bubbling."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 298,
+      "protein_g": 20,
+      "carbs_g": 32,
+      "fat_g": 10
+    },
+    "tags": ["soup", "french", "onion", "comfort"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["comfort_food", "gut_friendly", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["cramps", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["gruyere cheese"], "carbs": ["sourdough bread", "onions"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Double cheese and bread to ~420 kcal for a more indulgent luteal-phase version."]
+    }
+  },
+  {
+    "id": "SP014",
+    "name": "Butternut Squash Turkey Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "turkey breast",
+    "ingredients_grams": {
+      "turkey breast cooked": 140,
+      "butternut squash": 200,
+      "chicken stock": 300,
+      "onion": 50,
+      "garlic": 5,
+      "sage dried": 3,
+      "nutmeg": 1,
+      "olive oil": 8,
+      "Greek yogurt": 30
+    },
+    "instructions": [
+      "Roast squash at 200°C for 20 minutes.",
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Blend squash with stock, onion, and spices until smooth.",
+      "Simmer 5 minutes; stir in turkey.",
+      "Serve with a swirl of Greek yogurt."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 328,
+      "protein_g": 28,
+      "carbs_g": 36,
+      "fat_g": 8
+    },
+    "tags": ["soup", "turkey", "butternut-squash", "autumn"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["hormone_support", "gut_friendly", "anti_inflammatory", "comfort_food"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["cramps", "fatigue", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 6,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["turkey breast cooked"], "carbs": ["butternut squash"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 80g cannellini beans for +7g protein and extra fibre."]
+    }
+  },
+  {
+    "id": "SP015",
+    "name": "Vietnamese Beef Pho",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "beef sirloin",
+    "ingredients_grams": {
+      "beef sirloin thin sliced": 150,
+      "rice noodles cooked": 120,
+      "beef bone broth": 400,
+      "star anise": 2,
+      "cinnamon stick": 3,
+      "ginger fresh": 10,
+      "bean sprouts": 60,
+      "lime juice": 20,
+      "spring onion": 15,
+      "fish sauce": 10,
+      "thai basil": 10
+    },
+    "instructions": [
+      "Simmer bone broth with star anise, cinnamon, and ginger 15 minutes; strain.",
+      "Place noodles in bowl.",
+      "Pour boiling broth over raw beef slices; they cook in the heat.",
+      "Top with bean sprouts, lime juice, spring onion, and Thai basil.",
+      "Season with fish sauce."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 408,
+      "protein_g": 36,
+      "carbs_g": 48,
+      "fat_g": 8
+    },
+    "tags": ["soup", "vietnamese", "pho", "beef"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["iron_rich", "high_protein", "gut_friendly", "anti_inflammatory"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef sirloin thin sliced"], "carbs": ["rice noodles cooked"], "fat": [] },
+      "macro_adjustment_rules": ["Reduce rice noodles to 60g to lower carbs by ~25g on lower-carb days."]
+    }
+  },
+  {
+    "id": "SP016",
+    "name": "Minestrone with Cannellini Beans",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "cannellini beans",
+    "ingredients_grams": {
+      "cannellini beans canned": 150,
+      "small pasta": 40,
+      "diced tomatoes": 120,
+      "zucchini": 80,
+      "carrot": 60,
+      "celery": 50,
+      "kale": 60,
+      "vegetable stock": 350,
+      "garlic": 5,
+      "olive oil": 8,
+      "italian herbs": 3
+    },
+    "instructions": [
+      "Sauté garlic, carrot, and celery in olive oil 4 minutes.",
+      "Add stock, tomatoes, and herbs; bring to boil.",
+      "Add pasta and zucchini; cook 8 minutes.",
+      "Add beans and kale; simmer 5 minutes.",
+      "Adjust seasoning and serve."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 352,
+      "protein_g": 18,
+      "carbs_g": 52,
+      "fat_g": 8
+    },
+    "tags": ["soup", "minestrone", "italian", "vegan"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "gut_friendly", "iron_rich", "high_fibre"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "bloating", "low_iron"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["cannellini beans canned"], "carbs": ["small pasta"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 100g shredded chicken to boost protein to ~36g for higher-protein needs."]
+    }
+  },
+  {
+    "id": "SP017",
+    "name": "Creamy Broccoli Cheddar Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "cheddar cheese",
+    "ingredients_grams": {
+      "broccoli florets": 250,
+      "reduced fat cheddar": 40,
+      "chicken stock": 300,
+      "cottage cheese": 80,
+      "onion": 50,
+      "garlic": 5,
+      "olive oil": 8,
+      "dijon mustard": 5,
+      "smoked paprika": 2
+    },
+    "instructions": [
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Add broccoli and stock; simmer 12 minutes until tender.",
+      "Blend cottage cheese with a ladle of soup until smooth.",
+      "Stir blended mix, cheddar, and mustard back into soup.",
+      "Warm gently; garnish with paprika."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 350,
+      "protein_g": 26,
+      "carbs_g": 30,
+      "fat_g": 14
+    },
+    "tags": ["soup", "broccoli", "cheddar", "creamy"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["comfort_food", "hormone_support", "calcium_rich", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["cramps", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["cheddar cheese", "cottage cheese"], "carbs": ["broccoli florets"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add a scoop of unflavoured protein powder blended in for extra protein without changing texture."]
+    }
+  },
+  {
+    "id": "SP018",
+    "name": "Moroccan Harissa Chickpea Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "chickpeas canned": 150,
+      "diced tomatoes": 120,
+      "harissa paste": 15,
+      "vegetable stock": 300,
+      "onion": 60,
+      "garlic": 5,
+      "carrot": 60,
+      "cumin": 3,
+      "coriander ground": 2,
+      "olive oil": 8,
+      "lemon juice": 15
+    },
+    "instructions": [
+      "Sauté onion, garlic, and carrot in olive oil 4 minutes.",
+      "Add harissa and spices; cook 1 minute.",
+      "Add chickpeas, tomatoes, and stock; simmer 15 minutes.",
+      "Blend one third for texture; stir back.",
+      "Finish with lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 346,
+      "protein_g": 16,
+      "carbs_g": 48,
+      "fat_g": 10
+    },
+    "tags": ["soup", "moroccan", "chickpea", "vegan"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "anti_inflammatory", "iron_rich", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chickpeas canned"], "carbs": ["diced tomatoes", "carrot"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 80g lentils to the soup for +10g protein and extra fibre."]
+    }
+  },
+  {
+    "id": "SP019",
+    "name": "Thai Pumpkin Coconut Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "coconut milk",
+    "ingredients_grams": {
+      "pumpkin": 300,
+      "coconut milk light": 120,
+      "vegetable stock": 250,
+      "lemongrass": 8,
+      "ginger fresh": 8,
+      "garlic": 5,
+      "red chilli": 5,
+      "lime juice": 15,
+      "coriander fresh": 10,
+      "coconut oil": 8
+    },
+    "instructions": [
+      "Sauté ginger, garlic, chilli, and lemongrass in coconut oil 2 minutes.",
+      "Add pumpkin and stock; simmer 15 minutes.",
+      "Remove lemongrass; blend until smooth.",
+      "Stir in coconut milk; heat through.",
+      "Finish with lime juice and coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 326,
+      "protein_g": 12,
+      "carbs_g": 38,
+      "fat_g": 14
+    },
+    "tags": ["soup", "thai", "pumpkin", "coconut"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["anti_inflammatory", "hormone_support", "gut_friendly", "comfort_food"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["cramps", "mood_swings", "bloating"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 6,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": [], "carbs": ["pumpkin"], "fat": ["coconut milk light"] },
+      "macro_adjustment_rules": ["Stir in 150g cooked lentils post-blend for +12g protein with no texture change."]
+    }
+  },
+  {
+    "id": "SP020",
+    "name": "Light Salmon Chowder",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 160,
+      "potato diced": 100,
+      "leek": 80,
+      "fish stock": 300,
+      "Greek yogurt": 60,
+      "dill fresh": 8,
+      "garlic": 3,
+      "olive oil": 8,
+      "sweetcorn": 50
+    },
+    "instructions": [
+      "Sauté leek and garlic in olive oil 3 minutes.",
+      "Add potato and fish stock; simmer 10 minutes.",
+      "Add salmon and sweetcorn; poach 5 minutes; flake salmon.",
+      "Remove from heat; stir in yogurt and dill.",
+      "Serve immediately."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 366,
+      "protein_g": 32,
+      "carbs_g": 28,
+      "fat_g": 14
+    },
+    "tags": ["soup", "salmon", "chowder", "omega-3"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["omega3_rich", "hormone_support", "anti_inflammatory", "comfort_food"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["cramps", "inflammation", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["potato diced"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add an extra 80g salmon fillet to boost protein to ~48g for higher-protein needs."]
+    }
+  },
+  {
+    "id": "SP021",
+    "name": "Tuscan White Bean Kale Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "cannellini beans",
+    "ingredients_grams": {
+      "cannellini beans canned": 150,
+      "kale": 100,
+      "diced tomatoes": 100,
+      "chicken stock": 350,
+      "garlic": 5,
+      "rosemary": 3,
+      "olive oil": 8,
+      "onion": 50,
+      "lemon juice": 15,
+      "parmesan rind": 15
+    },
+    "instructions": [
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Add tomatoes, beans, stock, parmesan rind, and rosemary.",
+      "Simmer 12 minutes.",
+      "Add kale; cook 4 minutes until wilted.",
+      "Remove rind; finish with lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 352,
+      "protein_g": 20,
+      "carbs_g": 50,
+      "fat_g": 8
+    },
+    "tags": ["soup", "tuscan", "white-bean", "kale"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "iron_rich", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["cannellini beans canned"], "carbs": ["cannellini beans canned", "diced tomatoes"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 100g cooked Italian sausage for +20g protein and richer flavour on muscle-gain days."]
+    }
+  },
+  {
+    "id": "SP022",
+    "name": "Korean Doenjang Tofu Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "silken tofu",
+    "ingredients_grams": {
+      "silken tofu": 180,
+      "doenjang paste": 25,
+      "zucchini": 80,
+      "mushrooms": 60,
+      "spring onion": 20,
+      "garlic": 5,
+      "anchovy stock": 300,
+      "gochugaru": 3,
+      "sesame oil": 5
+    },
+    "instructions": [
+      "Dissolve doenjang in anchovy stock over medium heat.",
+      "Add garlic, zucchini, and mushrooms; simmer 5 minutes.",
+      "Add tofu in large cubes; simmer 3 minutes.",
+      "Season with gochugaru and sesame oil.",
+      "Top with spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 242,
+      "protein_g": 18,
+      "carbs_g": 20,
+      "fat_g": 10
+    },
+    "tags": ["soup", "korean", "miso-style", "tofu"],
+    "phase_support": ["luteal", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["gut_friendly", "probiotic", "hormone_support", "low_calorie"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["bloating", "hormonal_imbalance", "fatigue"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["silken tofu"], "carbs": ["zucchini", "mushrooms"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 80g firm tofu for extra texture and +8g protein."]
+    }
+  },
+  {
+    "id": "SP023",
+    "name": "Spinach Dal Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "red lentils",
+    "ingredients_grams": {
+      "red lentils": 80,
+      "spinach fresh": 100,
+      "vegetable stock": 300,
+      "onion": 60,
+      "garlic": 5,
+      "ginger fresh": 8,
+      "cumin seeds": 3,
+      "turmeric": 2,
+      "garam masala": 2,
+      "olive oil": 8,
+      "lemon juice": 15
+    },
+    "instructions": [
+      "Temper cumin seeds in olive oil until popping.",
+      "Add onion, garlic, ginger; sauté 4 minutes.",
+      "Add lentils, turmeric, and stock; simmer 15 minutes.",
+      "Stir in spinach and garam masala; cook 2 minutes.",
+      "Finish with lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 312,
+      "protein_g": 16,
+      "carbs_g": 44,
+      "fat_g": 8
+    },
+    "tags": ["soup", "dal", "indian", "vegan"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "iron_rich", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["red lentils"], "carbs": ["red lentils"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Serve with 1 small naan (+~180 kcal) for a more complete meal."]
+    }
+  },
+  {
+    "id": "SP024",
+    "name": "Greek Avgolemono Chicken Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast shredded": 150,
+      "orzo or rice": 40,
+      "chicken stock": 400,
+      "eggs": 55,
+      "lemon juice": 30,
+      "dill fresh": 8,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Simmer stock and orzo 10 minutes.",
+      "Add shredded chicken; cook 3 minutes.",
+      "Whisk eggs with lemon juice.",
+      "Ladle hot soup slowly into egg mixture, whisking constantly.",
+      "Pour back into pot over low heat; do not boil.",
+      "Garnish with dill and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 338,
+      "protein_g": 30,
+      "carbs_g": 32,
+      "fat_g": 10
+    },
+    "tags": ["soup", "greek", "avgolemono", "lemon"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "comfort_food", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "cramps", "nausea"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast shredded"], "carbs": ["orzo or rice"], "fat": ["eggs"] },
+      "macro_adjustment_rules": ["Add extra 50g shredded chicken for more protein — the egg-lemon broth pairs well."]
+    }
+  },
+  {
+    "id": "SP025",
+    "name": "Beef Bone Broth Noodle Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "beef sirloin",
+    "ingredients_grams": {
+      "beef sirloin thin sliced": 160,
+      "beef bone broth": 400,
+      "shirataki noodles": 100,
+      "bok choy": 100,
+      "ginger fresh": 8,
+      "garlic": 5,
+      "soy sauce": 15,
+      "spring onion": 15,
+      "sesame oil": 5
+    },
+    "instructions": [
+      "Heat bone broth with ginger and garlic 5 minutes.",
+      "Add bok choy; simmer 2 minutes.",
+      "Add shirataki noodles and soy sauce.",
+      "Place raw beef in bowls; pour boiling broth over to cook.",
+      "Drizzle sesame oil; top with spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 320,
+      "protein_g": 40,
+      "carbs_g": 22,
+      "fat_g": 8
+    },
+    "tags": ["soup", "beef", "bone-broth", "high-protein"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "low_carb", "gut_healing"],
+    "best_timing": ["dinner", "low_carb_day"],
+    "symptom_support": ["fatigue", "low_iron", "gut_issues"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef sirloin thin sliced"], "carbs": ["bok choy"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Swap shirataki for 80g rice noodles to add ~120 kcal for post-workout recovery."]
+    }
+  },
+  {
+    "id": "SP026",
+    "name": "Roasted Red Pepper Lentil Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "red lentils",
+    "ingredients_grams": {
+      "red lentils": 80,
+      "roasted red peppers jar": 100,
+      "diced tomatoes": 100,
+      "vegetable stock": 300,
+      "onion": 60,
+      "garlic": 5,
+      "smoked paprika": 3,
+      "cayenne pepper": 1,
+      "olive oil": 8,
+      "balsamic vinegar": 10
+    },
+    "instructions": [
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Add paprika and cayenne; cook 30 seconds.",
+      "Add lentils, roasted peppers, tomatoes, and stock.",
+      "Simmer 15 minutes; blend until smooth.",
+      "Stir in balsamic vinegar; adjust seasoning."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 328,
+      "protein_g": 18,
+      "carbs_g": 46,
+      "fat_g": 8
+    },
+    "tags": ["soup", "red-pepper", "lentil", "smoky"],
+    "phase_support": ["menstrual", "follicular", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "anti_inflammatory", "iron_rich", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["red lentils"], "carbs": ["red lentils", "diced tomatoes"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Top with 2 tbsp Greek yogurt for extra protein and a cooling contrast to the smoky spice."]
+    }
+  },
+  {
+    "id": "SP027",
+    "name": "Creamy Cauliflower Protein Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "cottage cheese",
+    "ingredients_grams": {
+      "cauliflower": 300,
+      "cottage cheese": 100,
+      "chicken stock": 300,
+      "garlic": 5,
+      "onion": 50,
+      "olive oil": 8,
+      "nutmeg": 1,
+      "chives": 10,
+      "white pepper": 2
+    },
+    "instructions": [
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Add cauliflower and stock; simmer 12 minutes.",
+      "Add cottage cheese; blend completely smooth.",
+      "Season with nutmeg and white pepper.",
+      "Serve topped with chives."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 292,
+      "protein_g": 22,
+      "carbs_g": 24,
+      "fat_g": 12
+    },
+    "tags": ["soup", "cauliflower", "creamy", "low-carb"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["low_carb", "gut_friendly", "hormone_support", "comfort_food"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["bloating", "cramps", "fatigue"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 6,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["cottage cheese"], "carbs": ["cauliflower"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 30g grated cheddar on top for extra calcium and +8g fat on rest days."]
+    }
+  },
+  {
+    "id": "SP028",
+    "name": "Udon Miso Salmon Noodle Soup",
+    "type": "soup",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 150,
+      "udon noodles cooked": 120,
+      "white miso paste": 25,
+      "dashi stock": 400,
+      "bok choy": 100,
+      "shiitake mushrooms": 60,
+      "spring onion": 15,
+      "sesame oil": 8,
+      "nori sheet": 5
+    },
+    "instructions": [
+      "Heat dashi stock; whisk in miso paste.",
+      "Add mushrooms and bok choy; simmer 3 minutes.",
+      "Pan-sear salmon skin-side down 3 minutes; flip 2 minutes.",
+      "Add udon noodles to soup; warm 1 minute.",
+      "Serve with salmon on top, nori, and sesame oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 452,
+      "protein_g": 34,
+      "carbs_g": 52,
+      "fat_g": 12
+    },
+    "tags": ["soup", "japanese", "miso", "salmon"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["omega3_rich", "gut_friendly", "probiotic", "anti_inflammatory"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["cramps", "inflammation", "mood_swings", "gut_issues"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["udon noodles cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Swap udon for shirataki noodles to reduce carbs by ~40g on lower-carb days."]
+    }
+  }
+]

@@ -1,0 +1,1326 @@
+[
+  {
+    "id": "PG001",
+    "name": "High-Protein Pasta Bolognese",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "medium",
+    "protein_source": "lean beef mince",
+    "ingredients_grams": {
+      "lean beef mince": 160,
+      "whole wheat pasta": 80,
+      "passata": 150,
+      "onion": 60,
+      "garlic": 5,
+      "carrot": 40,
+      "celery": 40,
+      "olive oil": 8,
+      "italian herbs": 3,
+      "parmesan": 10
+    },
+    "instructions": [
+      "Cook pasta al dente; drain.",
+      "Sauté onion, carrot, celery in olive oil 5 minutes.",
+      "Add beef mince; brown 5 minutes.",
+      "Add garlic, passata, and herbs; simmer 15 minutes.",
+      "Toss with pasta; top with parmesan."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 534,
+      "protein_g": 42,
+      "carbs_g": 60,
+      "fat_g": 14
+    },
+    "tags": ["pasta", "bolognese", "classic", "high-protein"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "energy_boost", "satiety"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["lean beef mince"], "carbs": ["whole wheat pasta"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Reduce pasta to 50g to lower carbs by ~20g on lower-carb days."]
+    }
+  },
+  {
+    "id": "PG002",
+    "name": "Greek Orzo Shrimp Bake",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "shrimp",
+    "ingredients_grams": {
+      "shrimp peeled": 200,
+      "orzo pasta": 80,
+      "cherry tomatoes": 100,
+      "feta cheese": 30,
+      "spinach": 60,
+      "lemon juice": 20,
+      "olive oil": 10,
+      "garlic": 5,
+      "oregano": 3
+    },
+    "instructions": [
+      "Cook orzo until al dente; drain.",
+      "Sauté garlic in olive oil; add shrimp 2 minutes per side.",
+      "Add cherry tomatoes; cook 2 minutes.",
+      "Stir in spinach and orzo; remove from heat.",
+      "Finish with lemon juice and crumbled feta."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 456,
+      "protein_g": 32,
+      "carbs_g": 55,
+      "fat_g": 12
+    },
+    "tags": ["pasta", "shrimp", "greek", "mediterranean"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["mediterranean", "anti_inflammatory", "hormone_support", "omega3_rich"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["shrimp peeled"], "carbs": ["orzo pasta"], "fat": ["olive oil", "feta cheese"] },
+      "macro_adjustment_rules": ["Add 20g extra feta for more calcium and richer taste on rest days."]
+    }
+  },
+  {
+    "id": "PG003",
+    "name": "Farro Mushroom Truffle Bowl",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "medium",
+    "protein_source": "mixed mushrooms",
+    "ingredients_grams": {
+      "farro cooked": 180,
+      "mixed mushrooms": 200,
+      "parmesan": 20,
+      "truffle oil": 8,
+      "garlic": 5,
+      "shallot": 30,
+      "vegetable stock": 80,
+      "olive oil": 8,
+      "thyme": 3,
+      "parsley": 10
+    },
+    "instructions": [
+      "Cook farro in vegetable stock until tender, about 20 minutes.",
+      "Sauté shallot and garlic in olive oil 3 minutes.",
+      "Add mushrooms; cook 5 minutes until golden.",
+      "Fold in farro; season with thyme.",
+      "Drizzle truffle oil; top with parmesan and parsley."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 412,
+      "protein_g": 18,
+      "carbs_g": 58,
+      "fat_g": 12
+    },
+    "tags": ["grains", "farro", "mushrooms", "vegetarian"],
+    "phase_support": ["luteal", "follicular"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["gut_friendly", "hormone_support", "immune_support", "plant_based"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "immune_weakness", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["mixed mushrooms"], "carbs": ["farro cooked"], "fat": ["truffle oil", "olive oil"] },
+      "macro_adjustment_rules": ["Add 150g grilled chicken for +40g protein and complete nutrition."]
+    }
+  },
+  {
+    "id": "PG004",
+    "name": "Brown Rice Salmon Power Bowl",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 160,
+      "brown rice cooked": 200,
+      "edamame shelled": 60,
+      "avocado": 40,
+      "cucumber": 60,
+      "soy sauce": 15,
+      "sesame oil": 8,
+      "sesame seeds": 5,
+      "pickled ginger": 15
+    },
+    "instructions": [
+      "Pan-sear or bake salmon 4 minutes per side; flake.",
+      "Arrange rice in bowl; top with edamame, cucumber, and avocado.",
+      "Place salmon on top.",
+      "Drizzle soy sauce and sesame oil.",
+      "Garnish with sesame seeds and pickled ginger."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 512,
+      "protein_g": 36,
+      "carbs_g": 65,
+      "fat_g": 12
+    },
+    "tags": ["grains", "salmon", "poke-bowl", "omega-3"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["omega3_rich", "hormone_support", "anti_inflammatory", "energy_boost"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "inflammation", "cramps", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["brown rice cooked"], "fat": ["avocado", "sesame oil"] },
+      "macro_adjustment_rules": ["Swap avocado for extra cucumber to reduce fat and calories by ~80 kcal."]
+    }
+  },
+  {
+    "id": "PG005",
+    "name": "Quinoa Chickpea Stuffed Bowl",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "quinoa cooked": 160,
+      "chickpeas canned": 120,
+      "roasted vegetables": 150,
+      "tahini": 20,
+      "lemon juice": 20,
+      "garlic": 3,
+      "olive oil": 8,
+      "cumin": 2,
+      "fresh herbs": 10
+    },
+    "instructions": [
+      "Roast mixed vegetables at 200°C for 20 minutes.",
+      "Mix tahini, lemon, garlic, and water into dressing.",
+      "Build bowl: quinoa base, roasted veg, chickpeas.",
+      "Drizzle tahini dressing; add herbs and a pinch of cumin."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 428,
+      "protein_g": 28,
+      "carbs_g": 52,
+      "fat_g": 12
+    },
+    "tags": ["grains", "quinoa", "vegan", "meal-prep"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "hormone_support", "meal_prep", "gut_friendly"],
+    "best_timing": ["dinner", "rest_day"],
+    "symptom_support": ["fatigue", "hormonal_imbalance", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 8,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chickpeas canned"], "carbs": ["quinoa cooked"], "fat": ["tahini", "olive oil"] },
+      "macro_adjustment_rules": ["Add 150g grilled halloumi to significantly boost protein and fat for muscle-gain days."]
+    }
+  },
+  {
+    "id": "PG006",
+    "name": "Pesto Chicken Pasta",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "whole wheat penne": 80,
+      "basil pesto": 30,
+      "cherry tomatoes": 80,
+      "parmesan": 15,
+      "olive oil": 8,
+      "garlic": 3,
+      "pine nuts": 10
+    },
+    "instructions": [
+      "Cook pasta al dente; reserve 50ml cooking water.",
+      "Grill or pan-fry sliced chicken 4 minutes per side.",
+      "Toss pasta with pesto and pasta water.",
+      "Add chicken and cherry tomatoes.",
+      "Finish with parmesan and pine nuts."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 554,
+      "protein_g": 40,
+      "carbs_g": 58,
+      "fat_g": 18
+    },
+    "tags": ["pasta", "pesto", "chicken", "italian"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["high_protein", "energy_boost", "hormone_support", "satiety"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["whole wheat penne"], "fat": ["basil pesto", "pine nuts"] },
+      "macro_adjustment_rules": ["Reduce pesto to 15g to cut fat by ~7g and calories by ~65 kcal on cut days."]
+    }
+  },
+  {
+    "id": "PG007",
+    "name": "Lentil Pasta Arrabiata",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "lentil pasta",
+    "ingredients_grams": {
+      "red lentil pasta": 80,
+      "passata": 180,
+      "red chilli": 5,
+      "garlic": 5,
+      "olive oil": 8,
+      "basil fresh": 10,
+      "capers": 15,
+      "nutritional yeast": 10
+    },
+    "instructions": [
+      "Cook lentil pasta per packet; drain.",
+      "Sauté garlic and chilli in olive oil 1 minute.",
+      "Add passata and capers; simmer 10 minutes.",
+      "Toss pasta in sauce.",
+      "Top with fresh basil and nutritional yeast."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 408,
+      "protein_g": 24,
+      "carbs_g": 60,
+      "fat_g": 8
+    },
+    "tags": ["pasta", "vegan", "spicy", "plant-based"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "high_protein_vegan", "gut_friendly", "low_fat"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["bloating", "hormonal_imbalance", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["red lentil pasta"], "carbs": ["passata"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 100g grilled chicken to boost protein by ~30g for a higher-protein version."]
+    }
+  },
+  {
+    "id": "PG008",
+    "name": "Barley Beef Risotto-Style",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 40,
+    "difficulty": "medium",
+    "protein_source": "beef mince",
+    "ingredients_grams": {
+      "pearl barley": 80,
+      "lean beef mince": 140,
+      "beef stock": 200,
+      "onion": 50,
+      "garlic": 5,
+      "mushrooms": 80,
+      "parmesan": 15,
+      "olive oil": 8,
+      "thyme": 3
+    },
+    "instructions": [
+      "Brown beef mince; set aside.",
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Add barley; toast 1 minute.",
+      "Add mushrooms and stock ladle by ladle, stirring, ~25 minutes.",
+      "Fold in beef; finish with parmesan and thyme."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 490,
+      "protein_g": 36,
+      "carbs_g": 55,
+      "fat_g": 14
+    },
+    "tags": ["grains", "barley", "beef", "risotto"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["iron_rich", "gut_friendly", "comfort_food", "high_protein"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron", "cramps"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["lean beef mince"], "carbs": ["pearl barley"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add an extra 80g barley to bring carbs to ~80g for post-workout refuelling."]
+    }
+  },
+  {
+    "id": "PG009",
+    "name": "Tuna Sweetcorn Pasta",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "tuna canned",
+    "ingredients_grams": {
+      "whole wheat pasta": 80,
+      "tuna in water": 130,
+      "sweetcorn": 80,
+      "light mayonnaise": 20,
+      "lemon juice": 15,
+      "spring onion": 20,
+      "cucumber": 60,
+      "black pepper": 2
+    },
+    "instructions": [
+      "Cook pasta; cool under cold water.",
+      "Drain tuna; flake into bowl.",
+      "Combine all ingredients with pasta.",
+      "Season with lemon juice and black pepper.",
+      "Serve cold or room temperature."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 440,
+      "protein_g": 34,
+      "carbs_g": 58,
+      "fat_g": 8
+    },
+    "tags": ["pasta", "tuna", "cold-pasta", "meal-prep"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "meal_prep", "omega3_rich", "quick_prep"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 8,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["tuna in water"], "carbs": ["whole wheat pasta", "sweetcorn"], "fat": ["light mayonnaise"] },
+      "macro_adjustment_rules": ["Prep 3 portions at once — keeps refrigerated for 3 days."]
+    }
+  },
+  {
+    "id": "PG010",
+    "name": "Chickpea Tomato Couscous",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "couscous": 90,
+      "chickpeas canned": 120,
+      "cherry tomatoes": 100,
+      "cucumber": 60,
+      "feta cheese": 25,
+      "olive oil": 8,
+      "lemon juice": 20,
+      "fresh parsley": 15,
+      "cumin": 2
+    },
+    "instructions": [
+      "Pour boiling water over couscous (1:1 ratio); cover 5 minutes; fluff.",
+      "Halve cherry tomatoes; dice cucumber.",
+      "Combine couscous with chickpeas, veg, and herbs.",
+      "Dress with olive oil, lemon, and cumin.",
+      "Crumble feta on top."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 408,
+      "protein_g": 22,
+      "carbs_g": 62,
+      "fat_g": 8
+    },
+    "tags": ["grains", "couscous", "mediterranean", "veg"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "mediterranean", "meal_prep", "gut_friendly"],
+    "best_timing": ["anytime", "rest_day"],
+    "symptom_support": ["fatigue", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chickpeas canned"], "carbs": ["couscous"], "fat": ["olive oil", "feta cheese"] },
+      "macro_adjustment_rules": ["Add 120g grilled chicken breast to nearly double the protein to ~52g."]
+    }
+  },
+  {
+    "id": "PG011",
+    "name": "Spelt Grain Bowl with Roasted Veg",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 35,
+    "difficulty": "medium",
+    "protein_source": "edamame",
+    "ingredients_grams": {
+      "spelt cooked": 180,
+      "mixed roasted vegetables": 200,
+      "edamame shelled": 80,
+      "tahini": 20,
+      "lemon juice": 20,
+      "olive oil": 8,
+      "pumpkin seeds": 15,
+      "mixed herbs": 5
+    },
+    "instructions": [
+      "Roast vegetables at 200°C for 25 minutes.",
+      "Cook spelt per packet; drain.",
+      "Mix tahini, lemon, and water into dressing.",
+      "Build bowl: spelt, roasted veg, edamame.",
+      "Top with pumpkin seeds and tahini dressing."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 438,
+      "protein_g": 16,
+      "carbs_g": 62,
+      "fat_g": 14
+    },
+    "tags": ["grains", "spelt", "vegan", "meal-prep"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "hormone_support", "meal_prep", "gut_friendly"],
+    "best_timing": ["dinner", "rest_day"],
+    "symptom_support": ["hormonal_imbalance", "fatigue", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 7,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["edamame shelled"], "carbs": ["spelt cooked"], "fat": ["tahini", "pumpkin seeds"] },
+      "macro_adjustment_rules": ["Add 100g canned tuna for +26g protein with minimal extra fat."]
+    }
+  },
+  {
+    "id": "PG012",
+    "name": "Teriyaki Chicken Rice Noodle Bowl",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "rice noodles cooked": 130,
+      "teriyaki sauce": 40,
+      "broccoli": 100,
+      "carrot julienned": 60,
+      "sesame oil": 8,
+      "sesame seeds": 5,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Marinate chicken in teriyaki sauce 10 minutes.",
+      "Pan-fry chicken 4 minutes per side; slice.",
+      "Blanch broccoli and carrot 2 minutes.",
+      "Soak rice noodles in boiling water 3 minutes; drain.",
+      "Assemble bowl: noodles, veg, chicken; drizzle remaining teriyaki.",
+      "Top with sesame seeds and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 488,
+      "protein_g": 36,
+      "carbs_g": 68,
+      "fat_g": 8
+    },
+    "tags": ["noodles", "teriyaki", "chicken", "japanese"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "energy_boost", "hormone_support", "meal_prep"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["rice noodles cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Reduce noodles to 80g to lower carbs by ~25g for fat-loss phases."]
+    }
+  },
+  {
+    "id": "PG013",
+    "name": "Prawn Chorizo Paella",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "medium",
+    "protein_source": "king prawns",
+    "ingredients_grams": {
+      "arborio rice": 80,
+      "king prawns": 130,
+      "chorizo": 30,
+      "chicken stock": 250,
+      "bell peppers": 80,
+      "garlic": 5,
+      "smoked paprika": 3,
+      "saffron": 1,
+      "olive oil": 10,
+      "frozen peas": 50
+    },
+    "instructions": [
+      "Fry chorizo in olive oil 2 minutes; remove.",
+      "Sauté garlic and pepper in same pan.",
+      "Add rice, paprika, and saffron; stir 1 minute.",
+      "Pour in stock; cook uncovered 15 minutes without stirring.",
+      "Add prawns and peas last 3 minutes.",
+      "Return chorizo; allow socarrat crust to form."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 528,
+      "protein_g": 34,
+      "carbs_g": 62,
+      "fat_g": 16
+    },
+    "tags": ["grains", "paella", "spanish", "seafood"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "hormone_support", "iron_rich", "energy_boost"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["king prawns"], "carbs": ["arborio rice"], "fat": ["chorizo", "olive oil"] },
+      "macro_adjustment_rules": ["Omit chorizo to reduce fat by ~8g and save ~80 kcal for leaner days."]
+    }
+  },
+  {
+    "id": "PG014",
+    "name": "Black Bean Rice Bowl",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "black beans",
+    "ingredients_grams": {
+      "brown rice cooked": 200,
+      "black beans canned": 150,
+      "corn": 60,
+      "red onion": 40,
+      "avocado": 40,
+      "lime juice": 20,
+      "cumin": 2,
+      "coriander fresh": 10,
+      "olive oil": 8
+    },
+    "instructions": [
+      "Warm black beans with cumin in a pan 3 minutes.",
+      "Build bowl: rice, black beans, corn, red onion.",
+      "Top with diced avocado and fresh coriander.",
+      "Drizzle lime juice and olive oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 450,
+      "protein_g": 20,
+      "carbs_g": 70,
+      "fat_g": 10
+    },
+    "tags": ["grains", "vegan", "mexican", "high-carb"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "gut_friendly", "hormone_support", "high_fibre"],
+    "best_timing": ["dinner", "rest_day"],
+    "symptom_support": ["fatigue", "bloating", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["black beans canned"], "carbs": ["brown rice cooked"], "fat": ["avocado"] },
+      "macro_adjustment_rules": ["Add 100g grilled chicken for +30g protein to convert to a complete macro meal."]
+    }
+  },
+  {
+    "id": "PG015",
+    "name": "Butter Chicken Basmati",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "medium",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "basmati rice cooked": 180,
+      "butter chicken sauce": 120,
+      "Greek yogurt": 40,
+      "onion": 50,
+      "garlic": 5,
+      "ginger": 5,
+      "ghee": 8,
+      "coriander fresh": 10
+    },
+    "instructions": [
+      "Marinate chicken in yogurt, garlic, ginger 10 minutes.",
+      "Cook in ghee 4 minutes per side; slice.",
+      "Simmer butter chicken sauce in same pan 5 minutes.",
+      "Return chicken to sauce; coat well.",
+      "Serve over basmati rice; garnish with coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 516,
+      "protein_g": 38,
+      "carbs_g": 55,
+      "fat_g": 16
+    },
+    "tags": ["grains", "indian", "butter-chicken", "comfort"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["high_protein", "comfort_food", "hormone_support", "satiety"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["cramps", "fatigue", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["basmati rice cooked"], "fat": ["ghee"] },
+      "macro_adjustment_rules": ["Reduce rice to 120g to lower carbs by ~22g for fat-loss days."]
+    }
+  },
+  {
+    "id": "PG016",
+    "name": "Turkey Meatball Pasta",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "medium",
+    "protein_source": "turkey mince",
+    "ingredients_grams": {
+      "turkey mince": 180,
+      "whole wheat spaghetti": 80,
+      "passata": 150,
+      "egg": 30,
+      "garlic": 5,
+      "parmesan": 15,
+      "italian herbs": 3,
+      "olive oil": 8,
+      "basil fresh": 8
+    },
+    "instructions": [
+      "Mix turkey, egg, garlic, herbs, half the parmesan; form meatballs.",
+      "Cook pasta; reserve some cooking water.",
+      "Brown meatballs in olive oil 4 minutes per side.",
+      "Simmer passata with meatballs 10 minutes.",
+      "Toss pasta in sauce; top with parmesan and basil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 532,
+      "protein_g": 44,
+      "carbs_g": 62,
+      "fat_g": 12
+    },
+    "tags": ["pasta", "turkey", "meatballs", "high-protein"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["high_protein", "lean_protein", "energy_boost", "satiety"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["turkey mince"], "carbs": ["whole wheat spaghetti"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Make a double batch of meatballs; freeze half for a quick future meal."]
+    }
+  },
+  {
+    "id": "PG017",
+    "name": "Salmon Dill Orzo",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 160,
+      "orzo": 80,
+      "Greek yogurt": 50,
+      "dill fresh": 10,
+      "capers": 15,
+      "lemon juice": 20,
+      "olive oil": 10,
+      "garlic": 3,
+      "spinach": 60
+    },
+    "instructions": [
+      "Cook orzo; drain and cool slightly.",
+      "Pan-fry salmon 3 minutes per side; flake.",
+      "Wilt spinach in the same pan.",
+      "Mix yogurt, dill, capers, lemon into sauce.",
+      "Toss orzo with spinach and sauce; top with salmon."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 496,
+      "protein_g": 36,
+      "carbs_g": 52,
+      "fat_g": 16
+    },
+    "tags": ["pasta", "salmon", "dill", "omega-3"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["omega3_rich", "hormone_support", "anti_inflammatory", "high_protein"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["cramps", "inflammation", "fatigue", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["orzo"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Serve chilled as a pasta salad — works well for meal-prepped lunches."]
+    }
+  },
+  {
+    "id": "PG018",
+    "name": "Mushroom Stroganoff Pappardelle",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "mixed mushrooms",
+    "ingredients_grams": {
+      "pappardelle pasta": 80,
+      "mixed mushrooms": 250,
+      "Greek yogurt": 60,
+      "onion": 50,
+      "garlic": 5,
+      "vegetable stock": 100,
+      "olive oil": 10,
+      "smoked paprika": 3,
+      "dill fresh": 8,
+      "dijon mustard": 10
+    },
+    "instructions": [
+      "Cook pappardelle al dente; drain.",
+      "Sauté onion and garlic in olive oil 3 minutes.",
+      "Add mushrooms; cook 5 minutes until golden.",
+      "Add stock, paprika, and mustard; simmer 5 minutes.",
+      "Stir in yogurt (off heat); toss with pasta and dill."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 482,
+      "protein_g": 20,
+      "carbs_g": 60,
+      "fat_g": 18
+    },
+    "tags": ["pasta", "stroganoff", "mushrooms", "vegetarian"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["gut_friendly", "immune_support", "comfort_food", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "mood_swings", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["mixed mushrooms", "Greek yogurt"], "carbs": ["pappardelle pasta"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 120g beef strips for extra protein and iron on menstrual days."]
+    }
+  },
+  {
+    "id": "PG019",
+    "name": "Beef Rendang Rice",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 45,
+    "difficulty": "hard",
+    "protein_source": "beef chuck",
+    "ingredients_grams": {
+      "beef chuck": 150,
+      "jasmine rice cooked": 180,
+      "coconut milk": 80,
+      "lemongrass": 10,
+      "galangal": 8,
+      "red chilli": 10,
+      "garlic": 5,
+      "shallots": 30,
+      "turmeric": 2,
+      "coconut oil": 12
+    },
+    "instructions": [
+      "Blend shallots, garlic, chilli, galangal, lemongrass into paste.",
+      "Fry paste in coconut oil 3 minutes.",
+      "Add beef; coat in paste.",
+      "Add coconut milk and turmeric; simmer 35 minutes until dry.",
+      "Serve over jasmine rice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 598,
+      "protein_g": 40,
+      "carbs_g": 60,
+      "fat_g": 22
+    },
+    "tags": ["grains", "indonesian", "beef", "rendang"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["iron_rich", "high_protein", "comfort_food", "anti_inflammatory"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron", "cramps"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "heavy",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "complex"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef chuck"], "carbs": ["jasmine rice cooked"], "fat": ["coconut milk", "coconut oil"] },
+      "macro_adjustment_rules": ["Cook a large batch of rendang; it improves overnight and freezes well for 3 months."]
+    }
+  },
+  {
+    "id": "PG020",
+    "name": "Chicken Tikka Masala Rice",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "medium",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 170,
+      "basmati rice cooked": 170,
+      "tikka masala sauce jar": 120,
+      "Greek yogurt": 40,
+      "onion": 50,
+      "garlic": 5,
+      "ginger": 5,
+      "coconut oil": 8,
+      "coriander fresh": 10
+    },
+    "instructions": [
+      "Marinate chicken in yogurt, garlic, ginger 10 minutes.",
+      "Cook chicken in coconut oil 4 minutes per side; slice.",
+      "Sauté onion 3 minutes; add tikka masala sauce.",
+      "Simmer chicken in sauce 8 minutes.",
+      "Serve over rice; garnish with coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 544,
+      "protein_g": 42,
+      "carbs_g": 58,
+      "fat_g": 16
+    },
+    "tags": ["grains", "indian", "tikka", "comfort"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["high_protein", "comfort_food", "hormone_support", "anti_inflammatory"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["cramps", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["basmati rice cooked"], "fat": ["coconut oil"] },
+      "macro_adjustment_rules": ["Substitute chicken for paneer for a vegetarian version with similar macros."]
+    }
+  },
+  {
+    "id": "PG021",
+    "name": "Vegan Lentil Bolognese Pasta",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "lentils",
+    "ingredients_grams": {
+      "whole wheat pasta": 80,
+      "green lentils cooked": 150,
+      "passata": 150,
+      "carrot": 50,
+      "celery": 40,
+      "onion": 50,
+      "garlic": 5,
+      "olive oil": 8,
+      "italian herbs": 3,
+      "nutritional yeast": 10
+    },
+    "instructions": [
+      "Cook pasta al dente; drain.",
+      "Sauté onion, carrot, celery in olive oil 5 minutes.",
+      "Add garlic, lentils, passata, and herbs; simmer 15 minutes.",
+      "Toss pasta in sauce; top with nutritional yeast."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 434,
+      "protein_g": 22,
+      "carbs_g": 64,
+      "fat_g": 10
+    },
+    "tags": ["pasta", "vegan", "bolognese", "plant-based"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "iron_rich", "gut_friendly", "high_fibre"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 6,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["green lentils cooked"], "carbs": ["whole wheat pasta"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Double lentils to 300g for a high-fibre, high-protein vegan muscle-gain version."]
+    }
+  },
+  {
+    "id": "PG022",
+    "name": "Harissa Lamb Couscous",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "lamb leg",
+    "ingredients_grams": {
+      "lamb leg lean": 150,
+      "couscous": 90,
+      "harissa paste": 20,
+      "cherry tomatoes": 80,
+      "chickpeas canned": 60,
+      "olive oil": 10,
+      "lemon juice": 20,
+      "mint fresh": 10,
+      "cucumber": 60
+    },
+    "instructions": [
+      "Pour boiling chicken stock over couscous; cover 5 minutes; fluff.",
+      "Rub lamb with harissa; grill or pan-fry 3 minutes per side; slice.",
+      "Warm chickpeas; combine with couscous, tomatoes, cucumber.",
+      "Dress with olive oil and lemon; top with lamb and mint."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 534,
+      "protein_g": 38,
+      "carbs_g": 55,
+      "fat_g": 18
+    },
+    "tags": ["grains", "lamb", "moroccan", "harissa"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["iron_rich", "high_protein", "hormone_support", "anti_inflammatory"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron", "cramps"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["lamb leg lean"], "carbs": ["couscous"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Swap couscous for cauliflower couscous to reduce carbs by ~45g on lower-carb days."]
+    }
+  },
+  {
+    "id": "PG023",
+    "name": "Sesame Buckwheat Noodle Salad",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "edamame",
+    "ingredients_grams": {
+      "buckwheat soba noodles cooked": 150,
+      "edamame shelled": 100,
+      "cucumber": 80,
+      "carrot": 60,
+      "sesame oil": 10,
+      "tamari": 15,
+      "rice vinegar": 10,
+      "sesame seeds": 10,
+      "ginger fresh": 5,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Cook soba noodles; rinse under cold water.",
+      "Mix tamari, rice vinegar, sesame oil, and ginger into dressing.",
+      "Toss noodles with edamame, cucumber, and carrot.",
+      "Dress and toss; top with sesame seeds and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 456,
+      "protein_g": 20,
+      "carbs_g": 58,
+      "fat_g": 16
+    },
+    "tags": ["noodles", "soba", "japanese", "vegan"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "hormone_support", "meal_prep", "gut_friendly"],
+    "best_timing": ["anytime", "rest_day"],
+    "symptom_support": ["fatigue", "hormonal_imbalance", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["edamame shelled"], "carbs": ["buckwheat soba noodles cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 150g grilled tofu to bring protein up to ~40g for a complete vegan meal."]
+    }
+  },
+  {
+    "id": "PG024",
+    "name": "High-Protein Mac & Cheese",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "cottage cheese",
+    "ingredients_grams": {
+      "whole wheat macaroni": 80,
+      "cottage cheese": 200,
+      "reduced fat cheddar": 40,
+      "milk": 50,
+      "dijon mustard": 5,
+      "garlic powder": 2,
+      "smoked paprika": 2,
+      "nutritional yeast": 10
+    },
+    "instructions": [
+      "Cook macaroni; drain.",
+      "Blend cottage cheese, milk, mustard, and garlic powder until smooth.",
+      "Heat in pan over low heat; add cheddar and nutritional yeast.",
+      "Toss pasta in cheese sauce.",
+      "Sprinkle paprika."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 566,
+      "protein_g": 50,
+      "carbs_g": 60,
+      "fat_g": 14
+    },
+    "tags": ["pasta", "mac-cheese", "high-protein", "comfort"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["high_protein", "comfort_food", "muscle_recovery", "satiety"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["cravings", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["cottage cheese"], "carbs": ["whole wheat macaroni"], "fat": ["reduced fat cheddar"] },
+      "macro_adjustment_rules": ["Swap cheddar for light mozzarella to reduce fat by ~5g and keep it leaner."]
+    }
+  },
+  {
+    "id": "PG025",
+    "name": "Bibimbap Rice Bowl",
+    "type": "pasta_grain",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "medium",
+    "protein_source": "beef mince",
+    "ingredients_grams": {
+      "short grain rice cooked": 180,
+      "lean beef mince": 100,
+      "spinach wilted": 80,
+      "carrot julienned": 60,
+      "zucchini julienned": 60,
+      "egg": 55,
+      "sesame oil": 10,
+      "soy sauce": 15,
+      "gochujang": 15,
+      "sesame seeds": 5
+    },
+    "instructions": [
+      "Season and cook beef mince 3 minutes.",
+      "Sauté spinach, carrot, and zucchini separately in sesame oil.",
+      "Fry egg sunny-side up.",
+      "Arrange rice in bowl; top with beef, vegetables, and egg.",
+      "Drizzle gochujang and sesame oil; mix before eating."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 502,
+      "protein_g": 32,
+      "carbs_g": 62,
+      "fat_g": 14
+    },
+    "tags": ["grains", "korean", "bibimbap", "balanced"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "maintenance", "muscle_gain", "recomp"],
+    "functional_tags": ["iron_rich", "hormone_support", "balanced_macros", "energy_boost"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["lean beef mince"], "carbs": ["short grain rice cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Swap beef for tofu to create a plant-based version with similar macros."]
+    }
+  }
+]

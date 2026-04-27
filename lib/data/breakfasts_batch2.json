@@ -1,0 +1,1020 @@
+[
+  {
+    "id": "BF009",
+    "name": "Banana Oat Protein Pancakes",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "banana ripe": 100,
+      "rolled oats": 60,
+      "vanilla protein powder": 25,
+      "egg": 55,
+      "almond milk": 60,
+      "cinnamon": 2,
+      "coconut oil": 8,
+      "fresh berries": 60
+    },
+    "instructions": [
+      "Blend banana, oats, protein powder, egg, and almond milk until smooth.",
+      "Heat coconut oil in non-stick pan over medium heat.",
+      "Pour small rounds; cook 2 minutes per side.",
+      "Serve with fresh berries."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 372,
+      "protein_g": 22,
+      "carbs_g": 52,
+      "fat_g": 8
+    },
+    "tags": ["breakfast", "pancakes", "high-protein", "banana"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "energy_boost", "hormone_support", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_energy"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "egg"], "carbs": ["rolled oats", "banana ripe"], "fat": ["coconut oil"] },
+      "macro_adjustment_rules": ["Add 15g peanut butter as topping for +90 kcal and healthy fats."]
+    }
+  },
+  {
+    "id": "BF010",
+    "name": "Shakshuka",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "eggs": 165,
+      "diced tomatoes": 200,
+      "red pepper": 80,
+      "onion": 50,
+      "garlic": 5,
+      "cumin": 3,
+      "smoked paprika": 3,
+      "cayenne pepper": 1,
+      "olive oil": 10,
+      "feta crumbled": 20,
+      "parsley": 8
+    },
+    "instructions": [
+      "Sauté onion, pepper, and garlic in olive oil 5 minutes.",
+      "Add tomatoes and spices; simmer 8 minutes.",
+      "Make wells; crack eggs in.",
+      "Cover and cook 5–7 minutes until whites are set.",
+      "Top with feta and parsley."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 308,
+      "protein_g": 22,
+      "carbs_g": 20,
+      "fat_g": 16
+    },
+    "tags": ["breakfast", "shakshuka", "mediterranean", "eggs"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["anti_inflammatory", "hormone_support", "gut_friendly", "iron_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["eggs", "feta crumbled"], "carbs": ["diced tomatoes", "red pepper"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Serve with 1 slice wholegrain bread to add ~120 kcal and extra complex carbs."]
+    }
+  },
+  {
+    "id": "BF011",
+    "name": "Açaí Protein Breakfast Bowl",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "açaí purée frozen": 100,
+      "vanilla protein powder": 25,
+      "banana frozen": 80,
+      "almond milk": 100,
+      "granola": 30,
+      "mixed berries": 60,
+      "honey": 8
+    },
+    "instructions": [
+      "Blend açaí, protein powder, banana, and almond milk until thick.",
+      "Pour into bowl.",
+      "Top with granola, berries, and honey."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 362,
+      "protein_g": 20,
+      "carbs_g": 48,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "açaí", "bowl", "antioxidant"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["antioxidant_rich", "hormone_support", "energy_boost", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["banana frozen", "granola"], "fat": [] },
+      "macro_adjustment_rules": ["Add 15g nut butter drizzle for +90 kcal of healthy fat and satiety."]
+    }
+  },
+  {
+    "id": "BF012",
+    "name": "Smoked Salmon Whole Grain Bagel",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "smoked salmon",
+    "ingredients_grams": {
+      "smoked salmon": 100,
+      "whole grain bagel": 90,
+      "light cream cheese": 30,
+      "capers": 10,
+      "red onion thin sliced": 20,
+      "cucumber": 40,
+      "dill fresh": 5,
+      "lemon juice": 10
+    },
+    "instructions": [
+      "Toast bagel.",
+      "Spread cream cheese on each half.",
+      "Layer smoked salmon, capers, red onion, and cucumber.",
+      "Finish with fresh dill and lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 402,
+      "protein_g": 30,
+      "carbs_g": 48,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "salmon", "bagel", "omega-3"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["omega3_rich", "hormone_support", "high_protein", "anti_inflammatory"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["smoked salmon"], "carbs": ["whole grain bagel"], "fat": ["light cream cheese"] },
+      "macro_adjustment_rules": ["Add a scrambled egg to boost protein by ~6g for a more filling version."]
+    }
+  },
+  {
+    "id": "BF013",
+    "name": "Mushroom Egg White Omelette",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "egg whites",
+    "ingredients_grams": {
+      "egg whites": 200,
+      "mixed mushrooms": 150,
+      "spinach": 60,
+      "garlic": 3,
+      "olive oil": 8,
+      "herbs mixed": 3,
+      "light feta": 20
+    },
+    "instructions": [
+      "Sauté mushrooms and garlic in olive oil 3 minutes until golden.",
+      "Add spinach; cook 1 minute.",
+      "Whisk egg whites with herbs; pour over vegetables.",
+      "Cook on low 3 minutes; fold omelette.",
+      "Crumble feta on top."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 228,
+      "protein_g": 28,
+      "carbs_g": 10,
+      "fat_g": 8
+    },
+    "tags": ["breakfast", "omelette", "low-calorie", "high-protein"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_calorie", "low_carb", "gut_friendly"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["fatigue", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["egg whites"], "carbs": ["mixed mushrooms", "spinach"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 1 whole egg to egg whites for richer flavour and extra healthy fats."]
+    }
+  },
+  {
+    "id": "BF014",
+    "name": "Overnight Protein Oats Jar",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "rolled oats": 70,
+      "vanilla protein powder": 25,
+      "almond milk": 180,
+      "chia seeds": 15,
+      "Greek yogurt": 60,
+      "mixed berries": 60,
+      "honey": 10
+    },
+    "instructions": [
+      "Stir together oats, protein powder, chia seeds, and almond milk.",
+      "Mix in yogurt and honey.",
+      "Refrigerate overnight or at least 4 hours.",
+      "Top with fresh berries before serving."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 418,
+      "protein_g": 24,
+      "carbs_g": 58,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "overnight-oats", "meal-prep", "no-cook"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["meal_prep", "gut_friendly", "hormone_support", "probiotic"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "gut_issues", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 9,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "Greek yogurt"], "carbs": ["rolled oats", "mixed berries"], "fat": ["chia seeds"] },
+      "macro_adjustment_rules": ["Prep 5 jars on Sunday — keeps refrigerated all week for zero-effort breakfasts."]
+    }
+  },
+  {
+    "id": "BF015",
+    "name": "Berry Protein Waffle",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "vanilla protein powder": 30,
+      "oat flour": 50,
+      "egg": 55,
+      "almond milk": 80,
+      "baking powder": 5,
+      "coconut oil": 8,
+      "mixed berries": 80,
+      "Greek yogurt": 50
+    },
+    "instructions": [
+      "Mix protein powder, oat flour, and baking powder.",
+      "Whisk egg, almond milk, and coconut oil; combine with dry ingredients.",
+      "Cook in preheated waffle iron 3–4 minutes.",
+      "Serve topped with Greek yogurt and mixed berries."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 386,
+      "protein_g": 28,
+      "carbs_g": 46,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "waffle", "high-protein", "berries"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "gut_friendly", "hormone_support", "antioxidant_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_energy"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "egg"], "carbs": ["oat flour", "mixed berries"], "fat": ["coconut oil"] },
+      "macro_adjustment_rules": ["Freeze extra waffles; toast from frozen for a 2-minute breakfast."]
+    }
+  },
+  {
+    "id": "BF016",
+    "name": "Avocado Egg Boats",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "avocado": 180,
+      "eggs": 110,
+      "cherry tomatoes": 50,
+      "feta crumbled": 15,
+      "chilli flakes": 2,
+      "lemon juice": 10,
+      "fresh herbs": 5
+    },
+    "instructions": [
+      "Halve avocado; remove stone and scoop out extra flesh.",
+      "Crack one egg into each avocado half.",
+      "Bake at 200°C for 12–15 minutes until whites set.",
+      "Top with cherry tomatoes, feta, chilli flakes, and herbs."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 294,
+      "protein_g": 18,
+      "carbs_g": 8,
+      "fat_g": 22
+    },
+    "tags": ["breakfast", "avocado", "eggs", "keto-friendly"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["healthy_fats", "hormone_support", "low_carb", "anti_inflammatory"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["cramps", "mood_swings", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 1,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["eggs"], "carbs": ["cherry tomatoes"], "fat": ["avocado"] },
+      "macro_adjustment_rules": ["Serve with 1 slice wholegrain toast to add ~120 kcal and complex carbs."]
+    }
+  },
+  {
+    "id": "BF017",
+    "name": "Mango Lassi Protein Parfait",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "Greek yogurt": 180,
+      "mango diced": 120,
+      "vanilla protein powder": 20,
+      "cardamom": 1,
+      "granola": 30,
+      "honey": 8,
+      "rose water": 2
+    },
+    "instructions": [
+      "Mix Greek yogurt with protein powder, cardamom, and rose water.",
+      "Layer in glass: yogurt base, mango, granola.",
+      "Repeat layers; drizzle honey on top.",
+      "Serve immediately or chill."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 360,
+      "protein_g": 22,
+      "carbs_g": 50,
+      "fat_g": 8
+    },
+    "tags": ["breakfast", "parfait", "mango", "probiotic"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["probiotic", "gut_friendly", "hormone_support", "antioxidant_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "gut_issues", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt", "vanilla protein powder"], "carbs": ["mango diced", "granola"], "fat": [] },
+      "macro_adjustment_rules": ["Skip granola for a lower-carb version at ~280 kcal."]
+    }
+  },
+  {
+    "id": "BF018",
+    "name": "Turkey Veggie Breakfast Hash",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "turkey mince",
+    "ingredients_grams": {
+      "turkey mince": 160,
+      "sweet potato diced": 100,
+      "bell pepper": 80,
+      "onion": 50,
+      "garlic": 5,
+      "smoked paprika": 3,
+      "olive oil": 8,
+      "kale": 50,
+      "egg": 55
+    },
+    "instructions": [
+      "Cook sweet potato in olive oil 6 minutes until tender.",
+      "Add onion, pepper, and garlic; cook 3 minutes.",
+      "Add turkey mince; brown 4 minutes.",
+      "Season with paprika; add kale and cook 2 minutes.",
+      "Make a well; crack in egg and cook to preference."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 360,
+      "protein_g": 32,
+      "carbs_g": 30,
+      "fat_g": 12
+    },
+    "tags": ["breakfast", "hash", "turkey", "savoury"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "hormone_support", "iron_rich", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["turkey mince", "egg"], "carbs": ["sweet potato diced"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add a second egg for +70 kcal and extra protein and healthy fats."]
+    }
+  },
+  {
+    "id": "BF019",
+    "name": "Almond Flour Protein Crepes",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "almond flour": 40,
+      "vanilla protein powder": 25,
+      "eggs": 110,
+      "almond milk": 80,
+      "coconut oil": 8,
+      "Greek yogurt": 80,
+      "mixed berries": 60
+    },
+    "instructions": [
+      "Whisk almond flour, protein powder, eggs, and almond milk into thin batter.",
+      "Heat coconut oil in pan over medium heat.",
+      "Pour thin crepe rounds; cook 90 seconds each side.",
+      "Fill with Greek yogurt and berries; fold and serve."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 336,
+      "protein_g": 24,
+      "carbs_g": 24,
+      "fat_g": 16
+    },
+    "tags": ["breakfast", "crepes", "gluten-free", "low-carb"],
+    "phase_support": ["luteal", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["gluten_free", "high_protein", "low_carb", "hormone_support"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["bloating", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "eggs"], "carbs": ["mixed berries"], "fat": ["almond flour", "coconut oil"] },
+      "macro_adjustment_rules": ["Fill with smoked salmon and cream cheese for a savoury high-protein version."]
+    }
+  },
+  {
+    "id": "BF020",
+    "name": "Green Protein Omelette",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "eggs": 165,
+      "spinach": 80,
+      "kale": 40,
+      "avocado": 50,
+      "garlic": 3,
+      "olive oil": 8,
+      "lemon juice": 10,
+      "chilli flakes": 2
+    },
+    "instructions": [
+      "Briefly wilt spinach and kale in olive oil with garlic; remove.",
+      "Whisk eggs; pour into pan.",
+      "When halfway set, add greens; fold omelette.",
+      "Top with sliced avocado, lemon juice, and chilli flakes."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 286,
+      "protein_g": 30,
+      "carbs_g": 10,
+      "fat_g": 14
+    },
+    "tags": ["breakfast", "omelette", "green", "high-protein"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_carb", "iron_rich", "anti_inflammatory"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["fatigue", "low_iron", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["eggs"], "carbs": ["spinach", "kale"], "fat": ["avocado", "olive oil"] },
+      "macro_adjustment_rules": ["Serve with 1 slice rye bread to add ~100 kcal and fibre."]
+    }
+  },
+  {
+    "id": "BF021",
+    "name": "Buckwheat Porridge with Nuts",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "hemp seeds",
+    "ingredients_grams": {
+      "buckwheat groats": 70,
+      "almond milk": 200,
+      "hemp seeds": 20,
+      "mixed nuts chopped": 20,
+      "cinnamon": 2,
+      "honey": 10,
+      "blueberries": 60
+    },
+    "instructions": [
+      "Cook buckwheat in almond milk 12 minutes, stirring occasionally.",
+      "Stir in hemp seeds and cinnamon.",
+      "Top with mixed nuts, blueberries, and honey."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 340,
+      "protein_g": 14,
+      "carbs_g": 52,
+      "fat_g": 8
+    },
+    "tags": ["breakfast", "porridge", "gluten-free", "buckwheat"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["gluten_free", "gut_friendly", "hormone_support", "antioxidant_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "bloating", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["hemp seeds"], "carbs": ["buckwheat groats", "blueberries"], "fat": ["mixed nuts chopped"] },
+      "macro_adjustment_rules": ["Add 25g protein powder stirred in to boost protein to ~36g."]
+    }
+  },
+  {
+    "id": "BF022",
+    "name": "Full English Protein Plate",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "eggs": 110,
+      "turkey sausages": 100,
+      "mushrooms": 100,
+      "cherry tomatoes": 80,
+      "spinach": 60,
+      "baked beans": 80,
+      "olive oil": 8
+    },
+    "instructions": [
+      "Grill turkey sausages 8 minutes turning occasionally.",
+      "Sauté mushrooms in olive oil 3 minutes.",
+      "Griddle tomatoes 2 minutes.",
+      "Scramble or poach eggs.",
+      "Warm baked beans; wilt spinach in residual heat.",
+      "Plate everything together."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 410,
+      "protein_g": 42,
+      "carbs_g": 20,
+      "fat_g": 18
+    },
+    "tags": ["breakfast", "full-english", "high-protein", "hearty"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "hormone_support", "satiety"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["eggs", "turkey sausages"], "carbs": ["baked beans", "cherry tomatoes"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 1 slice wholegrain toast to increase carbs by ~20g on training days."]
+    }
+  },
+  {
+    "id": "BF023",
+    "name": "Muesli Protein Breakfast Bowl",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "muesli unsweetened": 70,
+      "Greek yogurt": 150,
+      "vanilla protein powder": 15,
+      "almond milk": 60,
+      "apple grated": 60,
+      "mixed seeds": 15,
+      "cinnamon": 2
+    },
+    "instructions": [
+      "Mix muesli, almond milk, and grated apple; stand 5 minutes.",
+      "Stir protein powder into yogurt until smooth.",
+      "Layer muesli base and yogurt.",
+      "Top with seeds and cinnamon."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 412,
+      "protein_g": 20,
+      "carbs_g": 56,
+      "fat_g": 12
+    },
+    "tags": ["breakfast", "muesli", "no-cook", "fibre-rich"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["gut_friendly", "hormone_support", "meal_prep", "probiotic"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "fatigue", "gut_issues"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 7,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt", "vanilla protein powder"], "carbs": ["muesli unsweetened", "apple grated"], "fat": ["mixed seeds"] },
+      "macro_adjustment_rules": ["Soak overnight for a Bircher-style muesli with softer texture."]
+    }
+  },
+  {
+    "id": "BF024",
+    "name": "Blueberry Ricotta Toast",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "ricotta",
+    "ingredients_grams": {
+      "sourdough bread": 80,
+      "ricotta": 100,
+      "blueberries": 100,
+      "honey": 10,
+      "lemon zest": 3,
+      "mint fresh": 5,
+      "almonds sliced": 10
+    },
+    "instructions": [
+      "Toast sourdough slices.",
+      "Spread ricotta generously over toast.",
+      "Top with blueberries, lemon zest, and sliced almonds.",
+      "Drizzle honey; garnish with mint."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 346,
+      "protein_g": 18,
+      "carbs_g": 46,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "toast", "ricotta", "blueberries"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["antioxidant_rich", "calcium_rich", "hormone_support", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["ricotta"], "carbs": ["sourdough bread", "blueberries"], "fat": ["almonds sliced"] },
+      "macro_adjustment_rules": ["Add 20g protein powder mixed into ricotta for a high-protein version at ~478 kcal."]
+    }
+  },
+  {
+    "id": "BF025",
+    "name": "Egg & Lentil Breakfast Bowl",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "eggs",
+    "ingredients_grams": {
+      "eggs": 110,
+      "lentils cooked": 100,
+      "cherry tomatoes": 80,
+      "spinach": 60,
+      "garlic": 3,
+      "cumin": 2,
+      "olive oil": 8,
+      "lemon juice": 10,
+      "feta crumbled": 15
+    },
+    "instructions": [
+      "Sauté garlic and cumin in olive oil 1 minute.",
+      "Add lentils and tomatoes; cook 3 minutes.",
+      "Add spinach; wilt 1 minute.",
+      "Make wells; add eggs; cover 3 minutes.",
+      "Finish with lemon juice and feta."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 368,
+      "protein_g": 26,
+      "carbs_g": 38,
+      "fat_g": 12
+    },
+    "tags": ["breakfast", "savoury", "eggs", "lentils"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "high_protein", "gut_friendly", "hormone_support"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_iron", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["eggs"], "carbs": ["lentils cooked"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Double lentils to 200g for a more filling, fibre-rich breakfast."]
+    }
+  },
+  {
+    "id": "BF026",
+    "name": "Sweet Potato Toast with Almond Butter",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "almond butter",
+    "ingredients_grams": {
+      "sweet potato sliced lengthways": 200,
+      "almond butter": 30,
+      "banana sliced": 60,
+      "cinnamon": 2,
+      "hemp seeds": 10,
+      "honey": 8
+    },
+    "instructions": [
+      "Toast sweet potato slices in toaster on highest setting twice (or grill 8 minutes per side).",
+      "Spread almond butter generously.",
+      "Top with banana, hemp seeds, cinnamon, and honey."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 370,
+      "protein_g": 10,
+      "carbs_g": 42,
+      "fat_g": 18
+    },
+    "tags": ["breakfast", "sweet-potato-toast", "gluten-free", "vegan"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["gluten_free", "plant_based", "hormone_support", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["cramps", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["almond butter", "hemp seeds"], "carbs": ["sweet potato sliced lengthways", "banana sliced"], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Top with a soft-boiled egg to add +6g protein with minimal extra calories."]
+    }
+  },
+  {
+    "id": "BF027",
+    "name": "Cinnamon Protein French Toast",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "whole grain bread": 80,
+      "eggs": 110,
+      "vanilla protein powder": 20,
+      "almond milk": 60,
+      "cinnamon": 3,
+      "coconut oil": 8,
+      "Greek yogurt": 60,
+      "strawberries sliced": 60
+    },
+    "instructions": [
+      "Whisk eggs, protein powder, almond milk, and cinnamon.",
+      "Dip bread slices in egg mixture 30 seconds per side.",
+      "Cook in coconut oil over medium heat 2 minutes per side.",
+      "Serve with Greek yogurt and sliced strawberries."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 378,
+      "protein_g": 30,
+      "carbs_g": 42,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "french-toast", "high-protein", "comfort"],
+    "phase_support": ["luteal", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "comfort_food", "hormone_support", "satiety"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["cravings", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["eggs", "vanilla protein powder"], "carbs": ["whole grain bread", "strawberries sliced"], "fat": ["coconut oil"] },
+      "macro_adjustment_rules": ["Drizzle with maple syrup (+40 kcal) on extra-indulgent days; still fits fat_loss targets."]
+    }
+  },
+  {
+    "id": "BF028",
+    "name": "Baked Oat Protein Cup",
+    "type": "breakfast",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "rolled oats": 60,
+      "vanilla protein powder": 25,
+      "egg": 55,
+      "almond milk": 100,
+      "blueberries": 60,
+      "almond butter": 15,
+      "baking powder": 3,
+      "cinnamon": 2,
+      "honey": 8
+    },
+    "instructions": [
+      "Mix oats, protein powder, baking powder, cinnamon, egg, milk, honey, and almond butter.",
+      "Fold in blueberries.",
+      "Pour into ramekin or muffin tin.",
+      "Bake at 180°C for 18–20 minutes until set.",
+      "Serve warm or refrigerate for next day."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 370,
+      "protein_g": 22,
+      "carbs_g": 48,
+      "fat_g": 10
+    },
+    "tags": ["breakfast", "baked-oats", "meal-prep", "high-protein"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["meal_prep", "gut_friendly", "hormone_support", "high_protein"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_energy", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 8,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "egg"], "carbs": ["rolled oats", "blueberries"], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Bake a batch of 4 in a muffin tin — keeps in fridge 4 days, reheat 60 seconds."]
+    }
+  }
+]

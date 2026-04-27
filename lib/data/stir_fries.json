@@ -1,0 +1,1321 @@
+[
+  {
+    "id": "STR001",
+    "name": "Chicken Broccoli Ginger Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "broccoli florets": 200,
+      "bell pepper": 80,
+      "snap peas": 60,
+      "ginger fresh": 10,
+      "garlic": 5,
+      "soy sauce low sodium": 20,
+      "sesame oil": 8,
+      "cornstarch": 8,
+      "water": 30
+    },
+    "instructions": [
+      "Slice chicken into thin strips and toss with cornstarch.",
+      "Heat sesame oil in wok over high heat.",
+      "Stir-fry chicken 4 minutes until golden; remove.",
+      "Add ginger and garlic, stir 30 seconds.",
+      "Add vegetables and stir-fry 3 minutes until crisp-tender.",
+      "Return chicken, add soy sauce and water, toss to coat."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 368,
+      "protein_g": 35,
+      "carbs_g": 30,
+      "fat_g": 12
+    },
+    "tags": ["stir_fry", "high-protein", "low-carb"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "anti_inflammatory", "gut_friendly", "low_carb"],
+    "best_timing": ["anytime", "dinner"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["snap peas", "broccoli florets"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 150g cooked brown rice (+170 kcal) to transform into a full meal with complex carbs."]
+    }
+  },
+  {
+    "id": "STR002",
+    "name": "Beef Bok Choy Oyster Sauce Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "beef sirloin",
+    "ingredients_grams": {
+      "beef sirloin": 150,
+      "bok choy": 200,
+      "shiitake mushrooms": 80,
+      "oyster sauce": 25,
+      "soy sauce": 10,
+      "sesame oil": 8,
+      "garlic": 5,
+      "ginger fresh": 5,
+      "cornstarch": 8
+    },
+    "instructions": [
+      "Slice beef thinly against the grain; marinate in soy sauce and cornstarch 5 min.",
+      "Heat wok to smoking point with sesame oil.",
+      "Stir-fry beef 2 minutes; set aside.",
+      "Add garlic, ginger, mushrooms; stir-fry 2 minutes.",
+      "Add bok choy and oyster sauce; cook 2 minutes.",
+      "Return beef, toss everything together and serve."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 384,
+      "protein_g": 40,
+      "carbs_g": 20,
+      "fat_g": 16
+    },
+    "tags": ["stir_fry", "high-protein", "iron-rich"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "high_protein", "low_carb", "hormone_support"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef sirloin"], "carbs": ["bok choy"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Serve over 150g jasmine rice to add ~170 kcal and complete the meal."]
+    }
+  },
+  {
+    "id": "STR003",
+    "name": "Shrimp Vegetable Glass Noodle Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "shrimp",
+    "ingredients_grams": {
+      "shrimp peeled": 180,
+      "glass noodles cooked": 100,
+      "carrot": 60,
+      "snow peas": 80,
+      "cabbage": 80,
+      "fish sauce": 15,
+      "lime juice": 15,
+      "sesame oil": 8,
+      "garlic": 5,
+      "red chilli": 5
+    },
+    "instructions": [
+      "Soak glass noodles in hot water 5 minutes; drain.",
+      "Heat oil in wok; stir-fry garlic and chilli 30 seconds.",
+      "Add shrimp, cook 2 minutes until pink.",
+      "Add vegetables; stir-fry 2 minutes.",
+      "Add noodles, fish sauce, and lime juice; toss 1 minute."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 380,
+      "protein_g": 32,
+      "carbs_g": 45,
+      "fat_g": 8
+    },
+    "tags": ["stir_fry", "seafood", "noodles"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_fat", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["shrimp peeled"], "carbs": ["glass noodles cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Replace glass noodles with extra vegetables to reduce carbs by ~20g for lower-carb days."]
+    }
+  },
+  {
+    "id": "STR004",
+    "name": "Tofu Cashew Thai Basil Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "tofu",
+    "ingredients_grams": {
+      "firm tofu": 200,
+      "cashews": 25,
+      "Thai basil": 15,
+      "bell pepper": 100,
+      "green beans": 80,
+      "soy sauce": 15,
+      "oyster sauce": 15,
+      "coconut oil": 12,
+      "garlic": 5,
+      "red chilli": 5
+    },
+    "instructions": [
+      "Press tofu dry; cut into cubes and pan-fry 4 minutes per side until golden.",
+      "Heat coconut oil; stir-fry garlic and chilli 30 seconds.",
+      "Add vegetables and cashews; stir-fry 3 minutes.",
+      "Add tofu, soy sauce, and oyster sauce; toss.",
+      "Finish with fresh Thai basil leaves."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 380,
+      "protein_g": 20,
+      "carbs_g": 30,
+      "fat_g": 20
+    },
+    "tags": ["stir_fry", "vegan", "plant-based"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "hormone_support", "gut_friendly", "anti_inflammatory"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["inflammation", "bloating", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["firm tofu"], "carbs": ["green beans", "bell pepper"], "fat": ["cashews", "coconut oil"] },
+      "macro_adjustment_rules": ["Serve with 150g brown rice to add complex carbs and fibre."]
+    }
+  },
+  {
+    "id": "STR005",
+    "name": "Turkey Zucchini Sesame Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "turkey mince",
+    "ingredients_grams": {
+      "turkey mince": 180,
+      "zucchini": 200,
+      "red onion": 60,
+      "garlic": 5,
+      "soy sauce": 20,
+      "sesame oil": 8,
+      "sesame seeds": 8,
+      "ginger fresh": 5,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Heat sesame oil in wok over high heat.",
+      "Brown turkey mince 4 minutes, breaking it up.",
+      "Add ginger, garlic, and red onion; stir-fry 2 minutes.",
+      "Add zucchini and soy sauce; cook 3 minutes.",
+      "Garnish with sesame seeds and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 330,
+      "protein_g": 42,
+      "carbs_g": 18,
+      "fat_g": 10
+    },
+    "tags": ["stir_fry", "high-protein", "low-carb", "lean"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_carb", "lean", "hormone_support"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["turkey mince"], "carbs": ["zucchini"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 120g cooked cauliflower rice to bulk up without significant extra calories."]
+    }
+  },
+  {
+    "id": "STR006",
+    "name": "Salmon Asparagus Teriyaki Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 160,
+      "asparagus": 150,
+      "broccoli": 100,
+      "teriyaki sauce": 30,
+      "sesame oil": 8,
+      "garlic": 5,
+      "sesame seeds": 5,
+      "spring onion": 10
+    },
+    "instructions": [
+      "Cut salmon into cubes; marinate in teriyaki sauce 5 minutes.",
+      "Heat sesame oil in wok over medium-high heat.",
+      "Stir-fry salmon cubes 3 minutes; remove.",
+      "Add garlic, asparagus, and broccoli; stir-fry 3 minutes.",
+      "Return salmon with remaining teriyaki; toss gently.",
+      "Garnish with sesame seeds and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 390,
+      "protein_g": 38,
+      "carbs_g": 28,
+      "fat_g": 14
+    },
+    "tags": ["stir_fry", "salmon", "omega-3"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["omega3_rich", "anti_inflammatory", "hormone_support", "high_protein"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["inflammation", "cramps", "fatigue", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["asparagus", "broccoli"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 150g soba noodles to complete the teriyaki bowl with extra complex carbs."]
+    }
+  },
+  {
+    "id": "STR007",
+    "name": "Pork Tenderloin Mushroom Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "pork tenderloin",
+    "ingredients_grams": {
+      "pork tenderloin": 160,
+      "mixed mushrooms": 150,
+      "bok choy": 100,
+      "garlic": 5,
+      "ginger fresh": 8,
+      "hoisin sauce": 20,
+      "soy sauce": 10,
+      "sesame oil": 8,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Slice pork into thin medallions.",
+      "Heat sesame oil; stir-fry pork 3 minutes per side until cooked.",
+      "Remove pork; add garlic, ginger, and mushrooms.",
+      "Stir-fry mushrooms 3 minutes until golden.",
+      "Add bok choy, hoisin sauce, and soy sauce; cook 2 minutes.",
+      "Return pork; toss and garnish with spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 340,
+      "protein_g": 36,
+      "carbs_g": 22,
+      "fat_g": 12
+    },
+    "tags": ["stir_fry", "pork", "mushrooms"],
+    "phase_support": ["luteal", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "gut_friendly", "immune_support", "low_carb"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["pork tenderloin"], "carbs": ["mixed mushrooms"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 120g steamed jasmine rice to round out this meal to ~510 kcal."]
+    }
+  },
+  {
+    "id": "STR008",
+    "name": "Egg White Veggie Protein Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "egg whites",
+    "ingredients_grams": {
+      "egg whites": 200,
+      "spinach": 80,
+      "cherry tomatoes": 80,
+      "zucchini": 100,
+      "mushrooms": 80,
+      "garlic": 5,
+      "olive oil": 8,
+      "herbs mixed dried": 3
+    },
+    "instructions": [
+      "Heat olive oil in wok over medium-high heat.",
+      "Stir-fry garlic, mushrooms, and zucchini 3 minutes.",
+      "Add cherry tomatoes and spinach; cook 1 minute.",
+      "Pour egg whites over vegetables.",
+      "Stir gently until set, about 2–3 minutes.",
+      "Season with mixed herbs."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 264,
+      "protein_g": 28,
+      "carbs_g": 20,
+      "fat_g": 8
+    },
+    "tags": ["stir_fry", "low-calorie", "high-protein", "breakfast"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["low_calorie", "high_protein", "low_fat", "quick_prep"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["egg whites"], "carbs": ["zucchini", "cherry tomatoes"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 1 whole egg for +70 kcal and richer flavour, plus additional healthy fats."]
+    }
+  },
+  {
+    "id": "STR009",
+    "name": "Duck Plum Sauce Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "duck breast",
+    "ingredients_grams": {
+      "duck breast": 150,
+      "plum sauce": 30,
+      "bok choy baby": 150,
+      "shiitake mushrooms": 80,
+      "red pepper": 60,
+      "star anise": 2,
+      "soy sauce": 10,
+      "sesame oil": 10
+    },
+    "instructions": [
+      "Score duck skin; render fat over medium heat 5 minutes.",
+      "Flip and cook 3 more minutes; slice into strips.",
+      "Stir-fry mushrooms and pepper in duck fat 2 minutes.",
+      "Add bok choy, plum sauce, and soy sauce; cook 2 minutes.",
+      "Return duck; finish with sesame oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 416,
+      "protein_g": 32,
+      "carbs_g": 36,
+      "fat_g": 16
+    },
+    "tags": ["stir_fry", "duck", "rich"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["iron_rich", "comfort_food", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron", "cramps"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["duck breast"], "carbs": ["plum sauce", "bok choy baby"], "fat": [] },
+      "macro_adjustment_rules": ["Serve with 100g cooked rice noodles to add ~150 kcal for higher energy days."]
+    }
+  },
+  {
+    "id": "STR010",
+    "name": "Beef Black Bean Chilli Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "beef mince",
+    "ingredients_grams": {
+      "beef mince lean": 150,
+      "black bean sauce": 30,
+      "green pepper": 80,
+      "onion": 60,
+      "garlic": 5,
+      "red chilli": 5,
+      "soy sauce": 10,
+      "sesame oil": 8,
+      "spring onion": 10
+    },
+    "instructions": [
+      "Brown beef mince over high heat 4 minutes; drain excess fat.",
+      "Add garlic, chilli, onion; stir-fry 2 minutes.",
+      "Add green pepper and black bean sauce; cook 3 minutes.",
+      "Season with soy sauce; finish with sesame oil.",
+      "Top with spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 406,
+      "protein_g": 44,
+      "carbs_g": 26,
+      "fat_g": 14
+    },
+    "tags": ["stir_fry", "beef", "spicy"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "hormone_support", "comfort_food"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "cramps"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef mince lean"], "carbs": ["green pepper", "onion"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Serve over 150g steamed rice to round the meal to ~575 kcal."]
+    }
+  },
+  {
+    "id": "STR011",
+    "name": "Chicken Cashew Nut Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "cashews roasted": 30,
+      "red pepper": 80,
+      "snap peas": 80,
+      "spring onion": 20,
+      "oyster sauce": 20,
+      "soy sauce": 10,
+      "sesame oil": 10,
+      "cornstarch": 8,
+      "garlic": 5
+    },
+    "instructions": [
+      "Cube chicken; coat with cornstarch.",
+      "Stir-fry chicken in sesame oil 4 minutes until golden.",
+      "Add garlic, pepper, and snap peas; stir-fry 2 minutes.",
+      "Add oyster sauce and soy sauce; toss.",
+      "Fold in cashews and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 418,
+      "protein_g": 36,
+      "carbs_g": 28,
+      "fat_g": 18
+    },
+    "tags": ["stir_fry", "chicken", "cashews"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "healthy_fats", "hormone_support", "energy_boost"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["snap peas", "red pepper"], "fat": ["cashews", "sesame oil"] },
+      "macro_adjustment_rules": ["Add 15g extra cashews for richer fat profile on rest days."]
+    }
+  },
+  {
+    "id": "STR012",
+    "name": "Tempeh Sweet Potato Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "tempeh",
+    "ingredients_grams": {
+      "tempeh": 150,
+      "sweet potato cubed cooked": 150,
+      "kale": 80,
+      "tamari sauce": 20,
+      "coconut oil": 10,
+      "garlic": 5,
+      "smoked paprika": 3,
+      "cumin": 2,
+      "lemon juice": 15
+    },
+    "instructions": [
+      "Cube tempeh and marinate in tamari and spices 5 minutes.",
+      "Heat coconut oil; stir-fry tempeh 4 minutes until browned.",
+      "Add garlic and sweet potato; cook 3 minutes.",
+      "Add kale; stir-fry 2 minutes until wilted.",
+      "Finish with lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 406,
+      "protein_g": 28,
+      "carbs_g": 42,
+      "fat_g": 14
+    },
+    "tags": ["stir_fry", "vegan", "plant-based", "gut-health"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "gut_friendly", "hormone_support", "probiotic"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["bloating", "hormonal_imbalance", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["tempeh"], "carbs": ["sweet potato cubed cooked"], "fat": ["coconut oil"] },
+      "macro_adjustment_rules": ["Double sweet potato to 300g for extra carbs on high-training days."]
+    }
+  },
+  {
+    "id": "STR013",
+    "name": "Prawn Mango Chilli Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "king prawns",
+    "ingredients_grams": {
+      "king prawns": 200,
+      "mango fresh": 100,
+      "red pepper": 80,
+      "sugar snap peas": 60,
+      "sweet chilli sauce": 25,
+      "lime juice": 15,
+      "coconut oil": 8,
+      "garlic": 5,
+      "coriander fresh": 10
+    },
+    "instructions": [
+      "Heat coconut oil; stir-fry garlic 30 seconds.",
+      "Add prawns; cook 2 minutes until pink.",
+      "Add pepper and snap peas; stir-fry 2 minutes.",
+      "Add sweet chilli sauce and lime juice; toss.",
+      "Fold in mango and fresh coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 302,
+      "protein_g": 28,
+      "carbs_g": 34,
+      "fat_g": 6
+    },
+    "tags": ["stir_fry", "seafood", "tropical", "light"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["low_calorie", "low_fat", "high_protein", "anti_inflammatory"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["king prawns"], "carbs": ["mango fresh"], "fat": ["coconut oil"] },
+      "macro_adjustment_rules": ["Add 150g jasmine rice to boost this to a complete ~470 kcal meal."]
+    }
+  },
+  {
+    "id": "STR014",
+    "name": "Lamb Spinach Pine Nut Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "lamb leg",
+    "ingredients_grams": {
+      "lamb leg lean": 160,
+      "baby spinach": 100,
+      "pine nuts": 20,
+      "cherry tomatoes": 80,
+      "garlic": 5,
+      "cumin": 3,
+      "coriander ground": 2,
+      "olive oil": 10,
+      "lemon juice": 15
+    },
+    "instructions": [
+      "Slice lamb thinly; season with cumin and coriander.",
+      "Heat olive oil; sear lamb 2 minutes per side.",
+      "Add garlic and cherry tomatoes; cook 2 minutes.",
+      "Add spinach; stir until wilted.",
+      "Scatter pine nuts and drizzle lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 396,
+      "protein_g": 38,
+      "carbs_g": 16,
+      "fat_g": 20
+    },
+    "tags": ["stir_fry", "lamb", "iron-rich", "mediterranean"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "high_protein", "anti_inflammatory", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron", "cramps"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["lamb leg lean"], "carbs": ["cherry tomatoes"], "fat": ["pine nuts", "olive oil"] },
+      "macro_adjustment_rules": ["Serve over 150g couscous to add ~170 kcal and complete the meal."]
+    }
+  },
+  {
+    "id": "STR015",
+    "name": "Chicken Edamame Ginger Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "edamame shelled": 100,
+      "carrot julienned": 80,
+      "snow peas": 80,
+      "ginger fresh": 10,
+      "soy sauce": 15,
+      "rice vinegar": 10,
+      "sesame oil": 8,
+      "sesame seeds": 5
+    },
+    "instructions": [
+      "Stir-fry sliced chicken in sesame oil 4 minutes.",
+      "Add ginger, carrot, and snow peas; cook 2 minutes.",
+      "Add edamame, soy sauce, and rice vinegar; toss 1 minute.",
+      "Plate and scatter sesame seeds."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 338,
+      "protein_g": 40,
+      "carbs_g": 22,
+      "fat_g": 10
+    },
+    "tags": ["stir_fry", "high-protein", "phytoestrogen"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "hormone_support", "anti_inflammatory", "low_carb"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast", "edamame shelled"], "carbs": ["carrot julienned", "snow peas"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Serve over brown rice for a complete muscle-gain meal at ~510 kcal."]
+    }
+  },
+  {
+    "id": "STR016",
+    "name": "Salmon Bok Choy Miso Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 150,
+      "bok choy": 200,
+      "white miso paste": 20,
+      "mirin": 15,
+      "soy sauce": 10,
+      "sesame oil": 10,
+      "garlic": 5,
+      "ginger fresh": 5
+    },
+    "instructions": [
+      "Mix miso, mirin, and soy into a glaze.",
+      "Pan-fry salmon skin-side down in sesame oil 3 minutes; flip, brush glaze, cook 2 more minutes.",
+      "Remove salmon; stir-fry garlic, ginger, and bok choy 2 minutes.",
+      "Flake salmon over bok choy and serve."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 360,
+      "protein_g": 36,
+      "carbs_g": 18,
+      "fat_g": 16
+    },
+    "tags": ["stir_fry", "salmon", "miso", "japanese"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["omega3_rich", "gut_friendly", "anti_inflammatory", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["cramps", "inflammation", "fatigue", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["bok choy"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 100g soba noodles to bring the meal to ~510 kcal for muscle-gain days."]
+    }
+  },
+  {
+    "id": "STR017",
+    "name": "Beef Broccolini Black Pepper Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "beef sirloin",
+    "ingredients_grams": {
+      "beef sirloin": 160,
+      "broccolini": 180,
+      "garlic": 5,
+      "black pepper coarsely ground": 5,
+      "soy sauce": 20,
+      "oyster sauce": 15,
+      "sesame oil": 8,
+      "cornstarch": 8
+    },
+    "instructions": [
+      "Slice beef thin; marinate in soy, cornstarch, and black pepper 5 min.",
+      "Heat wok to smoking; sear beef 2 minutes; remove.",
+      "Stir-fry garlic and broccolini 3 minutes.",
+      "Return beef with oyster sauce; toss 1 minute.",
+      "Finish with sesame oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 356,
+      "protein_g": 42,
+      "carbs_g": 20,
+      "fat_g": 12
+    },
+    "tags": ["stir_fry", "beef", "classic", "high-protein"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "low_carb", "hormone_support"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef sirloin"], "carbs": ["broccolini"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 150g fried rice to bring total to ~526 kcal for maintenance."]
+    }
+  },
+  {
+    "id": "STR018",
+    "name": "Tofu Peanut Noodle Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "tofu",
+    "ingredients_grams": {
+      "firm tofu": 180,
+      "rice noodles cooked": 120,
+      "peanut butter natural": 25,
+      "soy sauce": 15,
+      "lime juice": 15,
+      "sriracha": 5,
+      "carrot": 60,
+      "cucumber": 60,
+      "bean sprouts": 50,
+      "sesame oil": 8
+    },
+    "instructions": [
+      "Pan-fry tofu cubes 4 minutes each side until golden.",
+      "Mix peanut butter, soy, lime, and sriracha into sauce.",
+      "Stir-fry carrot and bean sprouts 2 minutes.",
+      "Add noodles and sauce; toss.",
+      "Top with tofu and sliced cucumber."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 466,
+      "protein_g": 24,
+      "carbs_g": 52,
+      "fat_g": 18
+    },
+    "tags": ["stir_fry", "vegan", "noodles", "peanut"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["plant_based", "hormone_support", "gut_friendly", "satisfying"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "hormonal_imbalance", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["firm tofu"], "carbs": ["rice noodles cooked"], "fat": ["peanut butter natural", "sesame oil"] },
+      "macro_adjustment_rules": ["Swap rice noodles for extra vegetables to lower carbs by ~25g on rest days."]
+    }
+  },
+  {
+    "id": "STR019",
+    "name": "Chicken Oyster Mushroom Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "oyster mushrooms": 150,
+      "garlic": 5,
+      "soy sauce": 15,
+      "oyster sauce": 15,
+      "sesame oil": 8,
+      "ginger fresh": 5,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Tear oyster mushrooms into pieces.",
+      "Stir-fry sliced chicken in sesame oil 4 minutes.",
+      "Add garlic, ginger, and mushrooms; cook 3 minutes.",
+      "Add soy and oyster sauce; toss 1 minute.",
+      "Garnish with spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 306,
+      "protein_g": 38,
+      "carbs_g": 16,
+      "fat_g": 10
+    },
+    "tags": ["stir_fry", "chicken", "mushrooms", "umami"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_carb", "immune_support", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "immune_weakness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["oyster mushrooms"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 150g steamed jasmine rice to bring meal to ~475 kcal."]
+    }
+  },
+  {
+    "id": "STR020",
+    "name": "Tuna Pak Choi Soy Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "tuna steak",
+    "ingredients_grams": {
+      "tuna steak": 160,
+      "pak choi": 200,
+      "garlic": 5,
+      "soy sauce": 20,
+      "sesame oil": 8,
+      "ginger fresh": 5,
+      "sesame seeds": 5
+    },
+    "instructions": [
+      "Sear tuna steak 1 minute per side over high heat; slice.",
+      "Stir-fry garlic and ginger 30 seconds in sesame oil.",
+      "Add pak choi; cook 2 minutes until wilted.",
+      "Add soy sauce; toss and plate with tuna.",
+      "Scatter sesame seeds."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 272,
+      "protein_g": 36,
+      "carbs_g": 14,
+      "fat_g": 8
+    },
+    "tags": ["stir_fry", "tuna", "seafood", "light"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_calorie", "omega3_rich", "low_carb"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "low",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["tuna steak"], "carbs": ["pak choi"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 100g soba noodles to increase meal energy to ~425 kcal."]
+    }
+  },
+  {
+    "id": "STR021",
+    "name": "Hoisin Duck Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "duck breast",
+    "ingredients_grams": {
+      "duck breast": 140,
+      "hoisin sauce": 30,
+      "spring onion": 30,
+      "cucumber": 60,
+      "carrot": 60,
+      "sesame oil": 10,
+      "soy sauce": 10
+    },
+    "instructions": [
+      "Score and cook duck breast skin-side down 5 minutes, flip 3 minutes; slice thin.",
+      "Mix hoisin, soy, and sesame oil.",
+      "Quickly stir-fry carrot and spring onion 1 minute.",
+      "Serve duck over vegetables with hoisin drizzle and cucumber strips."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 416,
+      "protein_g": 30,
+      "carbs_g": 38,
+      "fat_g": 16
+    },
+    "tags": ["stir_fry", "duck", "hoisin", "asian"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["iron_rich", "comfort_food", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["duck breast"], "carbs": ["hoisin sauce", "carrot"], "fat": [] },
+      "macro_adjustment_rules": ["Serve in lettuce cups to lower carbs by ~20g for lighter days."]
+    }
+  },
+  {
+    "id": "STR022",
+    "name": "Lemon Herb Chicken Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast": 160,
+      "courgette": 150,
+      "cherry tomatoes": 80,
+      "lemon juice": 20,
+      "olive oil": 10,
+      "garlic": 5,
+      "mixed dried herbs": 3,
+      "capers": 10
+    },
+    "instructions": [
+      "Slice chicken; season with herbs and garlic.",
+      "Stir-fry in olive oil 4 minutes until cooked through.",
+      "Add courgette and cherry tomatoes; cook 3 minutes.",
+      "Deglaze with lemon juice; add capers.",
+      "Serve immediately."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 314,
+      "protein_g": 40,
+      "carbs_g": 16,
+      "fat_g": 10
+    },
+    "tags": ["stir_fry", "mediterranean", "chicken", "light"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_calorie", "anti_inflammatory", "mediterranean"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast"], "carbs": ["courgette", "cherry tomatoes"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Serve over 120g couscous to complete the Mediterranean meal at ~484 kcal."]
+    }
+  },
+  {
+    "id": "STR023",
+    "name": "Beef Broccoli Sesame Noodle Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "medium",
+    "protein_source": "beef sirloin",
+    "ingredients_grams": {
+      "beef sirloin": 150,
+      "egg noodles cooked": 120,
+      "broccoli": 150,
+      "soy sauce": 20,
+      "sesame oil": 10,
+      "sesame seeds": 8,
+      "garlic": 5,
+      "oyster sauce": 15,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Sear sliced beef in hot sesame oil 2 minutes per side.",
+      "Add garlic and broccoli; stir-fry 3 minutes.",
+      "Add egg noodles, soy sauce, and oyster sauce; toss 2 minutes.",
+      "Serve topped with sesame seeds and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 494,
+      "protein_g": 44,
+      "carbs_g": 48,
+      "fat_g": 14
+    },
+    "tags": ["stir_fry", "beef", "noodles", "classic"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "energy_boost", "satiety"],
+    "best_timing": ["dinner", "post_workout"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef sirloin"], "carbs": ["egg noodles cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Reduce noodles to 60g to lower carbs by ~25g for lower-carb days."]
+    }
+  },
+  {
+    "id": "STR024",
+    "name": "Mixed Vegetable Tofu Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "tofu",
+    "ingredients_grams": {
+      "firm tofu": 160,
+      "mixed stir-fry vegetables": 250,
+      "garlic": 5,
+      "ginger fresh": 5,
+      "tamari sauce": 20,
+      "sesame oil": 8,
+      "rice vinegar": 10,
+      "cornstarch": 5
+    },
+    "instructions": [
+      "Press tofu dry; cube and coat lightly in cornstarch.",
+      "Pan-fry tofu cubes 3 minutes each side until golden.",
+      "Add garlic and ginger; stir 30 seconds.",
+      "Add vegetables; stir-fry 3 minutes.",
+      "Add tamari, rice vinegar, and sesame oil; toss."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 292,
+      "protein_g": 18,
+      "carbs_g": 28,
+      "fat_g": 12
+    },
+    "tags": ["stir_fry", "vegan", "low-calorie", "plant-based"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "low_calorie", "gut_friendly", "hormone_support"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["bloating", "hormonal_imbalance", "inflammation"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["firm tofu"], "carbs": ["mixed stir-fry vegetables"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 150g cooked brown rice to create a complete plant-based meal at ~462 kcal."]
+    }
+  },
+  {
+    "id": "STR025",
+    "name": "Pork Belly Kimchi Stir-Fry",
+    "type": "stir_fry",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "pork belly",
+    "ingredients_grams": {
+      "pork belly sliced": 120,
+      "kimchi": 100,
+      "tofu firm": 80,
+      "spring onion": 20,
+      "sesame oil": 8,
+      "soy sauce": 10,
+      "gochugaru": 5,
+      "garlic": 5,
+      "sesame seeds": 5
+    },
+    "instructions": [
+      "Stir-fry pork belly over medium-high heat until crispy, about 5 minutes.",
+      "Add garlic and gochugaru; cook 30 seconds.",
+      "Add kimchi and tofu; stir-fry 3 minutes.",
+      "Season with soy sauce and sesame oil.",
+      "Garnish with spring onion and sesame seeds."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 432,
+      "protein_g": 32,
+      "carbs_g": 22,
+      "fat_g": 24
+    },
+    "tags": ["stir_fry", "korean", "probiotic", "spicy"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["gut_friendly", "probiotic", "comfort_food", "hormone_support"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["bloating", "mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["pork belly sliced"], "carbs": ["kimchi"], "fat": [] },
+      "macro_adjustment_rules": ["Serve over 150g steamed rice to reach ~600 kcal for muscle-gain days."]
+    }
+  }
+]

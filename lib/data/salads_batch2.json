@@ -1,0 +1,1060 @@
+[
+  {
+    "id": "SL009",
+    "name": "Watermelon Feta Mint Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "feta cheese",
+    "ingredients_grams": {
+      "watermelon": 300,
+      "feta cheese": 60,
+      "mint fresh": 15,
+      "rocket": 50,
+      "cucumber": 80,
+      "lime juice": 20,
+      "olive oil": 8,
+      "black pepper": 2
+    },
+    "instructions": [
+      "Cut watermelon into cubes.",
+      "Slice cucumber and combine with rocket.",
+      "Top with watermelon and crumbled feta.",
+      "Dress with lime juice, olive oil, and mint."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 246,
+      "protein_g": 12,
+      "carbs_g": 28,
+      "fat_g": 10
+    },
+    "tags": ["salad", "refreshing", "summer", "light"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["low_calorie", "anti_inflammatory", "hormone_support", "hydrating"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "inflammation"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "low",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["feta cheese"], "carbs": ["watermelon"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 100g halloumi (grilled) for +18g protein and a heartier main salad."]
+    }
+  },
+  {
+    "id": "SL010",
+    "name": "Warm Roasted Chickpea Power Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "chickpeas canned": 150,
+      "mixed salad leaves": 80,
+      "cherry tomatoes": 80,
+      "roasted red peppers": 60,
+      "tahini": 20,
+      "lemon juice": 20,
+      "olive oil": 10,
+      "smoked paprika": 3,
+      "cumin": 2,
+      "pumpkin seeds": 15
+    },
+    "instructions": [
+      "Toss drained chickpeas in olive oil, paprika, and cumin.",
+      "Roast at 200°C for 20 minutes until crispy.",
+      "Build salad with leaves, tomatoes, roasted peppers.",
+      "Top with warm chickpeas and pumpkin seeds.",
+      "Drizzle tahini-lemon dressing."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 358,
+      "protein_g": 18,
+      "carbs_g": 40,
+      "fat_g": 14
+    },
+    "tags": ["salad", "chickpea", "warm-salad", "vegan"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "iron_rich", "gut_friendly", "hormone_support"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chickpeas canned"], "carbs": ["cherry tomatoes"], "fat": ["tahini", "olive oil"] },
+      "macro_adjustment_rules": ["Add 120g grilled chicken to nearly double the protein."]
+    }
+  },
+  {
+    "id": "SL011",
+    "name": "Thai Beef & Herb Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "beef sirloin",
+    "ingredients_grams": {
+      "beef sirloin": 150,
+      "mixed asian herbs": 30,
+      "bean sprouts": 60,
+      "cucumber": 80,
+      "cherry tomatoes": 60,
+      "shallot": 20,
+      "fish sauce": 15,
+      "lime juice": 20,
+      "chilli fresh": 5,
+      "sesame oil": 8
+    },
+    "instructions": [
+      "Grill beef sirloin 2 minutes per side for medium-rare; rest 5 minutes; slice thin.",
+      "Combine herbs, bean sprouts, cucumber, tomatoes, and shallot.",
+      "Mix fish sauce, lime juice, and chilli into dressing.",
+      "Toss salad with dressing; top with sliced beef.",
+      "Drizzle sesame oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 334,
+      "protein_g": 36,
+      "carbs_g": 16,
+      "fat_g": 14
+    },
+    "tags": ["salad", "thai", "beef", "herb"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "iron_rich", "anti_inflammatory", "low_carb"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["beef sirloin"], "carbs": ["bean sprouts", "cherry tomatoes"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 80g cooked vermicelli to make a more filling noodle salad."]
+    }
+  },
+  {
+    "id": "SL012",
+    "name": "Grilled Peach Prosciutto Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "prosciutto",
+    "ingredients_grams": {
+      "peach": 150,
+      "prosciutto": 60,
+      "rocket": 80,
+      "mozzarella light": 60,
+      "balsamic glaze": 15,
+      "olive oil": 8,
+      "pine nuts": 10,
+      "basil fresh": 8
+    },
+    "instructions": [
+      "Grill peach halves 2 minutes per side until caramelised.",
+      "Arrange rocket on plate.",
+      "Add peach, torn prosciutto, and mozzarella.",
+      "Scatter pine nuts and basil.",
+      "Drizzle balsamic glaze and olive oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 274,
+      "protein_g": 20,
+      "carbs_g": 26,
+      "fat_g": 10
+    },
+    "tags": ["salad", "italian", "prosciutto", "summer"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["anti_inflammatory", "hormone_support", "low_calorie", "mediterranean"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["prosciutto", "mozzarella light"], "carbs": ["peach"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Double prosciutto to 120g to significantly boost protein on higher-protein days."]
+    }
+  },
+  {
+    "id": "SL013",
+    "name": "Protein Cobb Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast grilled": 150,
+      "eggs hard boiled": 110,
+      "bacon lean": 30,
+      "avocado": 60,
+      "cherry tomatoes": 80,
+      "romaine lettuce": 100,
+      "blue cheese": 15,
+      "red wine vinegar": 15,
+      "olive oil": 8
+    },
+    "instructions": [
+      "Slice chicken, halve eggs, crisp bacon.",
+      "Chop romaine; arrange in wide bowl.",
+      "Arrange chicken, eggs, bacon, avocado, and tomatoes in rows.",
+      "Crumble blue cheese.",
+      "Dress with red wine vinegar and olive oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 380,
+      "protein_g": 38,
+      "carbs_g": 12,
+      "fat_g": 20
+    },
+    "tags": ["salad", "cobb", "american", "high-protein"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_carb", "hormone_support", "satiety"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast grilled", "eggs hard boiled"], "carbs": ["cherry tomatoes"], "fat": ["avocado", "blue cheese"] },
+      "macro_adjustment_rules": ["Remove blue cheese and reduce avocado to 30g to save ~80 kcal on stricter fat-loss days."]
+    }
+  },
+  {
+    "id": "SL014",
+    "name": "Pear Walnut Gorgonzola Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "gorgonzola",
+    "ingredients_grams": {
+      "pear": 120,
+      "gorgonzola": 40,
+      "walnuts": 20,
+      "mixed leaves": 80,
+      "rocket": 40,
+      "red onion": 20,
+      "balsamic vinegar": 15,
+      "olive oil": 8,
+      "honey": 5
+    },
+    "instructions": [
+      "Slice pear thinly.",
+      "Build salad with leaves, rocket, pear, and red onion.",
+      "Scatter walnut halves and crumbled gorgonzola.",
+      "Whisk balsamic, olive oil, and honey into dressing.",
+      "Dress lightly."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 312,
+      "protein_g": 14,
+      "carbs_g": 28,
+      "fat_g": 16
+    },
+    "tags": ["salad", "italian", "cheese", "autumn"],
+    "phase_support": ["luteal", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["hormone_support", "gut_friendly", "anti_inflammatory", "omega3_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["mood_swings", "fatigue"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["gorgonzola"], "carbs": ["pear"], "fat": ["walnuts", "olive oil"] },
+      "macro_adjustment_rules": ["Add 120g grilled chicken breast to transform into a complete meal salad."]
+    }
+  },
+  {
+    "id": "SL015",
+    "name": "Vietnamese Prawn Rice Paper Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "medium",
+    "protein_source": "king prawns",
+    "ingredients_grams": {
+      "king prawns": 160,
+      "rice vermicelli cooked": 80,
+      "mint fresh": 15,
+      "coriander fresh": 15,
+      "carrot julienned": 60,
+      "cucumber": 80,
+      "fish sauce": 15,
+      "lime juice": 20,
+      "chilli": 5,
+      "sesame oil": 8
+    },
+    "instructions": [
+      "Cook and cool prawns.",
+      "Soak vermicelli in hot water 3 minutes; drain and cool.",
+      "Combine noodles with carrot, cucumber, and herbs.",
+      "Mix fish sauce, lime, chilli, and sesame oil into dressing.",
+      "Top with prawns; dress and toss."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 296,
+      "protein_g": 24,
+      "carbs_g": 32,
+      "fat_g": 8
+    },
+    "tags": ["salad", "vietnamese", "prawn", "noodle-salad"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_fat", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "moderate"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["king prawns"], "carbs": ["rice vermicelli cooked"], "fat": ["sesame oil"] },
+      "macro_adjustment_rules": ["Add 30g crushed peanuts for extra protein and healthy fats (+~170 kcal)."]
+    }
+  },
+  {
+    "id": "SL016",
+    "name": "Roasted Beet Goat Cheese Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 30,
+    "difficulty": "easy",
+    "protein_source": "goat cheese",
+    "ingredients_grams": {
+      "beetroot": 200,
+      "goat cheese": 50,
+      "mixed leaves": 80,
+      "walnuts": 20,
+      "red onion": 20,
+      "orange juice": 30,
+      "balsamic vinegar": 10,
+      "olive oil": 8,
+      "honey": 5
+    },
+    "instructions": [
+      "Wrap beetroot in foil; roast at 200°C 25 minutes; slice.",
+      "Build salad with mixed leaves and red onion.",
+      "Add sliced beets and crumble goat cheese.",
+      "Scatter walnuts.",
+      "Dress with orange juice, balsamic, olive oil, and honey."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 302,
+      "protein_g": 16,
+      "carbs_g": 28,
+      "fat_g": 14
+    },
+    "tags": ["salad", "beetroot", "goat-cheese", "antioxidant"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "antioxidant_rich", "hormone_support", "anti_inflammatory"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_iron", "inflammation"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["goat cheese"], "carbs": ["beetroot"], "fat": ["walnuts", "olive oil"] },
+      "macro_adjustment_rules": ["Add 120g grilled chicken or smoked salmon for a complete protein-rich meal."]
+    }
+  },
+  {
+    "id": "SL017",
+    "name": "Mexican Chicken Fiesta Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "chicken breast",
+    "ingredients_grams": {
+      "chicken breast grilled": 160,
+      "romaine lettuce": 100,
+      "black beans": 80,
+      "corn": 60,
+      "avocado": 40,
+      "cherry tomatoes": 60,
+      "lime juice": 20,
+      "cumin": 2,
+      "olive oil": 8,
+      "jalapeño": 10,
+      "coriander fresh": 10
+    },
+    "instructions": [
+      "Slice grilled chicken.",
+      "Build salad with romaine, black beans, and corn.",
+      "Add chicken, avocado, and tomatoes.",
+      "Dress with lime juice, olive oil, and cumin.",
+      "Top with jalapeño and coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 382,
+      "protein_g": 36,
+      "carbs_g": 28,
+      "fat_g": 14
+    },
+    "tags": ["salad", "mexican", "chicken", "hearty"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "hormone_support", "gut_friendly", "anti_inflammatory"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chicken breast grilled"], "carbs": ["black beans", "corn"], "fat": ["avocado", "olive oil"] },
+      "macro_adjustment_rules": ["Add 30g grated cheddar for extra fat and flavour on rest days."]
+    }
+  },
+  {
+    "id": "SL018",
+    "name": "Smoked Mackerel Potato Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "smoked mackerel",
+    "ingredients_grams": {
+      "smoked mackerel": 120,
+      "baby potatoes cooked": 150,
+      "green beans": 80,
+      "red onion": 30,
+      "capers": 15,
+      "dill fresh": 8,
+      "dijon mustard": 10,
+      "lemon juice": 15,
+      "olive oil": 10
+    },
+    "instructions": [
+      "Halve cooked potatoes; blanch green beans 2 minutes.",
+      "Flake mackerel.",
+      "Whisk mustard, lemon, and olive oil into dressing.",
+      "Combine potatoes, beans, red onion, and capers.",
+      "Add mackerel; dress and garnish with dill."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 380,
+      "protein_g": 28,
+      "carbs_g": 32,
+      "fat_g": 16
+    },
+    "tags": ["salad", "smoked-mackerel", "omega-3", "potato"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["omega3_rich", "anti_inflammatory", "hormone_support", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["cramps", "inflammation", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["smoked mackerel"], "carbs": ["baby potatoes cooked"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Reduce potatoes to 80g to lower carbs by ~15g on lower-carb days."]
+    }
+  },
+  {
+    "id": "SL019",
+    "name": "Fennel Orange Salmon Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "salmon fillet",
+    "ingredients_grams": {
+      "salmon fillet": 150,
+      "fennel": 100,
+      "orange": 100,
+      "rocket": 60,
+      "black olives": 20,
+      "olive oil": 10,
+      "lemon juice": 15,
+      "dill fresh": 8
+    },
+    "instructions": [
+      "Pan-sear salmon 3 minutes per side; flake.",
+      "Thinly slice fennel; segment orange.",
+      "Build salad with rocket, fennel, and orange.",
+      "Add salmon and olives.",
+      "Dress with olive oil, lemon, and dill."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 352,
+      "protein_g": 32,
+      "carbs_g": 20,
+      "fat_g": 16
+    },
+    "tags": ["salad", "salmon", "fennel", "citrus"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["omega3_rich", "anti_inflammatory", "hormone_support", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["cramps", "inflammation", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["salmon fillet"], "carbs": ["orange", "fennel"], "fat": ["olive oil", "black olives"] },
+      "macro_adjustment_rules": ["Add 100g cooked farro as a base for a more substantial grain salad."]
+    }
+  },
+  {
+    "id": "SL020",
+    "name": "Kale Caesar with Crispy Chickpeas",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 25,
+    "difficulty": "easy",
+    "protein_source": "chickpeas",
+    "ingredients_grams": {
+      "kale": 120,
+      "chickpeas canned": 120,
+      "parmesan": 20,
+      "light caesar dressing": 30,
+      "garlic": 3,
+      "lemon juice": 15,
+      "smoked paprika": 2,
+      "olive oil": 8
+    },
+    "instructions": [
+      "Roast chickpeas with paprika and olive oil at 200°C for 20 minutes until crispy.",
+      "Massage kale with lemon juice 1 minute.",
+      "Toss kale with caesar dressing.",
+      "Top with crispy chickpeas and shaved parmesan."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 334,
+      "protein_g": 22,
+      "carbs_g": 30,
+      "fat_g": 14
+    },
+    "tags": ["salad", "kale", "caesar", "vegan"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "plant_based", "anti_inflammatory", "hormone_support"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_iron", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chickpeas canned"], "carbs": ["chickpeas canned"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 120g grilled chicken for +36g extra protein and a complete meal."]
+    }
+  },
+  {
+    "id": "SL021",
+    "name": "Warm Lentil Spinach Feta Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "lentils",
+    "ingredients_grams": {
+      "green lentils cooked": 150,
+      "baby spinach": 100,
+      "feta cheese": 40,
+      "red onion": 30,
+      "cherry tomatoes": 80,
+      "cumin": 2,
+      "olive oil": 8,
+      "lemon juice": 15,
+      "garlic": 3
+    },
+    "instructions": [
+      "Warm lentils in olive oil with garlic and cumin 3 minutes.",
+      "Add spinach; wilt 1 minute.",
+      "Remove from heat; add cherry tomatoes.",
+      "Plate warm; top with crumbled feta and red onion.",
+      "Dress with lemon juice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 332,
+      "protein_g": 20,
+      "carbs_g": 36,
+      "fat_g": 12
+    },
+    "tags": ["salad", "lentil", "warm-salad", "iron-rich"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "plant_based", "anti_inflammatory", "gut_friendly"],
+    "best_timing": ["dinner", "anytime"],
+    "symptom_support": ["fatigue", "low_iron", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["green lentils cooked"], "carbs": ["green lentils cooked"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Top with a poached egg to add +6g protein and extra healthy fats."]
+    }
+  },
+  {
+    "id": "SL022",
+    "name": "Mango Avocado Prawn Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "king prawns",
+    "ingredients_grams": {
+      "king prawns": 180,
+      "mango fresh": 100,
+      "avocado": 60,
+      "mixed salad leaves": 80,
+      "red onion": 20,
+      "lime juice": 20,
+      "coriander fresh": 10,
+      "olive oil": 8,
+      "chilli flakes": 2
+    },
+    "instructions": [
+      "Cook prawns in garlic and olive oil 2 minutes per side.",
+      "Dice mango and avocado.",
+      "Build salad with leaves, mango, avocado, and red onion.",
+      "Top with warm prawns.",
+      "Dress with lime juice and coriander."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 338,
+      "protein_g": 28,
+      "carbs_g": 24,
+      "fat_g": 14
+    },
+    "tags": ["salad", "prawn", "mango", "tropical"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "anti_inflammatory", "hormone_support", "healthy_fats"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["king prawns"], "carbs": ["mango fresh"], "fat": ["avocado", "olive oil"] },
+      "macro_adjustment_rules": ["Add 150g cooked quinoa to create a more substantial grain-based salad."]
+    }
+  },
+  {
+    "id": "SL023",
+    "name": "Turkish Shepherd Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "feta cheese",
+    "ingredients_grams": {
+      "cucumber": 150,
+      "tomatoes": 150,
+      "green pepper": 60,
+      "red onion": 40,
+      "feta cheese": 40,
+      "black olives": 20,
+      "parsley fresh": 15,
+      "olive oil": 8,
+      "lemon juice": 15,
+      "sumac": 3
+    },
+    "instructions": [
+      "Dice all vegetables into small, equal pieces.",
+      "Combine with olives, parsley, and feta.",
+      "Dress with olive oil, lemon juice, and sumac.",
+      "Toss gently; serve immediately."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 210,
+      "protein_g": 12,
+      "carbs_g": 18,
+      "fat_g": 10
+    },
+    "tags": ["salad", "turkish", "mediterranean", "fresh"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["low_calorie", "anti_inflammatory", "gut_friendly", "mediterranean"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "inflammation"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "low",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["feta cheese"], "carbs": ["tomatoes", "cucumber"], "fat": ["olive oil", "black olives"] },
+      "macro_adjustment_rules": ["Serve alongside grilled protein to make a complete meal."]
+    }
+  },
+  {
+    "id": "SL024",
+    "name": "Grilled Halloumi Watermelon Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "halloumi",
+    "ingredients_grams": {
+      "halloumi": 80,
+      "watermelon": 200,
+      "rocket": 60,
+      "mint fresh": 10,
+      "cucumber": 80,
+      "lemon juice": 15,
+      "olive oil": 8,
+      "chilli flakes": 2
+    },
+    "instructions": [
+      "Grill halloumi slices 2 minutes per side until golden.",
+      "Cube watermelon; slice cucumber.",
+      "Build salad with rocket, watermelon, and cucumber.",
+      "Add warm halloumi.",
+      "Dress with lemon juice, olive oil, mint, and chilli flakes."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 292,
+      "protein_g": 18,
+      "carbs_g": 20,
+      "fat_g": 16
+    },
+    "tags": ["salad", "halloumi", "watermelon", "summer"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["anti_inflammatory", "hormone_support", "gut_friendly", "calcium_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["inflammation", "fatigue"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["halloumi"], "carbs": ["watermelon"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 100g cooked quinoa for a more filling meal with extra protein."]
+    }
+  },
+  {
+    "id": "SL025",
+    "name": "Antipasto Protein Plate Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "prosciutto",
+    "ingredients_grams": {
+      "prosciutto": 60,
+      "salami": 30,
+      "mozzarella light": 60,
+      "artichoke hearts": 60,
+      "mixed olives": 30,
+      "sun-dried tomatoes": 30,
+      "rocket": 60,
+      "balsamic glaze": 10,
+      "olive oil": 8
+    },
+    "instructions": [
+      "Arrange rocket on plate.",
+      "Lay prosciutto and salami over leaves.",
+      "Add torn mozzarella, artichokes, olives, and sun-dried tomatoes.",
+      "Drizzle balsamic glaze and olive oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 342,
+      "protein_g": 30,
+      "carbs_g": 16,
+      "fat_g": 18
+    },
+    "tags": ["salad", "antipasto", "italian", "charcuterie"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_carb", "hormone_support", "mediterranean"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 4,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["prosciutto", "mozzarella light"], "carbs": ["artichoke hearts"], "fat": ["mixed olives", "olive oil"] },
+      "macro_adjustment_rules": ["Serve with 80g sourdough for extra carbs and complete meal energy."]
+    }
+  },
+  {
+    "id": "SL026",
+    "name": "Szechuan Cucumber Edamame Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 10,
+    "difficulty": "easy",
+    "protein_source": "edamame",
+    "ingredients_grams": {
+      "edamame shelled": 120,
+      "cucumber": 200,
+      "sesame oil": 8,
+      "soy sauce": 15,
+      "rice vinegar": 10,
+      "chilli oil": 5,
+      "garlic": 3,
+      "ginger fresh": 3,
+      "sesame seeds": 8,
+      "spring onion": 15
+    },
+    "instructions": [
+      "Smash cucumber with flat knife; cut into pieces.",
+      "Mix sesame oil, soy sauce, rice vinegar, chilli oil, garlic, and ginger.",
+      "Combine cucumber with edamame.",
+      "Dress; toss and rest 5 minutes.",
+      "Top with sesame seeds and spring onion."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 242,
+      "protein_g": 18,
+      "carbs_g": 20,
+      "fat_g": 10
+    },
+    "tags": ["salad", "chinese", "cucumber", "spicy"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["plant_based", "low_calorie", "hormone_support", "gut_friendly"],
+    "best_timing": ["anytime", "low_carb_day"],
+    "symptom_support": ["bloating", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 5,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["edamame shelled"], "carbs": ["cucumber"], "fat": ["sesame oil", "chilli oil"] },
+      "macro_adjustment_rules": ["Add 150g firm tofu cubes for extra protein and a heartier texture."]
+    }
+  },
+  {
+    "id": "SL027",
+    "name": "Warm Brussels Sprout Bacon Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 20,
+    "difficulty": "easy",
+    "protein_source": "bacon",
+    "ingredients_grams": {
+      "brussels sprouts": 200,
+      "lean bacon": 60,
+      "mixed leaves": 60,
+      "parmesan": 20,
+      "dijon mustard": 10,
+      "apple cider vinegar": 15,
+      "olive oil": 8,
+      "garlic": 3
+    },
+    "instructions": [
+      "Halve brussels sprouts; roast at 200°C for 15 minutes.",
+      "Crisp bacon in pan 4 minutes; remove.",
+      "Deglaze pan with vinegar and mustard; whisk in olive oil.",
+      "Toss warm sprouts with leaves and warm dressing.",
+      "Top with bacon and shaved parmesan."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 294,
+      "protein_g": 24,
+      "carbs_g": 18,
+      "fat_g": 14
+    },
+    "tags": ["salad", "warm-salad", "brussels-sprouts", "bacon"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "hormone_support", "gut_friendly", "comfort_food"],
+    "best_timing": ["dinner"],
+    "symptom_support": ["fatigue", "low_iron", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["lean bacon"], "carbs": ["brussels sprouts"], "fat": ["olive oil"] },
+      "macro_adjustment_rules": ["Add 2 soft-boiled eggs for extra protein and a more filling meal."]
+    }
+  },
+  {
+    "id": "SL028",
+    "name": "Mediterranean Tuna Orzo Salad",
+    "type": "salad",
+    "servings": 1,
+    "prep_time_min": 15,
+    "difficulty": "easy",
+    "protein_source": "tuna canned",
+    "ingredients_grams": {
+      "orzo cooked": 100,
+      "tuna in water": 130,
+      "cucumber": 80,
+      "cherry tomatoes": 80,
+      "black olives": 20,
+      "feta cheese": 30,
+      "lemon juice": 20,
+      "olive oil": 8,
+      "oregano dried": 3,
+      "parsley fresh": 10
+    },
+    "instructions": [
+      "Cook orzo; cool under cold water.",
+      "Drain and flake tuna.",
+      "Combine orzo with cucumber, tomatoes, olives, and tuna.",
+      "Crumble feta; add parsley and oregano.",
+      "Dress with lemon juice and olive oil."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 386,
+      "protein_g": 30,
+      "carbs_g": 44,
+      "fat_g": 10
+    },
+    "tags": ["salad", "tuna", "orzo", "mediterranean"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "omega3_rich", "meal_prep", "mediterranean"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "inflammation", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 8,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["tuna in water"], "carbs": ["orzo cooked"], "fat": ["olive oil", "black olives"] },
+      "macro_adjustment_rules": ["Prep 3 servings at once — keeps refrigerated up to 3 days."]
+    }
+  }
+]

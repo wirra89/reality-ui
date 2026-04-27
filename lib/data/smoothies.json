@@ -1,0 +1,973 @@
+[
+  {
+    "id": "SM001",
+    "name": "Mango Turmeric Hormone Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "mango frozen": 150,
+      "Greek yogurt": 120,
+      "almond milk": 200,
+      "turmeric powder": 2,
+      "black pepper": 1,
+      "honey": 10,
+      "ginger fresh": 5
+    },
+    "instructions": [
+      "Add all ingredients to blender.",
+      "Blend on high for 60 seconds until smooth.",
+      "Serve immediately."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 352,
+      "protein_g": 10,
+      "carbs_g": 60,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "anti-inflammatory", "hormone-support"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["anti_inflammatory", "hormone_support", "quick_prep", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "cramps", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt"], "carbs": ["mango frozen"], "fat": [] },
+      "macro_adjustment_rules": ["Add 30g protein powder (+120 kcal) to boost protein for post-workout recovery."]
+    }
+  },
+  {
+    "id": "SM002",
+    "name": "Chocolate Protein Power Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "chocolate protein powder": 60,
+      "banana frozen": 100,
+      "almond milk": 250,
+      "cacao powder": 10,
+      "almond butter": 15,
+      "ice": 100
+    },
+    "instructions": [
+      "Add liquid to blender first, then protein powder, banana, cacao, and almond butter.",
+      "Blend on high 60 seconds.",
+      "Add ice, blend 20 seconds more."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 360,
+      "protein_g": 38,
+      "carbs_g": 34,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "high-protein", "post-workout"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "post_workout", "quick_prep", "muscle_recovery"],
+    "best_timing": ["post_workout", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chocolate protein powder"], "carbs": ["banana frozen"], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Add 50g oats for a muscle-gain version (+~190 kcal, extra 6g protein, 34g carbs)."]
+    }
+  },
+  {
+    "id": "SM003",
+    "name": "Green Power Detox Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "hemp seeds",
+    "ingredients_grams": {
+      "spinach": 60,
+      "kale": 30,
+      "green apple": 100,
+      "cucumber": 80,
+      "hemp seeds": 20,
+      "lemon juice": 15,
+      "water": 200,
+      "ice": 100
+    },
+    "instructions": [
+      "Add water first, then greens, apple, and cucumber.",
+      "Blend until smooth, about 90 seconds.",
+      "Add hemp seeds and lemon juice, blend 20 seconds."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 276,
+      "protein_g": 8,
+      "carbs_g": 52,
+      "fat_g": 4
+    },
+    "tags": ["smoothie", "detox", "greens", "low-fat"],
+    "phase_support": ["menstrual", "follicular", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["detox_support", "anti_inflammatory", "gut_friendly", "low_fat"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "inflammation", "fatigue"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "low",
+      "comfort_level": "low",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["hemp seeds"], "carbs": ["green apple"], "fat": [] },
+      "macro_adjustment_rules": ["Add 1 scoop vanilla protein powder for +25g protein, ideal for post-workout."]
+    }
+  },
+  {
+    "id": "SM004",
+    "name": "Berry Hormone Balance Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "mixed frozen berries": 150,
+      "vanilla protein powder": 30,
+      "Greek yogurt": 100,
+      "flaxseed ground": 15,
+      "almond milk": 200,
+      "honey": 10
+    },
+    "instructions": [
+      "Add liquid base and yogurt to blender.",
+      "Add protein powder, berries, and flaxseed.",
+      "Blend on high for 60 seconds until creamy."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 360,
+      "protein_g": 20,
+      "carbs_g": 52,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "hormone-balance", "high-protein"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["hormone_support", "anti_inflammatory", "gut_friendly", "antioxidant_rich"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["hormonal_imbalance", "inflammation", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "Greek yogurt"], "carbs": ["mixed frozen berries"], "fat": ["flaxseed ground"] },
+      "macro_adjustment_rules": ["Double flaxseed to 30g for extra omega-3 support during luteal phase."]
+    }
+  },
+  {
+    "id": "SM005",
+    "name": "Peanut Butter Banana Protein Shake",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "banana frozen": 120,
+      "vanilla protein powder": 30,
+      "peanut butter natural": 25,
+      "oats rolled": 30,
+      "whole milk": 250,
+      "cinnamon": 2
+    },
+    "instructions": [
+      "Add milk to blender, then all other ingredients.",
+      "Blend on high 60–90 seconds until smooth.",
+      "Serve cold."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 420,
+      "protein_g": 30,
+      "carbs_g": 48,
+      "fat_g": 12
+    },
+    "tags": ["smoothie", "high-protein", "energising"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "energy_boost", "pre_workout", "satiety"],
+    "best_timing": ["pre_workout", "anytime"],
+    "symptom_support": ["fatigue", "low_energy"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["banana frozen", "oats rolled"], "fat": ["peanut butter natural"] },
+      "macro_adjustment_rules": ["Add 15g extra peanut butter for +90 kcal and 5g more fat on high-training days."]
+    }
+  },
+  {
+    "id": "SM006",
+    "name": "Beet Berry Recovery Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "beetroot cooked": 80,
+      "frozen strawberries": 100,
+      "vanilla protein powder": 25,
+      "orange juice": 150,
+      "Greek yogurt": 80,
+      "ice": 80
+    },
+    "instructions": [
+      "Add orange juice, beetroot, and frozen strawberries to blender.",
+      "Add protein powder and yogurt.",
+      "Blend on high until vibrant and smooth, about 60 seconds."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 300,
+      "protein_g": 16,
+      "carbs_g": 50,
+      "fat_g": 4
+    },
+    "tags": ["smoothie", "recovery", "iron-rich"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["iron_rich", "recovery_support", "anti_inflammatory", "low_fat"],
+    "best_timing": ["post_workout", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness", "low_iron"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "Greek yogurt"], "carbs": ["beetroot cooked", "frozen strawberries"], "fat": [] },
+      "macro_adjustment_rules": ["Add 15g chia seeds for 75 extra kcal and omega-3 support on menstrual days."]
+    }
+  },
+  {
+    "id": "SM007",
+    "name": "Coconut Chia Tropical Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "pineapple frozen": 120,
+      "mango frozen": 80,
+      "coconut milk": 100,
+      "Greek yogurt": 100,
+      "chia seeds": 20,
+      "lime juice": 15
+    },
+    "instructions": [
+      "Blend frozen fruit and coconut milk until smooth.",
+      "Add Greek yogurt, chia seeds, and lime juice.",
+      "Blend 30 seconds more and serve."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 368,
+      "protein_g": 12,
+      "carbs_g": 44,
+      "fat_g": 16
+    },
+    "tags": ["smoothie", "tropical", "gut-health"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["gut_friendly", "hormone_support", "anti_inflammatory"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "inflammation", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt"], "carbs": ["pineapple frozen", "mango frozen"], "fat": ["coconut milk", "chia seeds"] },
+      "macro_adjustment_rules": ["Swap coconut milk for water to reduce fat by ~7g on lighter days."]
+    }
+  },
+  {
+    "id": "SM008",
+    "name": "Vanilla Almond Protein Shake",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "vanilla protein powder": 60,
+      "almond milk": 300,
+      "almond butter": 15,
+      "vanilla extract": 3,
+      "ice": 150,
+      "cinnamon": 2
+    },
+    "instructions": [
+      "Add almond milk and ice to blender.",
+      "Add protein powder, almond butter, vanilla, and cinnamon.",
+      "Blend on high 45 seconds until frothy."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 328,
+      "protein_g": 32,
+      "carbs_g": 32,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "high-protein", "low-carb"],
+    "phase_support": ["follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "low_carb", "muscle_recovery", "quick_prep"],
+    "best_timing": ["post_workout", "anytime"],
+    "symptom_support": ["fatigue", "muscle_soreness"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": [], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Add 50g oats (+190 kcal) to convert into a pre-workout meal smoothie."]
+    }
+  },
+  {
+    "id": "SM009",
+    "name": "Avocado Spinach Creamy Green Shake",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "avocado": 80,
+      "spinach fresh": 60,
+      "vanilla protein powder": 25,
+      "almond milk": 250,
+      "banana frozen": 80,
+      "honey": 10
+    },
+    "instructions": [
+      "Add almond milk, spinach, and avocado to blender.",
+      "Add banana, protein powder, and honey.",
+      "Blend on high 60 seconds until perfectly smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 392,
+      "protein_g": 16,
+      "carbs_g": 28,
+      "fat_g": 24
+    },
+    "tags": ["smoothie", "creamy", "healthy-fats"],
+    "phase_support": ["menstrual", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["hormone_support", "anti_inflammatory", "gut_friendly", "healthy_fats"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["cramps", "mood_swings", "bloating"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["banana frozen"], "fat": ["avocado"] },
+      "macro_adjustment_rules": ["Reduce avocado to 40g to cut fat by ~8g on lighter nutrition days."]
+    }
+  },
+  {
+    "id": "SM010",
+    "name": "Strawberry Collagen Glow Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "collagen peptides",
+    "ingredients_grams": {
+      "frozen strawberries": 150,
+      "collagen peptides": 20,
+      "Greek yogurt": 100,
+      "almond milk": 200,
+      "lemon juice": 15,
+      "honey": 10
+    },
+    "instructions": [
+      "Add strawberries, almond milk, and yogurt to blender.",
+      "Add collagen peptides, lemon juice, and honey.",
+      "Blend 60 seconds until smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 276,
+      "protein_g": 20,
+      "carbs_g": 40,
+      "fat_g": 4
+    },
+    "tags": ["smoothie", "collagen", "skin-health", "low-fat"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["skin_glow", "low_fat", "antioxidant_rich", "hormone_support"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["collagen peptides", "Greek yogurt"], "carbs": ["frozen strawberries"], "fat": [] },
+      "macro_adjustment_rules": ["Add 15g chia seeds for +75 kcal and omega-3 fatty acids."]
+    }
+  },
+  {
+    "id": "SM011",
+    "name": "Cacao Maca Hormone Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "chocolate protein powder": 30,
+      "cacao powder": 10,
+      "maca powder": 8,
+      "banana frozen": 100,
+      "almond milk": 250,
+      "almond butter": 20,
+      "medjool date": 20
+    },
+    "instructions": [
+      "Add all ingredients to blender.",
+      "Blend on high for 75 seconds until completely smooth.",
+      "Taste and adjust sweetness with another date if desired."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 372,
+      "protein_g": 18,
+      "carbs_g": 48,
+      "fat_g": 12
+    },
+    "tags": ["smoothie", "hormone-balance", "adaptogen"],
+    "phase_support": ["menstrual", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["hormone_support", "adaptogen", "stress_relief", "mood_boost"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["mood_swings", "fatigue", "cramps", "anxiety"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["chocolate protein powder"], "carbs": ["banana frozen", "medjool date"], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Reduce banana to 60g and skip date to lower carbs by ~18g for lower-carb days."]
+    }
+  },
+  {
+    "id": "SM012",
+    "name": "Pineapple Ginger Digestive Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "pineapple frozen": 200,
+      "Greek yogurt": 60,
+      "ginger fresh": 8,
+      "turmeric powder": 2,
+      "coconut water": 200,
+      "mint leaves": 5
+    },
+    "instructions": [
+      "Add coconut water and pineapple to blender.",
+      "Add yogurt, ginger, turmeric, and mint.",
+      "Blend 60 seconds and serve over ice."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 242,
+      "protein_g": 8,
+      "carbs_g": 48,
+      "fat_g": 2
+    },
+    "tags": ["smoothie", "digestive", "anti-inflammatory"],
+    "phase_support": ["menstrual", "follicular", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["gut_friendly", "anti_inflammatory", "bloat_relief", "low_fat"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "nausea", "cramps", "inflammation"],
+    "attributes": {
+      "energy_level": "low",
+      "digestion": "light",
+      "satiety": "low",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt"], "carbs": ["pineapple frozen"], "fat": [] },
+      "macro_adjustment_rules": ["Add 25g collagen peptides to boost protein by ~18g without changing the flavour."]
+    }
+  },
+  {
+    "id": "SM013",
+    "name": "Cherry Almond Recovery Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "tart cherry frozen": 150,
+      "vanilla protein powder": 30,
+      "almond milk": 250,
+      "almond butter": 15,
+      "honey": 10,
+      "ice": 80
+    },
+    "instructions": [
+      "Blend almond milk and cherries on high for 30 seconds.",
+      "Add protein powder, almond butter, and honey.",
+      "Blend 45 more seconds until smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 344,
+      "protein_g": 22,
+      "carbs_g": 46,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "recovery", "anti-inflammatory"],
+    "phase_support": ["menstrual", "follicular"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["recovery_support", "anti_inflammatory", "muscle_recovery", "sleep_support"],
+    "best_timing": ["post_workout", "anytime"],
+    "symptom_support": ["muscle_soreness", "fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["tart cherry frozen"], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Add 30g Greek yogurt for extra creaminess and ~3g more protein."]
+    }
+  },
+  {
+    "id": "SM014",
+    "name": "Oat Cookie Protein Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "vanilla protein powder": 60,
+      "rolled oats": 50,
+      "almond milk": 300,
+      "cinnamon": 3,
+      "vanilla extract": 3,
+      "almond butter": 10,
+      "ice": 100
+    },
+    "instructions": [
+      "Blend almond milk and oats first for 30 seconds.",
+      "Add protein powder, almond butter, cinnamon, and vanilla.",
+      "Add ice and blend 45 seconds until thick and smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 440,
+      "protein_g": 36,
+      "carbs_g": 56,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "high-protein", "meal-replacement"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["high_protein", "energy_boost", "satiety", "meal_prep"],
+    "best_timing": ["pre_workout", "anytime"],
+    "symptom_support": ["fatigue", "low_energy"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "medium",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 3,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["rolled oats"], "fat": ["almond butter"] },
+      "macro_adjustment_rules": ["Add 20g peanut butter (+120 kcal) and extra 30g oats for muscle-gain days."]
+    }
+  },
+  {
+    "id": "SM015",
+    "name": "Kale Apple Detox Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "hemp seeds",
+    "ingredients_grams": {
+      "kale fresh": 60,
+      "green apple": 120,
+      "cucumber": 80,
+      "celery": 60,
+      "hemp seeds": 15,
+      "lemon juice": 20,
+      "water": 250,
+      "ice": 100
+    },
+    "instructions": [
+      "Add water and kale, blend for 45 seconds.",
+      "Add apple, cucumber, celery, hemp seeds, and lemon.",
+      "Blend on high 60 seconds until smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 268,
+      "protein_g": 8,
+      "carbs_g": 50,
+      "fat_g": 4
+    },
+    "tags": ["smoothie", "detox", "greens", "low-calorie"],
+    "phase_support": ["menstrual", "follicular", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["detox_support", "anti_inflammatory", "low_calorie", "gut_friendly"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["bloating", "fatigue", "inflammation"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "low",
+      "comfort_level": "low",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["hemp seeds"], "carbs": ["green apple"], "fat": [] },
+      "macro_adjustment_rules": ["Add 1 scoop protein powder to make this a complete meal-replacement smoothie."]
+    }
+  },
+  {
+    "id": "SM016",
+    "name": "Walnut Date Hormone Balancer",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "medjool dates": 40,
+      "walnuts": 25,
+      "banana frozen": 80,
+      "Greek yogurt": 120,
+      "almond milk": 200,
+      "cinnamon": 2,
+      "cardamom": 1
+    },
+    "instructions": [
+      "Soak walnuts in warm water for 5 minutes, then drain.",
+      "Add all ingredients to blender.",
+      "Blend on high 75 seconds until creamy and smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 400,
+      "protein_g": 12,
+      "carbs_g": 52,
+      "fat_g": 16
+    },
+    "tags": ["smoothie", "hormone-balance", "healthy-fats"],
+    "phase_support": ["luteal", "menstrual"],
+    "goal_support": ["fat_loss", "maintenance", "recomp"],
+    "functional_tags": ["hormone_support", "mood_boost", "omega3_rich", "healthy_fats"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["mood_swings", "cramps", "anxiety", "PMS"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "medium",
+      "satiety": "medium_high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt"], "carbs": ["medjool dates", "banana frozen"], "fat": ["walnuts"] },
+      "macro_adjustment_rules": ["Reduce dates to 20g to lower carbs by ~13g on lower-carb luteal days."]
+    }
+  },
+  {
+    "id": "SM017",
+    "name": "Tropical Protein Sunrise Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "mango frozen": 100,
+      "pineapple frozen": 80,
+      "vanilla protein powder": 30,
+      "Greek yogurt": 80,
+      "coconut water": 200,
+      "turmeric powder": 1,
+      "lime juice": 15
+    },
+    "instructions": [
+      "Add coconut water and frozen fruit to blender.",
+      "Add protein powder, yogurt, turmeric, and lime.",
+      "Blend on high 60 seconds until frothy."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 374,
+      "protein_g": 28,
+      "carbs_g": 52,
+      "fat_g": 6
+    },
+    "tags": ["smoothie", "tropical", "high-protein"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "anti_inflammatory", "energy_boost", "hormone_support"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "low_energy", "inflammation"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "medium_high",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder", "Greek yogurt"], "carbs": ["mango frozen", "pineapple frozen"], "fat": [] },
+      "macro_adjustment_rules": ["Add 20g hemp seeds for +110 kcal and healthy omega-3 fats."]
+    }
+  },
+  {
+    "id": "SM018",
+    "name": "Espresso Banana Pre-Workout Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "banana frozen": 120,
+      "espresso shot": 30,
+      "vanilla protein powder": 25,
+      "almond milk": 250,
+      "cacao nibs": 10,
+      "honey": 10,
+      "ice": 100
+    },
+    "instructions": [
+      "Brew espresso and let it cool for 2 minutes.",
+      "Add all ingredients including espresso to blender.",
+      "Blend on high 60 seconds. Serve immediately."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 324,
+      "protein_g": 20,
+      "carbs_g": 52,
+      "fat_g": 4
+    },
+    "tags": ["smoothie", "pre-workout", "energising"],
+    "phase_support": ["follicular", "ovulation"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["energy_boost", "pre_workout", "focus_support", "high_carb"],
+    "best_timing": ["pre_workout"],
+    "symptom_support": ["fatigue", "low_energy"],
+    "attributes": {
+      "energy_level": "high",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["banana frozen"], "fat": [] },
+      "macro_adjustment_rules": ["Double espresso shot on intense training days for more caffeine without extra calories."]
+    }
+  },
+  {
+    "id": "SM019",
+    "name": "Blueberry Flax Antioxidant Smoothie",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "protein powder",
+    "ingredients_grams": {
+      "blueberries frozen": 150,
+      "vanilla protein powder": 25,
+      "flaxseed ground": 20,
+      "almond milk": 250,
+      "spinach": 30,
+      "lemon juice": 15,
+      "honey": 10
+    },
+    "instructions": [
+      "Add almond milk, spinach, and blueberries to blender.",
+      "Add protein powder, flaxseed, lemon, and honey.",
+      "Blend on high 60–75 seconds until smooth."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 312,
+      "protein_g": 14,
+      "carbs_g": 46,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "antioxidant", "omega-3", "hormone-support"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["antioxidant_rich", "omega3_rich", "hormone_support", "anti_inflammatory"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["inflammation", "hormonal_imbalance", "mood_swings"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "medium",
+      "comfort_level": "medium",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["vanilla protein powder"], "carbs": ["blueberries frozen"], "fat": ["flaxseed ground"] },
+      "macro_adjustment_rules": ["Add extra 15g flaxseed for enhanced omega-3 support during luteal phase."]
+    }
+  },
+  {
+    "id": "SM020",
+    "name": "Greek Yogurt Berry Thick Shake",
+    "type": "smoothie",
+    "servings": 1,
+    "prep_time_min": 5,
+    "difficulty": "easy",
+    "protein_source": "Greek yogurt",
+    "ingredients_grams": {
+      "Greek yogurt": 200,
+      "mixed frozen berries": 150,
+      "vanilla protein powder": 20,
+      "honey": 15,
+      "almond milk": 100,
+      "vanilla extract": 2
+    },
+    "instructions": [
+      "Add Greek yogurt and almond milk to blender.",
+      "Add frozen berries, protein powder, honey, and vanilla.",
+      "Blend on high 60 seconds until thick and creamy."
+    ],
+    "macros_per_serving": {
+      "calories_kcal": 376,
+      "protein_g": 28,
+      "carbs_g": 48,
+      "fat_g": 8
+    },
+    "tags": ["smoothie", "high-protein", "thick", "probiotic"],
+    "phase_support": ["menstrual", "follicular", "ovulation", "luteal"],
+    "goal_support": ["fat_loss", "recomp"],
+    "functional_tags": ["high_protein", "gut_friendly", "probiotic", "hormone_support"],
+    "best_timing": ["anytime"],
+    "symptom_support": ["fatigue", "gut_issues", "hormonal_imbalance"],
+    "attributes": {
+      "energy_level": "medium",
+      "digestion": "light",
+      "satiety": "high",
+      "comfort_level": "high",
+      "meal_prep_score": 2,
+      "prep_complexity": "simple"
+    },
+    "scaling": {
+      "scalable": true,
+      "base_serving_multiplier": 1,
+      "primary_scalers_grams": { "protein": ["Greek yogurt", "vanilla protein powder"], "carbs": ["mixed frozen berries"], "fat": [] },
+      "macro_adjustment_rules": ["Add 30g oats (+115 kcal) to make this a full meal-replacement with extra fibre."]
+    }
+  }
+]
