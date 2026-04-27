@@ -115,8 +115,9 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
       }
       setLogged(true);
       setTimeout(() => { onLogged(); onClose(); }, 700);
-    } catch {
-      setError("Logging failed — please try again.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Logging failed — please try again.";
+      setError(msg);
       setLogging(false);
     }
   }
@@ -335,9 +336,6 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
           </div>
         </div>
 
-        {error && (
-          <p className="text-xs text-rose-500 font-body px-1 mb-2">{error}</p>
-        )}
       </div>
 
       {/* Sticky log button */}
@@ -345,6 +343,9 @@ export default function FoodDetailModal({ food, phase, cycleDay, onClose, onLogg
         className="flex-shrink-0 px-4 pb-6 pt-3"
         style={{ background: "var(--color-bg)", borderTop: "1px solid var(--color-border)" }}
       >
+        {error && (
+          <p className="text-xs text-rose-500 font-body text-center mb-2">{error}</p>
+        )}
         <button
           onClick={handleLog}
           disabled={logging || logged}
