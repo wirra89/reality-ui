@@ -124,6 +124,11 @@ export function getPhaseAdjustedPrescription({
   // sets[1] intentionally unused: adjustedSets is a count, not a range;
   // upper bound is reserved for future volume-progression logic
 
+  // ── Layer 3: symptom override ──────────────────────────────────────────────
+  const SEVERE = ["cramps", "fatigue", "pain", "heavy bleeding"];
+  const hasSevereSymptom = (signals.symptomFlags ?? []).some(s => SEVERE.includes(s));
+  const shouldSwap = hasSevereSymptom && signals.readinessScore < 35;
+
   return {
     adjustedSets:     baseSets,
     adjustedRepRange: applyTier(row.repRange, tier),
@@ -131,7 +136,10 @@ export function getPhaseAdjustedPrescription({
     targetRPE:        applyTier(row.rpe, tier),
     targetRIR:        applyTier(row.rir, tier),
     restSeconds:      applyTier(row.restSeconds, tier),
-    adjustmentReason: buildAdjustmentReason(subPhase, tier, false),
-    shouldSwapExercise: false,
+    adjustmentReason: buildAdjustmentReason(subPhase, tier, shouldSwap),
+    shouldSwapExercise: shouldSwap,
+    suggestedAlternativeType: shouldSwap
+      ? (signals.phase === "menstrual" ? "mobility" : "bodyweight")
+      : undefined,
   };
 }

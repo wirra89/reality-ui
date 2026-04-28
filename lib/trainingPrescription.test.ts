@@ -152,3 +152,65 @@ describe("getPhaseAdjustedPrescription — layer 1 + 2", () => {
     expect(result.intensityPercent).toEqual([0, 0]);
   });
 });
+
+describe("getPhaseAdjustedPrescription — layer 3 symptom override", () => {
+  const SEVERE_SYMPTOMS = ["cramps", "heavy bleeding"];
+
+  it("triggers swap when readinessScore < 35 AND severe symptoms present", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({
+        phase: "menstrual",
+        cycleDay: 2,
+        readinessScore: 20,
+        readinessLabel: "rest",
+        symptomFlags: SEVERE_SYMPTOMS,
+      }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(true);
+    expect(result.suggestedAlternativeType).toBe("mobility");
+  });
+
+  it("triggers swap with bodyweight alternative for non-menstrual phases", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({
+        phase: "luteal",
+        cycleDay: 26,
+        readinessScore: 20,
+        readinessLabel: "rest",
+        symptomFlags: ["fatigue", "pain"],
+      }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(true);
+    expect(result.suggestedAlternativeType).toBe("bodyweight");
+  });
+
+  it("does NOT trigger swap if readinessScore >= 35 even with symptoms", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({
+        readinessScore: 40,
+        readinessLabel: "rest",
+        symptomFlags: SEVERE_SYMPTOMS,
+      }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(false);
+  });
+
+  it("does NOT trigger swap if score < 35 but no severe symptoms", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({
+        readinessScore: 20,
+        readinessLabel: "rest",
+        symptomFlags: ["bloating"],
+      }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(false);
+  });
+});
