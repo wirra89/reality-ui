@@ -110,7 +110,7 @@ export default function PRsPage() {
     <div className="min-h-dvh bg-background">
       <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
-      <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-28">
+      <main className="relative mx-auto max-w-app px-4 pt-6 pb-28">
         {/* Header */}
         <header className="flex items-center gap-3 mb-5">
           <button onClick={() => router.back()}

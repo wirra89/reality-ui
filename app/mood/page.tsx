@@ -236,7 +236,7 @@ export default function MoodPage() {
     <div className="min-h-dvh bg-background">
       <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
-      <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
+      <main className="relative mx-auto max-w-app px-4 pt-6">
         <header className="flex items-center justify-between mb-5">
           <div>
             <p className="text-xs text-secondary font-semibold uppercase tracking-widest mb-1">Wellness</p>

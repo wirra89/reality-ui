@@ -101,7 +101,7 @@ export default function MealsPage() {
         </div>
       )}
 
-      <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
+      <main className="relative mx-auto max-w-app px-4 pt-6">
 
         {/* Header */}
         <header className="flex items-center justify-between mb-5">

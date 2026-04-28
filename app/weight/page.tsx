@@ -122,7 +122,7 @@ export default function WeightPage() {
     <div className="min-h-dvh bg-background">
       <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
 
-      <main className="relative z-10 mx-auto max-w-app px-4 pt-6">
+      <main className="relative mx-auto max-w-app px-4 pt-6">
 
         {/* Header */}
         <header className="flex items-center gap-3 mb-5">

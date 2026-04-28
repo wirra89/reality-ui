@@ -185,10 +185,24 @@ export default function ProfilePage() {
       supabase.from("personal_records").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("weight_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("personal_records").select("exercise").eq("user_id", user.id),
-    ]).then(([workoutsRes, mealsRes, prsRes, weightRes, exercisesRes]) => {
+      supabase.from("mood_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      getProgressPhotos(),
+      supabase.from("meal_log_entries").select("date, meal_type").eq("user_id", user.id),
+    ]).then(([workoutsRes, mealsRes, prsRes, weightRes, exercisesRes, moodRes, photos, mealTypesRes]) => {
       const uniqueExercises = new Set(
         (exercisesRes.data ?? []).map((r: { exercise: string }) => r.exercise.toLowerCase())
       ).size;
+
+      // Check if any single day has all 4 meal types logged
+      const byDate = new Map<string, Set<string>>();
+      for (const row of (mealTypesRes.data ?? []) as { date: string; meal_type: string }[]) {
+        if (!byDate.has(row.date)) byDate.set(row.date, new Set());
+        byDate.get(row.date)!.add(row.meal_type);
+      }
+      const allMealTypesDay = [...byDate.values()].some(
+        (types) => types.has("breakfast") && types.has("lunch") && types.has("dinner") && types.has("snack")
+      );
+
       const counts: AchievementCounts = {
         workouts:        workoutsRes.count  ?? 0,
         meals:           mealsRes.count     ?? 0,
@@ -196,6 +210,9 @@ export default function ProfilePage() {
         weightLogs:      weightRes.count    ?? 0,
         uniqueExercises,
         streak:          0,
+        moodLogs:        moodRes.count      ?? 0,
+        progressPhotos:  (photos as import("@/lib/progressPhotos").ProgressPhoto[]).length,
+        allMealTypesDay,
       };
       getCheckinStreak().then((s) => {
         setAchievements(computeAchievements({ ...counts, streak: s }));
@@ -410,7 +427,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <main className="relative z-10 mx-auto max-w-app px-4 pt-6 pb-28">
+      <main className="relative mx-auto max-w-app px-4 pt-6 pb-28">
 
         {/* Header */}
         <header className="flex items-center justify-between mb-5">
