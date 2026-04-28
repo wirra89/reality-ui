@@ -46,3 +46,10 @@ export const PHASE_MATRIX: Record<SubPhase, PhaseRow> = {
   early_luteal: { intensityPercent: [65, 80], repRange: [8,  12], sets: [3, 4], rpe: [7, 8], rir: [2, 3], restSeconds: [90,  120] },
   late_luteal:  { intensityPercent: [55, 70], repRange: [10, 15], sets: [2, 4], rpe: [6, 7], rir: [3, 4], restSeconds: [60,  90]  },
 };
+
+/** Splits the luteal phase into early (first half) and late (second half). */
+export function getLutealSubPhase(cycleDay: number, cycleParams: CycleParams): "early_luteal" | "late_luteal" {
+  const b = getPhaseBoundaries(cycleParams);
+  const lutealMid = Math.floor((b.luteal.start + b.luteal.end) / 2);
+  return cycleDay <= lutealMid ? "early_luteal" : "late_luteal";
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PHASE_MATRIX } from "./trainingPrescription";
+import { PHASE_MATRIX, getLutealSubPhase } from "./trainingPrescription";
 
 describe("PHASE_MATRIX", () => {
   const SUB_PHASES = ["menstrual", "follicular", "ovulation", "early_luteal", "late_luteal"] as const;
@@ -32,5 +32,22 @@ describe("PHASE_MATRIX", () => {
       expect(row.rir[0]).toBeLessThanOrEqual(row.rir[1]);
       expect(row.restSeconds[0]).toBeLessThanOrEqual(row.restSeconds[1]);
     }
+  });
+});
+
+describe("getLutealSubPhase", () => {
+  // Default 28-day cycle: luteal runs day 17–28 (12 days)
+  // First half: days 17–22, second half: days 23–28
+
+  it("returns early_luteal for first half of luteal window", () => {
+    expect(getLutealSubPhase(17, {})).toBe("early_luteal");
+    expect(getLutealSubPhase(19, {})).toBe("early_luteal");
+    expect(getLutealSubPhase(22, {})).toBe("early_luteal");
+  });
+
+  it("returns late_luteal for second half of luteal window", () => {
+    expect(getLutealSubPhase(23, {})).toBe("late_luteal");
+    expect(getLutealSubPhase(26, {})).toBe("late_luteal");
+    expect(getLutealSubPhase(28, {})).toBe("late_luteal");
   });
 });
