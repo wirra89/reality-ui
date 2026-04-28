@@ -36,10 +36,11 @@ describe("PHASE_MATRIX", () => {
 });
 
 describe("getLutealSubPhase", () => {
-  // Default 28-day cycle: luteal runs day 17–28 (12 days)
-  // First half: days 17–22, second half: days 23–28
+  // Default 28-day cycle: luteal runs day 16–28 (13 days)
+  // First half: days 16–22, second half: days 23–28
 
   it("returns early_luteal for first half of luteal window", () => {
+    expect(getLutealSubPhase(16, {})).toBe("early_luteal");
     expect(getLutealSubPhase(17, {})).toBe("early_luteal");
     expect(getLutealSubPhase(19, {})).toBe("early_luteal");
     expect(getLutealSubPhase(22, {})).toBe("early_luteal");
