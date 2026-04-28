@@ -29,6 +29,7 @@ describe("PHASE_MATRIX", () => {
       expect(row.repRange[0]).toBeLessThanOrEqual(row.repRange[1]);
       expect(row.sets[0]).toBeLessThanOrEqual(row.sets[1]);
       expect(row.rpe[0]).toBeLessThanOrEqual(row.rpe[1]);
+      expect(row.rir[0]).toBeLessThanOrEqual(row.rir[1]);
       expect(row.restSeconds[0]).toBeLessThanOrEqual(row.restSeconds[1]);
     }
   });
