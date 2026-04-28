@@ -42,7 +42,7 @@ interface PhaseRow {
 export const PHASE_MATRIX: Record<SubPhase, PhaseRow> = {
   menstrual:    { intensityPercent: [50, 65], repRange: [10, 15], sets: [2, 3], rpe: [5, 7], rir: [3, 5], restSeconds: [60,  90]  },
   follicular:   { intensityPercent: [70, 85], repRange: [6,  10], sets: [3, 5], rpe: [7, 9], rir: [1, 3], restSeconds: [90,  150] },
-  ovulation:    { intensityPercent: [75, 90], repRange: [4,  8],  sets: [3, 5], rpe: [8, 9], rir: [1, 2], restSeconds: [120, 180] },
+  ovulation:    { intensityPercent: [75, 90], repRange: [4,  8],  sets: [3, 5], rpe: [8, 9], rir: [1, 2], restSeconds: [120, 180] }, // rir floor 1 (not 0): RPE 9 + RIR 1 = 10
   early_luteal: { intensityPercent: [65, 80], repRange: [8,  12], sets: [3, 4], rpe: [7, 8], rir: [2, 3], restSeconds: [90,  120] },
   late_luteal:  { intensityPercent: [55, 70], repRange: [10, 15], sets: [2, 4], rpe: [6, 7], rir: [3, 4], restSeconds: [60,  90]  },
 };
@@ -69,6 +69,17 @@ function buildAdjustmentReason(
   swapTriggered: boolean,
 ): string {
   return `${subPhase} / ${tier}`; // placeholder — replaced in Task 6
+}
+
+// ── Tier-based range narrowing (private) ──────────────────────────────────────
+
+function applyTier(range: [number, number], tier: ReadinessTier): [number, number] {
+  if (tier === "high") return range;
+  if (tier === "moderate") {
+    const mid = Math.round((range[0] + range[1]) / 2);
+    return [range[0], mid];
+  }
+  return [range[0], range[0]];
 }
 
 // ── Layer 1 + 2: phase-adjusted prescription ──────────────────────────────────
@@ -99,7 +110,7 @@ export function getPhaseAdjustedPrescription({
   // ── Layer 1: resolve sub-phase ─────────────────────────────────────────────
   const subPhase: SubPhase =
     signals.phase === "luteal"
-      ? getLutealSubPhase(signals.cycleDay ?? 20, cycleParams)
+      ? (signals.cycleDay != null ? getLutealSubPhase(signals.cycleDay, cycleParams) : "late_luteal")
       : signals.phase;
 
   const row = PHASE_MATRIX[subPhase];
@@ -107,27 +118,19 @@ export function getPhaseAdjustedPrescription({
   // ── Layer 2: readiness modifier (within phase envelope only) ───────────────
   const tier = getReadinessTier(signals.readinessLabel);
 
-  function pick(range: [number, number]): [number, number] {
-    if (tier === "high")     return range;
-    if (tier === "moderate") {
-      const mid = Math.round((range[0] + range[1]) / 2);
-      return [range[0], mid];
-    }
-    // low
-    return [range[0], range[0]];
-  }
-
   const baseSets = tier === "low"
     ? Math.max(2, row.sets[0] - 1)
     : row.sets[0];
+  // sets[1] intentionally unused: adjustedSets is a count, not a range;
+  // upper bound is reserved for future volume-progression logic
 
   return {
     adjustedSets:     baseSets,
-    adjustedRepRange: pick(row.repRange),
-    intensityPercent: pick(row.intensityPercent),
-    targetRPE:        pick(row.rpe),
-    targetRIR:        pick(row.rir),
-    restSeconds:      pick(row.restSeconds),
+    adjustedRepRange: applyTier(row.repRange, tier),
+    intensityPercent: applyTier(row.intensityPercent, tier),
+    targetRPE:        applyTier(row.rpe, tier),
+    targetRIR:        applyTier(row.rir, tier),
+    restSeconds:      applyTier(row.restSeconds, tier),
     adjustmentReason: buildAdjustmentReason(subPhase, tier, false),
     shouldSwapExercise: false,
   };
