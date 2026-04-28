@@ -272,6 +272,9 @@ export default function PRsPage() {
                 : !exercise.trim() || !reps || !weight ? "Fill in all fields"
                 : "Log Personal Record"}
             </button>
+            {saveStatus === "error" && (
+              <p className="text-xs text-rose-500 font-body text-center mt-2">Failed to save — please try again.</p>
+            )}
           </div>
         )}
 

@@ -510,6 +510,9 @@ export default function MoodPage() {
           style={{ background: saveStatus === "success" ? "linear-gradient(135deg, #34D399, #10B981)" : "linear-gradient(135deg, #C48A97, #7B6D8D)" }}>
           {saveStatus === "loading" ? "Saving…" : saveStatus === "success" ? "✓ Mood Logged!" : selectedMood === null ? "Select a mood first" : alreadyLogged ? "Update Check-in" : "Save Check-in"}
         </button>
+        {saveStatus === "error" && (
+          <p className="text-xs text-rose-500 font-body text-center mt-2">Save failed — please try again.</p>
+        )}
       </main>
     </div>
   );

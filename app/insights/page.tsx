@@ -537,6 +537,11 @@ export default function InsightsPage() {
                       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
                         Workouts & avg volume by phase
                       </p>
+                      {maturity === "personalized" && bestTrainingPhase && (
+                        <p className="text-xs text-dark/55 font-body mb-3">
+                          Your {bestTrainingPhase.phase} sessions average the most volume — that&apos;s your peak training window.
+                        </p>
+                      )}
                       {maturity !== "personalized" && (
                         <p className="text-xs text-dark/35 font-body mb-3">
                           {maturity === "early"
@@ -604,6 +609,17 @@ export default function InsightsPage() {
                       <p className="text-xs font-semibold text-dark/50 uppercase tracking-wide mb-1">
                         Avg daily calories by phase
                       </p>
+                      {maturity === "personalized" && (() => {
+                        const phases = mealsByPhase.filter(p => p.count > 0);
+                        if (phases.length < 2) return null;
+                        const high = phases.reduce((a, b) => a.avgCal > b.avgCal ? a : b);
+                        const low  = phases.reduce((a, b) => a.avgCal < b.avgCal ? a : b);
+                        return (
+                          <p className="text-xs text-dark/55 font-body mb-3">
+                            You eat most in {high.phase} ({high.avgCal} kcal avg) and least in {low.phase} — a normal hormonal shift.
+                          </p>
+                        );
+                      })()}
                       {maturity !== "personalized" && (
                         <p className="text-xs text-dark/35 font-body mb-3">
                           {maturity === "early"
@@ -802,7 +818,12 @@ export default function InsightsPage() {
                           Early patterns — {28 - logCount} more logs will unlock your full personalised cycle profile.
                         </p>
                       )}
-                      {maturity === "personalized" && (
+                      {maturity === "personalized" && bestPhase && worstPhase && bestPhase.phase !== worstPhase.phase && (
+                        <p className="text-xs text-dark/55 font-body mb-3">
+                          You feel best in {bestPhase.phase} (avg {bestPhase.avgMood!.toFixed(1)}/5) and lowest in {worstPhase.phase} — plan recovery time there.
+                        </p>
+                      )}
+                      {maturity === "personalized" && !(bestPhase && worstPhase && bestPhase.phase !== worstPhase.phase) && (
                         <p className="text-xs text-dark/35 font-body mb-3">
                           Your personalised mood and energy profile across your cycle.
                         </p>

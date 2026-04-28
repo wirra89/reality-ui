@@ -231,6 +231,9 @@ export default function WeightPage() {
               {saveStatus === "loading" ? "…" : saveStatus === "success" ? "✓" : "Save"}
             </button>
           </div>
+          {saveStatus === "error" && (
+            <p className="text-xs text-rose-500 font-body mb-2">Failed to save — please try again.</p>
+          )}
           <input type="text" placeholder="Optional note (e.g. post-workout, morning)" value={note}
             onChange={(e) => setNote(e.target.value)}
             className="w-full bg-background rounded-xl px-3 py-2.5 text-sm text-dark outline-none placeholder:text-dark/30 font-body" />
