@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PHASE_MATRIX, getLutealSubPhase } from "./trainingPrescription";
+import { PHASE_MATRIX, getLutealSubPhase, getReadinessTier } from "./trainingPrescription";
 
 describe("PHASE_MATRIX", () => {
   const SUB_PHASES = ["menstrual", "follicular", "ovulation", "early_luteal", "late_luteal"] as const;
@@ -50,5 +50,20 @@ describe("getLutealSubPhase", () => {
     expect(getLutealSubPhase(23, {})).toBe("late_luteal");
     expect(getLutealSubPhase(26, {})).toBe("late_luteal");
     expect(getLutealSubPhase(28, {})).toBe("late_luteal");
+  });
+});
+
+describe("getReadinessTier", () => {
+  it("returns 'high' for readinessLabel peak or good", () => {
+    expect(getReadinessTier("peak")).toBe("high");
+    expect(getReadinessTier("good")).toBe("high");
+  });
+
+  it("returns 'moderate' for readinessLabel moderate", () => {
+    expect(getReadinessTier("moderate")).toBe("moderate");
+  });
+
+  it("returns 'low' for readinessLabel rest", () => {
+    expect(getReadinessTier("rest")).toBe("low");
   });
 });

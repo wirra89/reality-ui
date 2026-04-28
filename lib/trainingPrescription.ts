@@ -53,3 +53,11 @@ export function getLutealSubPhase(cycleDay: number, cycleParams: CycleParams): "
   const lutealMid = Math.floor((b.luteal.start + b.luteal.end) / 2);
   return cycleDay <= lutealMid ? "early_luteal" : "late_luteal";
 }
+
+type ReadinessTier = "high" | "moderate" | "low";
+
+export function getReadinessTier(label: ReadinessLabel): ReadinessTier {
+  if (label === "peak" || label === "good") return "high";
+  if (label === "moderate") return "moderate";
+  return "low"; // "rest"
+}
