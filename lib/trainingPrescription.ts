@@ -61,3 +61,74 @@ export function getReadinessTier(label: ReadinessLabel): ReadinessTier {
   if (label === "moderate") return "moderate";
   return "low"; // "rest"
 }
+
+// ── Stub (replaced in Task 6) ─────────────────────────────────────────────────
+function buildAdjustmentReason(
+  subPhase: SubPhase,
+  tier: ReadinessTier,
+  swapTriggered: boolean,
+): string {
+  return `${subPhase} / ${tier}`; // placeholder — replaced in Task 6
+}
+
+// ── Layer 1 + 2: phase-adjusted prescription ──────────────────────────────────
+
+export function getPhaseAdjustedPrescription({
+  basePrescription,
+  signals,
+  cycleParams = {},
+}: {
+  basePrescription: BasePrescription;
+  signals: DailySignals;
+  cycleParams?: CycleParams;
+}): PrescriptionResult {
+  // Duration-only exercises: no rep/intensity prescription
+  if (basePrescription.loadType === "duration_only") {
+    return {
+      adjustedSets: basePrescription.sets,
+      adjustedRepRange: [0, 0],
+      intensityPercent: [0, 0],
+      targetRPE: [0, 0],
+      targetRIR: [0, 0],
+      restSeconds: [0, 0],
+      adjustmentReason: "",
+      shouldSwapExercise: false,
+    };
+  }
+
+  // ── Layer 1: resolve sub-phase ─────────────────────────────────────────────
+  const subPhase: SubPhase =
+    signals.phase === "luteal"
+      ? getLutealSubPhase(signals.cycleDay ?? 20, cycleParams)
+      : signals.phase;
+
+  const row = PHASE_MATRIX[subPhase];
+
+  // ── Layer 2: readiness modifier (within phase envelope only) ───────────────
+  const tier = getReadinessTier(signals.readinessLabel);
+
+  function pick(range: [number, number]): [number, number] {
+    if (tier === "high")     return range;
+    if (tier === "moderate") {
+      const mid = Math.round((range[0] + range[1]) / 2);
+      return [range[0], mid];
+    }
+    // low
+    return [range[0], range[0]];
+  }
+
+  const baseSets = tier === "low"
+    ? Math.max(2, row.sets[0] - 1)
+    : row.sets[0];
+
+  return {
+    adjustedSets:     baseSets,
+    adjustedRepRange: pick(row.repRange),
+    intensityPercent: pick(row.intensityPercent),
+    targetRPE:        pick(row.rpe),
+    targetRIR:        pick(row.rir),
+    restSeconds:      pick(row.restSeconds),
+    adjustmentReason: buildAdjustmentReason(subPhase, tier, false),
+    shouldSwapExercise: false,
+  };
+}
