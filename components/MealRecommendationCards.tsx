@@ -331,7 +331,7 @@ export default function MealRecommendationCards({
             const isLogging  = logging === type;
             const isLogged   = loggedSlots.has(type);
             const isOpen     = expanded === type;
-            const showAccordion = recipe.has_real_instructions;
+            const showAccordion = true;
 
             return (
               <div
@@ -484,8 +484,8 @@ export default function MealRecommendationCards({
                   )}
                 </div>
 
-                {/* Recipe accordion — only rendered when has_real_instructions */}
-                {isOpen && showAccordion && (
+                {/* Recipe accordion */}
+                {isOpen && (
                   <div
                     className="mx-4 mb-4 rounded-xl px-4 py-3"
                     style={{ background: "var(--color-bg)", borderTop: `2px solid ${color}33` }}
@@ -535,6 +535,13 @@ export default function MealRecommendationCards({
                         </ol>
                       </>
                     )}
+
+                    {/* Fallback when no instructions seeded yet */}
+                    {recipe.ingredients.length === 0 && recipe.instructions.length === 0 && (
+                      <p className="text-xs font-body leading-relaxed" style={{ color: "var(--color-text-mid)" }}>
+                        {recipe.benefits ?? `A ${recipe.difficulty?.toLowerCase() ?? "simple"} ${recipe.prep_time_min + recipe.cook_time_min}-minute meal suited for the ${phase} phase.`}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -545,8 +552,8 @@ export default function MealRecommendationCards({
           const food = getFoodPick(i, type);
           if (!food) return null;
 
-          const recipe     = RECIPE_DETAILS[food.externalId ?? ""];
-          const macros     = getFoodMacros(food);
+          const recipeDetail = RECIPE_DETAILS[food.externalId ?? ""];
+          const macros       = getFoodMacros(food);
           const isOpen     = expanded === type;
           const isLogging  = logging === type;
           const isLogged   = loggedSlots.has(type);
@@ -588,7 +595,7 @@ export default function MealRecommendationCards({
                   <div className="min-w-0">
                     <p className="text-dark font-display font-semibold text-sm leading-snug">{food.name}</p>
                     <p className="text-xs mt-1 font-body leading-snug" style={{ color: `${color}cc` }}>
-                      {recipe?.phaseReason ?? (food.keyNutrient ? `Key nutrient: ${food.keyNutrient}` : "")}
+                      {recipeDetail?.phaseReason ?? (food.keyNutrient ? `Key nutrient: ${food.keyNutrient}` : "")}
                     </p>
                   </div>
                 </div>
@@ -632,50 +639,64 @@ export default function MealRecommendationCards({
                   )}
                 </button>
 
-                {recipe && (
-                  <button
-                    onClick={() => setExpanded(isOpen ? null : type)}
-                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
-                    style={{
-                      background: isOpen ? `${color}22` : "rgba(0,0,0,0.04)",
-                      color:      isOpen ? color : "var(--color-text-mid)",
-                      border:     `1px solid ${isOpen ? color + "44" : "var(--color-border)"}`,
-                    }}
-                  >
-                    <span>{isOpen ? "▲" : "▼"}</span>
-                    <span>Recipe</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => setExpanded(isOpen ? null : type)}
+                  className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                  style={{
+                    background: isOpen ? `${color}22` : "rgba(0,0,0,0.04)",
+                    color:      isOpen ? color : "var(--color-text-mid)",
+                    border:     `1px solid ${isOpen ? color + "44" : "var(--color-border)"}`,
+                  }}
+                >
+                  <span>{isOpen ? "▲" : "▼"}</span>
+                  <span>Recipe</span>
+                </button>
               </div>
 
-              {isOpen && recipe && (
+              {isOpen && (
                 <div
                   className="mx-4 mb-4 rounded-xl px-4 py-3"
                   style={{ background: "var(--color-bg)", borderTop: `2px solid ${color}33` }}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>Ingredients</p>
-                  <ul className="mb-4 space-y-1">
-                    {recipe.ingredients.map((ing, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs font-body text-[var(--color-text-mid)]">
-                        <span className="mt-0.5 flex-shrink-0" style={{ color }}>•</span>
-                        <span>{ing}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>Preparation</p>
-                  <ol className="space-y-2">
-                    {recipe.steps.map((step, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-[var(--color-text-mid)]">
-                        <span
-                          className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold leading-none"
-                          style={{ background: `${color}33`, color }}
-                        >
-                          {idx + 1}
-                        </span>
-                        <span className="leading-relaxed">{step}</span>
-                      </li>
-                    ))}
-                  </ol>
+                  {recipeDetail ? (
+                    <>
+                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>Ingredients</p>
+                      <ul className="mb-4 space-y-1">
+                        {recipeDetail.ingredients.map((ing, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-xs font-body text-[var(--color-text-mid)]">
+                            <span className="mt-0.5 flex-shrink-0" style={{ color }}>•</span>
+                            <span>{ing}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>Preparation</p>
+                      <ol className="space-y-2">
+                        {recipeDetail.steps.map((step, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-xs font-body text-[var(--color-text-mid)]">
+                            <span
+                              className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold leading-none"
+                              style={{ background: `${color}33`, color }}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span className="leading-relaxed">{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: `${color}99` }}>About this food</p>
+                      {food.keyNutrient && (
+                        <p className="text-xs font-body leading-relaxed mb-2" style={{ color: "var(--color-text-mid)" }}>
+                          <span className="font-semibold">Key nutrient:</span> {food.keyNutrient}
+                        </p>
+                      )}
+                      <p className="text-xs font-body leading-relaxed" style={{ color: "var(--color-text-mid)" }}>
+                        Serving size: {food.servingSizeG ?? 100}g · Enjoy as part of your {type}.
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
             </div>

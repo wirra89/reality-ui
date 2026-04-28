@@ -113,6 +113,16 @@ export const RECIPE_DETAILS: Record<string, RecipeDetail> = {
       "Top with berries before serving.",
     ],
   },
+  "men-13": {
+    phaseReason: "Iodine from seaweed supports thyroid function; tofu provides plant-based iron and complete protein — both depleted during menstruation.",
+    ingredients: ["400ml dashi or vegetable stock", "1 tbsp white miso paste", "100g firm tofu, cubed", "2 tbsp dried wakame seaweed", "2 spring onions, sliced", "½ tsp sesame oil"],
+    steps: [
+      "Soak wakame in cold water 5 min, then drain and squeeze dry.",
+      "Heat stock in a pot until just before boiling — do not boil miso.",
+      "Whisk miso paste into a ladleful of hot stock until smooth, then stir back in.",
+      "Add tofu and wakame, warm 2 min, then ladle into bowls and top with spring onions and sesame oil.",
+    ],
+  },
   "men-14": {
     phaseReason: "Combining haem iron (beef) with non-haem iron (spinach) maximises total absorption.",
     ingredients: ["150g beef strips", "2 large handfuls spinach", "1 garlic clove", "1 tbsp soy sauce", "1 tsp sesame oil"],
