@@ -42,7 +42,7 @@ interface PhaseRow {
 export const PHASE_MATRIX: Record<SubPhase, PhaseRow> = {
   menstrual:    { intensityPercent: [50, 65], repRange: [10, 15], sets: [2, 3], rpe: [5, 7], rir: [3, 5], restSeconds: [60,  90]  },
   follicular:   { intensityPercent: [70, 85], repRange: [6,  10], sets: [3, 5], rpe: [7, 9], rir: [1, 3], restSeconds: [90,  150] },
-  ovulation:    { intensityPercent: [75, 90], repRange: [4,  8],  sets: [3, 5], rpe: [8, 9], rir: [0, 2], restSeconds: [120, 180] },
+  ovulation:    { intensityPercent: [75, 90], repRange: [4,  8],  sets: [3, 5], rpe: [8, 9], rir: [1, 2], restSeconds: [120, 180] },
   early_luteal: { intensityPercent: [65, 80], repRange: [8,  12], sets: [3, 4], rpe: [7, 8], rir: [2, 3], restSeconds: [90,  120] },
   late_luteal:  { intensityPercent: [55, 70], repRange: [10, 15], sets: [2, 4], rpe: [6, 7], rir: [3, 4], restSeconds: [60,  90]  },
 };
