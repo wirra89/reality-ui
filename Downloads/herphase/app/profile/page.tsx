@@ -388,7 +388,7 @@ export default function ProfilePage() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-sm font-semibold text-white shadow-lg"
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-sm font-semibold text-white shadow-lg"
           style={{ background: "linear-gradient(135deg, #34D399, #10B981)", whiteSpace: "nowrap" }}>
           {toast}
         </div>
@@ -486,7 +486,7 @@ export default function ProfilePage() {
             <div className="flex gap-2 mb-2">
               {avatarColors.map((grad, i) => (
                 <button key={i} onClick={() => { setAvatarIndex(i); setDirty(true); }}
-                  className="w-7 h-7 rounded-full transition-all active:scale-90"
+                  className="w-8 h-8 rounded-full transition-all active:scale-90"
                   style={{ background: grad, border: avatarIndex === i ? "2.5px solid #2E2E2E" : "2.5px solid transparent" }} />
               ))}
             </div>
@@ -501,9 +501,14 @@ export default function ProfilePage() {
           </div>
 
           {/* Name */}
-          <input type="text" value={name} onChange={(e) => { setName(e.target.value); setDirty(true); }}
-            className="text-center text-dark font-display font-semibold text-xl outline-none bg-transparent w-full"
-            placeholder="Your name" />
+          <div className="relative w-full flex items-center justify-center">
+            <input type="text" value={name} onChange={(e) => { setName(e.target.value); setDirty(true); }}
+              className="text-center text-dark font-display font-semibold text-xl outline-none bg-transparent border-b border-transparent focus:border-dark/15 transition-colors pb-0.5 w-full"
+              placeholder="Your name" />
+            <svg className="absolute right-0 w-3.5 h-3.5 pointer-events-none opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--color-text-mid)" }}>
+              <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 013.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+          </div>
 
           {/* Sub-line: member since + streak */}
           <p className="text-dark/35 text-xs font-body mt-1">
@@ -517,7 +522,7 @@ export default function ProfilePage() {
           {weightDelta !== null && (
             <div
               className="flex items-center justify-center gap-2 mt-3 px-4 py-2 rounded-xl"
-              style={{ background: "rgba(52,211,153,0.07)" }}
+              style={{ background: "rgba(52,211,153,0.10)" }}
             >
               <span className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>Weight</span>
               <span className="text-sm font-bold text-dark">{weightDelta.latest} kg</span>
@@ -546,7 +551,7 @@ export default function ProfilePage() {
               </p>
               <div className="flex gap-1.5">
                 {completenessItems.map((item, i) => (
-                  <div key={i} className="flex-1 h-1.5 rounded-full transition-all duration-500"
+                  <div key={i} className="flex-1 h-2 rounded-full transition-all duration-500"
                     style={{ background: item.done ? phaseColor : "rgba(var(--color-text-rgb),0.08)" }} />
                 ))}
               </div>
@@ -565,7 +570,7 @@ export default function ProfilePage() {
             <div key={s.label} className="rounded-[18px] p-3 text-center"
               style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)" }}>
               <p className="font-accent text-lg font-bold text-dark leading-none">{s.value}</p>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.10em] mt-1" style={{ color: "var(--color-text-dim)" }}>{s.label}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.10em] mt-1" style={{ color: "var(--color-text-dim)" }}>{s.label}</p>
             </div>
           ))}
         </div>
@@ -601,8 +606,9 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
-            <span className="text-dark/30 text-sm transition-transform duration-200"
-              style={{ transform: showCycleAccordion ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block" }}>▾</span>
+            <svg className="w-4 h-4 flex-shrink-0 transition-transform duration-200" style={{ color: "var(--color-text-dim)", transform: showCycleAccordion ? "rotate(180deg)" : "rotate(0deg)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
           </button>
 
           {showCycleAccordion && (
@@ -631,7 +637,9 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setShowAdvancedOvulation(v => !v)}
                   className="flex items-center gap-1.5 text-xs font-semibold text-dark/35 mb-3">
-                  <span style={{ transform: showAdvancedOvulation ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", transition: "transform 0.2s" }}>▶</span>
+                  <svg className="w-3 h-3 flex-shrink-0 transition-transform duration-200" style={{ transform: showAdvancedOvulation ? "rotate(90deg)" : "rotate(0deg)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
                   Advanced
                 </button>
                 {showAdvancedOvulation && (
@@ -693,13 +701,13 @@ export default function ProfilePage() {
               const active = selectedGoals.includes(g);
               return (
                 <button key={g} onClick={() => toggleGoal(g)}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95"
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
                   style={{
                     background: active ? "rgba(196,138,151,0.15)" : "var(--color-ghost)",
                     color:      active ? "#C48A97" : "var(--color-text-mid)",
-                    border:     `1px solid ${active ? "rgba(196,138,151,0.4)" : "transparent"}`,
+                    border:     `1.5px solid ${active ? "rgba(196,138,151,0.5)" : "transparent"}`,
                   }}>
-                  {active ? "✓ " : ""}{g}
+                  {g}
                 </button>
               );
             })}
@@ -733,7 +741,9 @@ export default function ProfilePage() {
             </div>
             <div className="flex items-center gap-2">
               {calcSaved && <span className="text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">✓ Saved</span>}
-              <span className="text-dark/30 text-lg">{showCalc ? "↑" : "↓"}</span>
+              <svg className="w-4 h-4 flex-shrink-0 transition-transform duration-200" style={{ color: "var(--color-text-dim)", transform: showCalc ? "rotate(180deg)" : "rotate(0deg)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
             </div>
           </button>
 
@@ -853,7 +863,9 @@ export default function ProfilePage() {
                     <button
                       onClick={() => setShowMacroDetails(v => !v)}
                       className="flex items-center gap-1.5 text-xs text-dark/35 font-semibold mb-2">
-                      <span style={{ transform: showMacroDetails ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", transition: "transform 0.2s" }}>▶</span>
+                      <svg className="w-3 h-3 flex-shrink-0 transition-transform duration-200" style={{ transform: showMacroDetails ? "rotate(90deg)" : "rotate(0deg)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18l6-6-6-6"/>
+                      </svg>
                       Details
                     </button>
                     {showMacroDetails && (() => {
@@ -957,7 +969,7 @@ export default function ProfilePage() {
                     {item.count} {item.unit}
                   </span>
                 )}
-                <span className="text-dark/20 text-sm flex-shrink-0">→</span>
+                <svg className="w-4 h-4 flex-shrink-0 opacity-30" style={{ color: "var(--color-text-mid)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
               </button>
             ))}
           </div>
@@ -981,7 +993,9 @@ export default function ProfilePage() {
             <button onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3.5 transition-all active:scale-98"
               style={{ borderTop: "1px solid rgba(248,113,113,0.08)" }}>
-              <span className="text-base text-rose-400">↪</span>
+              <svg className="w-4 h-4 flex-shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
               <span className="text-sm font-semibold text-rose-400">Sign out</span>
             </button>
           </div>
