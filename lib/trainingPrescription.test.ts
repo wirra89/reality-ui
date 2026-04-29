@@ -283,3 +283,32 @@ describe("getPhaseAdjustedPrescription — adjustment reason", () => {
     expect(result.adjustmentReason.toLowerCase()).toMatch(/intense|alternative|lighter/);
   });
 });
+
+describe("getPhaseAdjustedPrescription — reason exhaustiveness", () => {
+  const PHASES_AND_DAYS: Array<{ phase: "menstrual" | "follicular" | "ovulation" | "luteal"; cycleDay: number }> = [
+    { phase: "menstrual",  cycleDay: 2  },
+    { phase: "follicular", cycleDay: 8  },
+    { phase: "ovulation",  cycleDay: 14 },
+    { phase: "luteal",     cycleDay: 19 }, // early_luteal
+    { phase: "luteal",     cycleDay: 26 }, // late_luteal
+  ];
+  const TIERS: Array<{ readinessLabel: "peak" | "good" | "moderate" | "rest" }> = [
+    { readinessLabel: "peak"     },
+    { readinessLabel: "moderate" },
+    { readinessLabel: "rest"     },
+  ];
+
+  it("all 15 phase+tier combinations produce a non-empty reason string", () => {
+    for (const { phase, cycleDay } of PHASES_AND_DAYS) {
+      for (const { readinessLabel } of TIERS) {
+        const result = getPhaseAdjustedPrescription({
+          basePrescription: BASE,
+          signals: makeSignals({ phase, cycleDay, readinessLabel }),
+          cycleParams: {},
+        });
+        expect(result.adjustmentReason.length, `empty reason for ${phase} day ${cycleDay} / ${readinessLabel}`).toBeGreaterThan(0);
+        expect(result.adjustmentReason, `placeholder reason for ${phase} day ${cycleDay} / ${readinessLabel}`).not.toMatch(/^\w+_\w+ \/ \w+$/);
+      }
+    }
+  });
+});
