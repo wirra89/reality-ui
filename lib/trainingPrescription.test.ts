@@ -241,3 +241,45 @@ describe("getPhaseAdjustedPrescription — layer 3 symptom override", () => {
     expect(result.shouldSwapExercise).toBe(false);
   });
 });
+
+describe("getPhaseAdjustedPrescription — adjustment reason", () => {
+  it("ovulation / high → mentions peak or intensity", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({ phase: "ovulation", cycleDay: 14, readinessLabel: "peak" }),
+      cycleParams: {},
+    });
+    expect(result.adjustmentReason.toLowerCase()).toMatch(/peak|intensity/);
+  });
+
+  it("late luteal / moderate → mentions rep range or recovery or luteal", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({ phase: "luteal", cycleDay: 26, readinessLabel: "moderate" }),
+      cycleParams: {},
+    });
+    expect(result.adjustmentReason.toLowerCase()).toMatch(/rep|recovery|luteal/);
+  });
+
+  it("menstrual / any → mentions body or volume or light", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({ phase: "menstrual", cycleDay: 2, readinessLabel: "rest" }),
+      cycleParams: {},
+    });
+    expect(result.adjustmentReason.toLowerCase()).toMatch(/body|volume|light/);
+  });
+
+  it("swap triggered → mentions alternative or intense or lighter", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({
+        phase: "menstrual", cycleDay: 2,
+        readinessScore: 20, readinessLabel: "rest",
+        symptomFlags: ["cramps"],
+      }),
+      cycleParams: {},
+    });
+    expect(result.adjustmentReason.toLowerCase()).toMatch(/intense|alternative|lighter/);
+  });
+});

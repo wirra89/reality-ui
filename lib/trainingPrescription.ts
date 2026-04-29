@@ -64,13 +64,45 @@ export function getReadinessTier(label: ReadinessLabel): ReadinessTier {
   return "low"; // "rest"
 }
 
-// ── Stub (replaced in Task 6) ─────────────────────────────────────────────────
+// ── Adjustment reason lookup (Task 6) ─────────────────────────────────────────
+
+const REASONS: Record<SubPhase, Record<ReadinessTier, string>> = {
+  menstrual: {
+    high:     "Your body is doing important work. We kept volume light and rest generous.",
+    moderate: "Light volume today — your body is in its rest window.",
+    low:      "We reduced volume to match how you're feeling. Movement is still medicine.",
+  },
+  follicular: {
+    high:     "Rising oestrogen supports strength gains — intensity is up and rep range is lower.",
+    moderate: "Good window for progressive work. We've set a solid moderate range.",
+    low:      "Energy is lower than usual. We scaled back slightly — your movement stays the same.",
+  },
+  ovulation: {
+    high:     "Ovulation is your peak window — intensity is up and rest is longer to match.",
+    moderate: "You're in a strong performance window. We set a solid working range.",
+    low:      "Peak phase, but energy is lower today. We kept intensity moderate.",
+  },
+  early_luteal: {
+    high:     "Early luteal supports solid training. We set a strong moderate range.",
+    moderate: "We moved you into a balanced rep range to match your early luteal phase.",
+    low:      "Energy is dipping. We reduced volume slightly — your workout stays the same.",
+  },
+  late_luteal: {
+    high:     "Late luteal recovery pattern — we moved rep range up and kept intensity controlled.",
+    moderate: "We moved you into a 10–12 rep range to match your luteal recovery pattern.",
+    low:      "Energy is low today. We reduced volume slightly — your movement stays the same.",
+  },
+};
+
 function buildAdjustmentReason(
   subPhase: SubPhase,
   tier: ReadinessTier,
   swapTriggered: boolean,
 ): string {
-  return `${subPhase} / ${tier}`; // placeholder — replaced in Task 6
+  if (swapTriggered) {
+    return "This might feel intense today. Consider a lighter alternative.";
+  }
+  return REASONS[subPhase][tier];
 }
 
 // ── Tier-based range narrowing (private) ──────────────────────────────────────
