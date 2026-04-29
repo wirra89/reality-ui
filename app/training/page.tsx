@@ -13,6 +13,13 @@ import {
 } from "@/lib/supabase";
 import ExerciseLibrary from "@/components/ExerciseLibrary";
 import { getExerciseInputTypeByName, type InputType } from "@/lib/exercises";
+import {
+  getPhaseAdjustedPrescription,
+  type BasePrescription,
+  type PrescriptionResult,
+} from "@/lib/trainingPrescription";
+import type { DailySignals } from "@/lib/sharedSignals";
+import type { CycleParams } from "@/lib/cycle";
 import { TrainingIntelligenceCard } from "@/components/TrainingIntelligenceCard";
 import type { IntelligenceWorkoutExercise } from "@/components/TrainingIntelligenceCard";
 import { getTemplates, type NewWorkoutTemplate } from "@/lib/workoutSessions";
@@ -145,8 +152,36 @@ const newSet = (): SetRow => ({ id: crypto.randomUUID(), reps: "", weight: "" })
 const newEx  = (name = "", exType: InputType = "weight_reps"): ExRow =>
   ({ id: crypto.randomUUID(), name, sets: [newSet()], exType });
 
+function buildPrescriptionSignals(
+  phaseData: ReturnType<typeof getPhaseData>,
+  cycleDay: number,
+  cycleParams: CycleParams,
+  dailySignals: DailySignals | null,
+): DailySignals {
+  if (dailySignals) return dailySignals;
+  const labelMap: Record<string, import("@/lib/dailyPlan").ReadinessLabel> = {
+    low: "rest", moderate: "moderate", high: "good", peak: "peak",
+  };
+  return {
+    phase: phaseData.phase,
+    cycleDay,
+    readinessScore: phaseData.readinessScore,
+    readinessLabel: labelMap[phaseData.energyLevel] ?? "moderate",
+    biasTone: "neutral",
+    symptomFlags: [],
+    energy: null,
+    mood: null,
+    primaryGoal: null,
+  };
+}
+
+const DEFAULT_BASE: Record<string, BasePrescription> = {
+  weight_reps: { sets: 3, reps: 8,  loadType: "weight_reps", targetRPE: 7, restSeconds: 120 },
+  reps_only:   { sets: 3, reps: 10, loadType: "reps_only",   restSeconds: 60 },
+};
+
 export default function TrainingPage() {
-  const { user, cycleDay, cycleParams, loading, todayState, latestMoodLog } = useApp();
+  const { user, cycleDay, cycleParams, loading, todayState, latestMoodLog, dailySignals } = useApp();
   const router = useRouter();
   const phaseData = getPhaseData(cycleDay, cycleParams);
 
@@ -170,6 +205,7 @@ export default function TrainingPage() {
   const [newPRs, setNewPRs] = useState<string[]>([]);
   const [resolvedWorkoutType, setResolvedWorkoutType] = useState<WorkoutTypeId | null>(null);
   const [myTemplates, setMyTemplates] = useState<NewWorkoutTemplate[]>([]);
+  const [dismissedSwaps, setDismissedSwaps] = useState<Set<string>>(new Set());
 
   // Use today's date in draft key so drafts don't persist across cycles
   const today = new Date().toISOString().split("T")[0];
@@ -744,6 +780,57 @@ export default function TrainingPage() {
                   className="flex-1 text-dark font-semibold text-sm outline-none placeholder:text-dark/30 bg-transparent font-body" />
                 <button onClick={() => removeEx(exercise.id)} className="text-dark/20 hover:text-rose-400 transition-colors text-lg leading-none">×</button>
               </div>
+              {/* ── HerPhase prescription strip ── */}
+              {(exercise.exType === "weight_reps" || exercise.exType === "reps_only") && exercise.name.trim() && (() => {
+                const sig = buildPrescriptionSignals(phaseData, cycleDay, cycleParams, dailySignals);
+                const base = DEFAULT_BASE[exercise.exType] ?? DEFAULT_BASE.weight_reps;
+                const rx: PrescriptionResult = getPhaseAdjustedPrescription({ basePrescription: base, signals: sig, cycleParams });
+
+                if (rx.shouldSwapExercise && !dismissedSwaps.has(exercise.id)) {
+                  return (
+                    <div className="mx-4 mb-2 flex items-center justify-between gap-2 rounded-xl px-3 py-2"
+                      style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)" }}>
+                      <p className="text-xs font-body leading-snug flex-1" style={{ color: "var(--color-text-mid)" }}>
+                        {rx.adjustmentReason}
+                      </p>
+                      <button
+                        onClick={() => setDismissedSwaps(p => new Set(p).add(exercise.id))}
+                        className="text-dark/30 hover:text-dark text-base leading-none flex-shrink-0">
+                        ×
+                      </button>
+                    </div>
+                  );
+                }
+
+                if (rx.shouldSwapExercise) return null;
+
+                const [repLo, repHi]   = rx.adjustedRepRange;
+                const [rpeLo, rpeHi]   = rx.targetRPE;
+                const [restLo, restHi] = rx.restSeconds;
+                const restLabel = restLo === restHi ? `${restLo}s` : `${restLo}–${restHi}s`;
+
+                return (
+                  <div className="mx-4 mb-2 rounded-xl px-3 py-2.5"
+                    style={{ background: "rgba(196,138,151,0.06)", border: "1px solid rgba(196,138,151,0.15)" }}>
+                    <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                      <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: "#C48A97" }}>
+                        HerPhase
+                      </span>
+                      <span className="text-dark/20 text-xs">·</span>
+                      <span className="text-xs font-semibold text-dark">{rx.adjustedSets} sets</span>
+                      <span className="text-dark/20 text-xs">·</span>
+                      <span className="text-xs font-semibold text-dark">{repLo}–{repHi} reps</span>
+                      <span className="text-dark/20 text-xs">·</span>
+                      <span className="text-xs font-semibold text-dark">RPE {rpeLo}–{rpeHi}</span>
+                      <span className="text-dark/20 text-xs">·</span>
+                      <span className="text-xs font-semibold text-dark">Rest {restLabel}</span>
+                    </div>
+                    <p className="text-xs font-body leading-snug" style={{ color: "var(--color-text-mid)" }}>
+                      {rx.adjustmentReason}
+                    </p>
+                  </div>
+                );
+              })()}
               <div className="px-4 py-3">
                 {/* ── weight_reps: Reps + Weight ── */}
                 {exercise.exType === "weight_reps" && (
