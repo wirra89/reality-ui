@@ -1,0 +1,679 @@
+"use client";
+import PageSkeleton from "@/components/PageSkeleton";
+
+// app/dashboard/page.tsx
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
+import { getPhaseData, formatPeriodStartDate, getDayInPhase } from "@/lib/cycle";
+import { supabase, getCheckinStreak } from "@/lib/supabase";
+import { getTodayNutritionSummary, type NutritionSummary } from "@/lib/nutrition";
+import CycleSlider from "@/components/CycleSlider";
+import WorkoutCard from "@/components/WorkoutCard";
+import AIRecommendationCard from "@/components/AIRecommendationCard";
+import ReadinessCard from "@/components/ReadinessCard";
+import NutritionCard from "@/components/NutritionCard";
+import WeeklySummaryCard from "@/components/WeeklySummaryCard";
+import CycleCalendar from "@/components/CycleCalendar";
+import PhaseCard from "@/components/PhaseCard";
+import WaterBottleCard from "@/components/WaterBottleCard";
+
+// ── Phase visual constants ──────────────────────────────────────────────────
+const PHASE_HERO_GRADIENT: Record<string, string> = {
+  menstrual:  "linear-gradient(135deg,#FEE2E2,#FECACA)",
+  follicular: "linear-gradient(135deg,#D1FAE5,#A7F3D0)",
+  ovulation:  "linear-gradient(135deg,#FEF3C7,#FDE68A)",
+  luteal:     "linear-gradient(135deg,#EDE9FE,#DDD6FE)",
+};
+const PHASE_HERO_TEXT: Record<string, string> = {
+  menstrual: "#7F1D1D", follicular: "#064E3B", ovulation: "#78350F", luteal: "#3B1D8B",
+};
+const PHASE_EMOJIS_DASH: Record<string, string> = {
+  menstrual: "🌙", follicular: "🌱", ovulation: "⚡", luteal: "🍂",
+};
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+// ── MacroCard ──────────────────────────────────────────────────────────────
+function MacroCard({ phaseData, profile, nutritionSummary }: {
+  phaseData: ReturnType<typeof getPhaseData>;
+  profile: import("@/lib/supabase").Profile | null;
+  nutritionSummary: NutritionSummary | null;
+}) {
+  const hasCustom = !!(profile?.calculated_calories);
+  const targets = {
+    protein: profile?.calculated_protein ?? phaseData.macros.protein,
+    carbs:   profile?.calculated_carbs   ?? phaseData.macros.carbs,
+    fats:    profile?.calculated_fats    ?? phaseData.macros.fats,
+  };
+  const totalTarget = hasCustom && profile?.calculated_calories
+    ? profile.calculated_calories
+    : targets.protein * 4 + targets.carbs * 4 + targets.fats * 9;
+
+  const consumed = {
+    kcal:    Math.round(nutritionSummary?.kcal    ?? 0),
+    protein: Math.round(nutritionSummary?.protein ?? 0),
+    carbs:   Math.round(nutritionSummary?.carbs   ?? 0),
+    fats:    Math.round(nutritionSummary?.fats    ?? 0),
+  };
+  const hasLogged = consumed.kcal > 0;
+
+  const kcalPct = Math.min(consumed.kcal / totalTarget, 1);
+
+  const macroRows = [
+    { label: "Protein", consumed: consumed.protein, target: targets.protein, color: "#7B6D8D" },
+    { label: "Carbs",   consumed: consumed.carbs,   target: targets.carbs,   color: "#C48A97" },
+    { label: "Fats",    consumed: consumed.fats,    target: targets.fats,    color: "#EDD5DB" },
+  ];
+
+  return (
+    <div className="bg-surface rounded-2xl p-4 shadow-card mb-3">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-dark">Daily Macros</h3>
+        <div className="flex items-center gap-1.5">
+          {hasCustom && <span className="text-xs font-bold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full">Custom ✓</span>}
+          {!hasCustom && <span className="text-xs text-dark/30 font-medium">Phase estimate</span>}
+        </div>
+      </div>
+
+      {/* Kcal consumed / target */}
+      <div className="flex items-end justify-between mb-1.5">
+        <div className="flex items-baseline gap-1">
+          <span className="font-display font-bold text-xl text-dark leading-none">{consumed.kcal}</span>
+          <span className="text-xs text-dark/40 font-body">/ {totalTarget} kcal</span>
+        </div>
+        {kcalPct >= 1 && <span className="text-xs font-semibold text-emerald-500">✓ Goal reached</span>}
+        {!hasLogged && <span className="text-xs text-dark/30 font-body">Nothing logged yet</span>}
+      </div>
+      <div className="h-2 rounded-full overflow-hidden mb-4" style={{ background: "rgba(196,138,151,0.12)" }}>
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{
+            width: `${kcalPct * 100}%`,
+            background: kcalPct >= 1
+              ? "linear-gradient(90deg,#34D399,#10B981)"
+              : "linear-gradient(90deg,#C48A97,#7B6D8D)",
+          }}
+        />
+      </div>
+
+      {/* Per-macro rows */}
+      <div className="flex flex-col gap-2.5">
+        {macroRows.map(m => {
+          const pct = Math.min(m.consumed / m.target, 1);
+          const met = pct >= 1;
+          return (
+            <div key={m.label}>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: m.color }} />
+                  <span className="text-xs font-semibold text-dark/70">{m.label}</span>
+                </div>
+                <span className="text-xs font-body" style={{ color: met ? "#10B981" : "rgba(var(--color-text-rgb),0.35)" }}>
+                  {met ? `✓ ${m.target}g` : `${m.consumed}g / ${m.target}g`}
+                </span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(var(--color-text-rgb),0.06)" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pct * 100}%`,
+                    background: met ? "#10B981" : m.color,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── DashboardPage ──────────────────────────────────────────────────────────
+export default function DashboardPage() {
+  const { user, profile, cycleDay, cycleParams, setCycleDay, setPeriodStartToday, setPeriodStartDate, loading, newCyclePrompt, dismissNewCyclePrompt, todayState, latestMoodLog } = useApp();
+  const router = useRouter();
+
+  const [showCalendar, setShowCalendar]     = useState(false);
+  const [streak, setStreak]                 = useState(0);
+  const [nutritionSummary, setNutritionSummary] = useState<NutritionSummary | null>(null);
+  const [waterGlasses, setWaterGlasses]     = useState(0);
+  const [hydrationLoading, setHydrationLoading] = useState(true);
+
+  // ── Hydration — Supabase-backed, replaces localStorage ────────────────
+  // Debounce ref: we update state immediately (optimistic) but only flush
+  // to Supabase 400ms after the last tap, so rapid taps become one write.
+  const hydrationDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const persistHydration = useCallback((glasses: number, waterTarget: number, phase: string, day: number) => {
+    if (!user) return;
+    const today = new Date().toISOString().split("T")[0];
+    if (hydrationDebounceRef.current) clearTimeout(hydrationDebounceRef.current);
+    hydrationDebounceRef.current = setTimeout(() => {
+      supabase.from("hydration_logs").upsert([{
+        user_id:    user.id,
+        date:       today,
+        glasses,
+        target:     waterTarget,
+        phase,
+        cycle_day:  day,
+        updated_at: new Date().toISOString(),
+      }], { onConflict: "user_id,date" }).then(() => {});
+    }, 400);
+  }, [user]);
+
+  useEffect(() => { if (!loading && !user) router.replace("/auth"); }, [user, loading, router]);
+
+  // Load today's hydration from Supabase on mount
+  useEffect(() => {
+    if (!user) return;
+    const today = new Date().toISOString().split("T")[0];
+    setHydrationLoading(true);
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("hydration_logs")
+          .select("glasses")
+          .eq("user_id", user.id)
+          .eq("date", today)
+          .maybeSingle();
+        setWaterGlasses(data?.glasses ?? 0);
+      } catch {
+        setWaterGlasses(0);
+      } finally {
+        setHydrationLoading(false);
+      }
+    })();
+  }, [user]);
+
+  const fetchDashboardData = useCallback(async () => {
+    if (!user) return;
+    getCheckinStreak().then(setStreak);
+    const summary = await getTodayNutritionSummary();
+    setNutritionSummary(summary);
+  }, [user]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === "visible") fetchDashboardData(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [fetchDashboardData]);
+
+  const phaseData     = getPhaseData(cycleDay, cycleParams);
+  const dayInPhase    = getDayInPhase(cycleDay, cycleParams);
+  const waterTarget   = (phaseData.phase === "menstrual" || phaseData.phase === "luteal") ? 9 : 8;
+
+  if (loading || !user) return (
+    <PageSkeleton />
+  );
+
+  const firstName   = profile?.name?.split(" ")[0] ?? "there";
+  const cycleLength = profile?.cycle_length ?? 28;
+
+  // Countdown calculated from cycleDay — updates live with slider
+  const daysUntilNext = cycleLength - cycleDay + 1;
+  const nextPeriodUrgent = daysUntilNext <= 3;
+
+  // Phase segments for prediction bar
+  const segs = [
+    { label: "Menstrual",  color: "#F87171", from: 1,                                     end: profile?.period_length ?? 5,         emoji: "🌙" },
+    { label: "Follicular", color: "#34D399", from: (profile?.period_length ?? 5) + 1,     end: Math.round(cycleLength * 0.46),      emoji: "🌱" },
+    { label: "Ovulation",  color: "#FBBF24", from: Math.round(cycleLength * 0.46) + 1,    end: Math.round(cycleLength * 0.57),      emoji: "⚡" },
+    { label: "Luteal",     color: "#A78BFA", from: Math.round(cycleLength * 0.57) + 1,    end: cycleLength,                         emoji: "🍂" },
+  ];
+  const currentSegIdx   = segs.findIndex(s => s.label.toLowerCase() === phaseData.phase);
+  const currentSeg      = segs[currentSegIdx];
+  const daysLeftInPhase = currentSeg ? Math.max(0, currentSeg.end - cycleDay) : 0;
+
+  return (
+    <div className="min-h-dvh bg-background">
+      <div className="rose-glow fixed top-0 left-0 right-0 pointer-events-none z-0" />
+
+      <main className="relative mx-auto max-w-app px-4 pb-12 pt-6">
+
+        {/* ── 1. HEADER ── */}
+        <header className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "#B8788A" }}>{getGreeting()}</p>
+            <h1 className="font-display text-2xl font-semibold text-dark leading-tight">Hi, {firstName} 👋</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {streak > 0 && (
+              <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface shadow-card">
+                <span className="text-base">🔥</span>
+                <span className="text-xs font-bold text-dark">{streak}</span>
+              </div>
+            )}
+            <button
+              className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white text-sm font-semibold shadow-soft"
+              style={{ background: profile?.avatar_url ? "transparent" : "linear-gradient(135deg, #C48A97, #7B6D8D)", boxShadow: "0 2px 8px rgba(196,138,151,0.35)" }}
+              onClick={() => router.push("/profile")}
+            >
+              {profile?.avatar_url
+                ? <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                : firstName.charAt(0).toUpperCase()}
+            </button>
+          </div>
+        </header>
+
+        {/* ── NEW CYCLE PROMPT ── */}
+        {newCyclePrompt && (
+          <div className="rounded-2xl p-4 mb-4 flex items-center gap-3"
+            style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)" }}>
+            <span className="text-2xl flex-shrink-0">🩸</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-dark">New cycle starting?</p>
+              <p className="text-xs text-dark/50 font-body">It looks like your period may have started. Tap to reset to Day 1.</p>
+            </div>
+            <div className="flex flex-col gap-1.5 flex-shrink-0">
+              <button onClick={async () => { await setPeriodStartToday(); }}
+                className="text-xs font-bold px-3 py-1.5 rounded-xl text-white transition-all active:scale-95"
+                style={{ background: "linear-gradient(135deg, #F87171, #C48A97)" }}>
+                Yes, Day 1
+              </button>
+              <button onClick={dismissNewCyclePrompt}
+                className="text-xs font-medium px-3 py-1 rounded-xl text-dark/40 transition-all active:scale-95"
+                style={{ background: "rgba(var(--color-text-rgb),0.04)" }}>
+                Not yet
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── 2. PHASE TRANSITION CARD — only on day 1 of a new phase ── */}
+        {dayInPhase === 1 && (() => {
+          const trainingDiff: Record<string, { from: string; to: string }> = {
+            menstrual:  { from: "Strength training",  to: "Rest & light movement" },
+            follicular: { from: "Rest & recovery",    to: "Strength + HIIT" },
+            ovulation:  { from: "Moderate training",  to: "Peak effort / PRs" },
+            luteal:     { from: "Peak performance",   to: "Moderate → wind down" },
+          };
+          const nutritionDiff: Record<string, { from: string; to: string }> = {
+            menstrual:  { from: "High carbs + protein", to: "Iron + Omega-3 + warmth" },
+            follicular: { from: "Iron + Omega-3",        to: "Lean protein + complex carbs" },
+            ovulation:  { from: "Muscle-building focus", to: "Peak fuel + zinc" },
+            luteal:     { from: "Peak fuel",             to: "Magnesium + B6 + stable carbs" },
+          };
+          const diff = trainingDiff[phaseData.phase];
+          const nutr = nutritionDiff[phaseData.phase];
+          const heroGrad = PHASE_HERO_GRADIENT[phaseData.phase];
+          const heroText = PHASE_HERO_TEXT[phaseData.phase];
+          return (
+            <div className="rounded-2xl mb-3 overflow-hidden shadow-card" style={{ background: heroGrad, color: heroText }}>
+              <div className="p-4 pb-3">
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", top: -4, right: -4, fontSize: 40, opacity: 0.12, transform: "rotate(15deg)", lineHeight: 1 }}>
+                    {PHASE_EMOJIS_DASH[phaseData.phase]}
+                  </span>
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest opacity-65 mb-1">New phase started</p>
+                <p className="font-display text-lg font-bold leading-tight mb-1">
+                  {PHASE_EMOJIS_DASH[phaseData.phase]} {phaseData.label}
+                </p>
+                <p className="text-xs leading-relaxed opacity-80 mb-3">{phaseData.aiRecommendation?.split(".")[0] + "."}</p>
+                {/* Training + nutrition diff */}
+                {diff && (
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {[
+                      { label: "Training", from: diff.from, to: diff.to },
+                      { label: "Nutrition", from: nutr?.from, to: nutr?.to },
+                    ].filter(d => d.from && d.to).map(d => (
+                      <div key={d.label} className="rounded-xl p-2.5" style={{ background: "rgba(255,255,255,0.3)" }}>
+                        <p className="text-xs font-bold uppercase tracking-wide opacity-60 mb-1.5">{d.label}</p>
+                        <p className="text-xs line-through opacity-50 leading-tight">{d.from}</p>
+                        <p className="text-xs font-bold leading-tight mt-1">→ {d.to}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs opacity-50 text-center">Swipe down to see today&apos;s full plan</p>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ── 2. PHASE CARD (design v3) ── */}
+        <PhaseCard
+          phase={phaseData.phase}
+          label={phaseData.label}
+          description={
+            (phaseData.trainingDetail ?? phaseData.aiRecommendation ?? "").split(".")[0]
+          }
+          cycleDay={cycleDay}
+          className="mb-3"
+        />
+
+        {/* ── 3. STATS ROW ── */}
+        <div className="flex gap-2 mb-3">
+          {/* Day tile */}
+          <div className="flex-shrink-0 flex flex-col items-center justify-center rounded-[18px] bg-surface border border-[var(--color-border)]"
+            style={{ width: 76, height: 76, boxShadow: "var(--shadow-card)" }}>
+            <span className="font-accent text-2xl font-bold text-primary leading-none">{cycleDay}</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wide text-text-dim mt-0.5">of cycle</span>
+          </div>
+          {/* Mini stats */}
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="bg-surface rounded-[14px] px-2.5 py-2 border border-[var(--color-border)]"
+              style={{ boxShadow: "var(--shadow-card)" }}>
+              <p className="font-accent text-sm font-bold text-dark leading-none mb-0.5">
+                {Math.max(0, (profile?.cycle_length ?? 28) - cycleDay)}
+              </p>
+              <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim">days left</p>
+            </div>
+            <div className="bg-surface rounded-[14px] px-2.5 py-2 border border-[var(--color-border)]"
+              style={{ boxShadow: "var(--shadow-card)" }}>
+              <p className="font-accent text-sm font-bold text-dark leading-none mb-0.5">
+                {streak > 0 ? streak : phaseData.label}
+                {streak > 0 && <span className="flame-icon text-xs ml-0.5">🔥</span>}
+              </p>
+              <p className="text-[9px] font-semibold uppercase tracking-wide text-text-dim">
+                {streak > 0 ? "day streak" : "phase"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── 4. TODAY'S FOCUS CARDS ── */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2 px-0.5">
+            <h2 className="font-display text-[15px] font-semibold text-dark">Today&apos;s Focus</h2>
+            <button onClick={() => router.push("/mood")}
+              className="text-xs font-semibold text-primary active:opacity-70 transition-opacity">
+              {todayState?.adaptedFromCheckin ? "✓ Checked in" : "Check in"}
+            </button>
+          </div>
+          <div className="flex gap-2">
+            {/* Train */}
+            <div className="flex-1 rounded-[18px] px-2.5 py-3"
+              style={{ background: "linear-gradient(135deg, #C96480, #A84468)", border: "1px solid transparent", boxShadow: "0 6px 20px rgba(232,130,154,0.40)" }}>
+              <span className="text-xl mb-1.5 block">💪</span>
+              <p className="text-xs font-bold mb-0.5 leading-tight" style={{ color: "white" }}>Train</p>
+              <p className="text-[10px] leading-snug" style={{ color: "rgba(255,255,255,0.85)" }}>
+                {(todayState?.workoutRecommendation?.type ?? phaseData.training).slice(0, 30)}
+              </p>
+            </div>
+            {/* Eat */}
+            <div className="flex-1 rounded-[18px] px-2.5 py-3"
+              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "0 2px 10px rgba(180,80,100,0.08)" }}>
+              <span className="text-xl mb-1.5 block">🥗</span>
+              <p className="text-xs font-bold mb-0.5 leading-tight" style={{ color: "var(--color-text)" }}>Eat</p>
+              <p className="text-[10px] leading-snug" style={{ color: "var(--color-text-mid)" }}>
+                {phaseData.nutritionDetail
+                  ? phaseData.nutritionDetail.slice(0, 30)
+                  : `${profile?.calculated_protein ?? phaseData.macros.protein}g protein`}
+              </p>
+            </div>
+            {/* Hydrate — interactive water bottle */}
+            <WaterBottleCard
+              glasses={waterGlasses}
+              target={waterTarget}
+              loading={hydrationLoading}
+              onTap={(next) => {
+                setWaterGlasses(next);
+                persistHydration(next, waterTarget, phaseData.phase, cycleDay);
+              }}
+            />
+          </div>
+        </div>
+
+        {/* ── PERIOD DATE NUDGE — show if not set ── */}
+        {!profile?.period_start_date && !newCyclePrompt && (
+          <button onClick={() => router.push("/profile")}
+            className="w-full rounded-2xl px-4 py-3.5 mb-3 flex items-center gap-3 text-left active:scale-98 transition-all"
+            style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.2)" }}>
+            <span className="text-lg flex-shrink-0">🩸</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-dark">Set your period start date</p>
+              <p className="text-xs text-dark/45 font-body">Required for accurate phase tracking and recommendations</p>
+            </div>
+            <span className="text-dark/25 text-sm">→</span>
+          </button>
+        )}
+
+        {/* ── PROFILE COMPLETENESS NUDGE — show if goals/metrics missing ── */}
+        {profile?.period_start_date && (!profile?.goals?.length || !profile?.height_cm || !profile?.weight_kg) && (
+          <button onClick={() => router.push("/profile")}
+            className="w-full rounded-2xl px-4 py-3.5 mb-3 flex items-center gap-3 text-left active:scale-98 transition-all"
+            style={{ background: "rgba(196,138,151,0.07)", border: "1px solid rgba(196,138,151,0.2)" }}>
+            <span className="text-lg flex-shrink-0">✨</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-dark">Complete your profile</p>
+              <p className="text-xs text-dark/45 font-body">Add goals & body stats for personalised macro targets</p>
+            </div>
+            <span className="text-dark/25 text-sm">→</span>
+          </button>
+        )}
+
+        {/* ── MOOD PERSONALISATION BANNER — visible when check-in influenced today's plan ── */}
+        {todayState?.adaptedFromCheckin && (
+          <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl mb-3"
+            style={{ background: "rgba(123,109,141,0.07)", border: "1px solid rgba(123,109,141,0.15)" }}>
+            <span className="text-base flex-shrink-0">💜</span>
+            <p className="text-xs text-dark/60 font-body leading-snug">
+              Today&apos;s workout and nutrition were <strong className="text-dark/80 font-semibold">adjusted based on your mood check-in</strong>.
+            </p>
+          </div>
+        )}
+
+        {/* ── 3. TODAY'S TRAINING ── */}
+        {todayState ? (
+          <WorkoutCard recommendation={todayState.workoutRecommendation} phase={phaseData.phase} />
+        ) : (
+          <WorkoutCard
+            recommendation={{
+              type: phaseData.training,
+              intensity: phaseData.energyLevel === "peak" ? "peak" : phaseData.energyLevel === "high" ? "high" : phaseData.energyLevel === "low" ? "light" : "moderate",
+              duration: 45,
+              reasoning: phaseData.trainingDetail,
+              exercises: [],
+            }}
+            phase={phaseData.phase}
+          />
+        )}
+
+        {/* ── 4. HERPHASE INSIGHT ── */}
+        <AIRecommendationCard
+          insightTitle={todayState?.insightTitle ?? phaseData.label}
+          insightBody={todayState?.insightBody ?? phaseData.aiRecommendation}
+          adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+          phase={phaseData.phase}
+          goals={profile?.goals ?? []}
+          bodyGoal={profile?.body_goal ?? null}
+        />
+
+        {/* ── 5. READINESS + NUTRITION ── */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <ReadinessCard
+            score={todayState?.readinessScore ?? phaseData.readinessScore}
+            label={todayState?.readinessLabel ?? (phaseData.readinessScore >= 80 ? "peak" : phaseData.readinessScore >= 60 ? "good" : phaseData.readinessScore >= 40 ? "moderate" : "rest")}
+            adaptedFromCheckin={todayState?.adaptedFromCheckin ?? false}
+          />
+          <NutritionCard phaseData={phaseData} />
+        </div>
+
+        {/* ── 6. WEEKLY SUMMARY ── */}
+        <WeeklySummaryCard />
+
+        {/* ── 7. MACROS ── */}
+        <MacroCard phaseData={phaseData} profile={profile} nutritionSummary={nutritionSummary} />
+
+
+        {/* ── 9. CYCLE DAY + PREDICTION ── */}
+        <div className="bg-surface rounded-2xl shadow-card mb-3">
+
+          {/* Period date row */}
+          <div className="flex items-center gap-2 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-dark/40 font-body uppercase tracking-wide">Period started</p>
+              <p className="text-sm font-semibold text-dark truncate">
+                {profile?.period_start_date
+                  ? `${formatPeriodStartDate(profile.period_start_date)} · Day ${cycleDay}`
+                  : "Not set yet"}
+              </p>
+            </div>
+            {profile?.period_start_date && (
+              <div className="text-center px-2.5 py-1 rounded-xl flex-shrink-0"
+                style={{ background: nextPeriodUrgent ? "rgba(248,113,113,0.10)" : "rgba(167,139,250,0.08)" }}>
+                <p className="text-xs font-bold" style={{ color: nextPeriodUrgent ? "#F87171" : "#A78BFA" }}>
+                  {daysUntilNext <= 0 ? "Today" : daysUntilNext === 1 ? "Tomorrow" : `${daysUntilNext}d`}
+                </p>
+                <p className="text-xs text-dark/30 leading-tight">next 🩸</p>
+              </div>
+            )}
+            <button onClick={() => setShowCalendar(true)}
+              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
+              style={{ background: "var(--color-ghost)" }}>
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#7B6D8D" strokeWidth="1.8">
+                <rect x="3" y="4" width="18" height="18" rx="3" />
+                <path strokeLinecap="round" d="M16 2v4M8 2v4M3 10h18" />
+                <circle cx="8" cy="15" r="1" fill="#7B6D8D" />
+                <circle cx="12" cy="15" r="1" fill="#7B6D8D" />
+                <circle cx="16" cy="15" r="1" fill="#7B6D8D" />
+              </svg>
+            </button>
+            <button onClick={async () => { await setPeriodStartToday(); }}
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-soft transition-all active:scale-90 flex-shrink-0 text-base"
+              style={{ background: "linear-gradient(135deg, #F87171, #C48A97)" }}>
+              🩸
+            </button>
+          </div>
+
+          {/* Unified slider — no overflow clip so thumb is visible */}
+          <div className="px-4 py-3 border-b border-[var(--color-border)]" style={{ overflow: "visible" }}>
+            <CycleSlider cycleDay={cycleDay} cycleLength={cycleLength} cycleParams={cycleParams} onChange={setCycleDay} />
+          </div>
+
+          {/* Prediction timeline */}
+          <div className="px-4 py-3">
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-xs font-semibold text-dark/40 uppercase tracking-wide">Coming up</p>
+              <p className="text-xs text-dark/30 font-body">
+                {daysLeftInPhase > 0 ? `${daysLeftInPhase}d left in ${phaseData.phase}` : "Transitioning soon"}
+              </p>
+            </div>
+            {(() => {
+              const today = new Date(); today.setHours(0, 0, 0, 0);
+              let offset = daysLeftInPhase + 1;
+              return [1, 2, 3].map(i => {
+                const idx      = (currentSegIdx + i) % 4;
+                const phase    = segs[idx];
+                const duration = phase.end - phase.from + 1;
+                const date     = new Date(today);
+                date.setDate(today.getDate() + offset);
+                const daysTo = offset;
+                offset += duration;
+                return (
+                  <div key={phase.label} className="flex items-center gap-2.5 mb-2 last:mb-0">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm"
+                      style={{ background: `${phase.color}15` }}>
+                      {phase.emoji}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-dark">{phase.label}</p>
+                      <p className="text-xs text-dark/40 font-body">
+                        {date.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} · {duration} days
+                      </p>
+                    </div>
+                    <p className="text-xs font-semibold flex-shrink-0" style={{ color: phase.color }}>
+                      {daysTo === 1 ? "tomorrow" : `in ${daysTo}d`}
+                    </p>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+
+        {/* ── PERIOD PREDICTION CARD — last 7 days of luteal ── */}
+        {phaseData.phase === "luteal" && daysUntilNext > 0 && daysUntilNext <= 7 && profile?.period_start_date && (() => {
+          const today = new Date();
+          const predicted = new Date(today);
+          predicted.setDate(today.getDate() + daysUntilNext);
+          const predictedStr = predicted.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+          const prepFoods = [
+            { emoji: "🌰", text: "Magnesium — almonds, dark chocolate, spinach" },
+            { emoji: "🐟", text: "Omega-3 now to reduce next week's cramps" },
+            { emoji: "🔥", text: "Shift to warming foods, reduce cold / raw" },
+            { emoji: "💊", text: "Pain relief ready at home" },
+          ];
+          return (
+            <div className="rounded-2xl mb-3 overflow-hidden shadow-card" style={{ background: "#FEF7F8" }}>
+              <div className="flex items-center gap-3 px-4 py-3" style={{ background: "#FEE2E2" }}>
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#F87171" }} />
+                <p className="text-xs font-extrabold uppercase tracking-widest flex-1" style={{ color: "#B91C1C" }}>
+                  Period predicted in {daysUntilNext}d
+                </p>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#B91C1C" }}>
+                  {predictedStr}
+                </span>
+              </div>
+              <div className="p-4">
+                <p className="text-xs font-bold text-dark mb-3">Start loading these now for an easier period</p>
+                <div className="space-y-2">
+                  {prepFoods.map(f => (
+                    <div key={f.emoji} className="flex items-center gap-2">
+                      <span>{f.emoji}</span>
+                      <p className="text-xs text-dark/60 font-body">{f.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Calendar modal */}
+        {showCalendar && (
+          <CycleCalendar
+            periodStartDate={profile?.period_start_date ?? null}
+            cycleLength={cycleLength}
+            cycleParams={cycleParams}
+            onSelectDate={async (date) => { await setPeriodStartDate(date); setShowCalendar(false); }}
+            onClose={() => setShowCalendar(false)}
+          />
+        )}
+
+        {/* ── 10. QUICK ACTIONS ── */}
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          <button onClick={() => router.push("/weight")}
+            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-surface shadow-card active:scale-95 transition-all text-center">
+            <span className="text-xl">⚖️</span>
+            <div>
+              <p className="text-xs font-semibold text-dark">Weight</p>
+              <p className="text-xs text-dark/35 font-body">Log</p>
+            </div>
+          </button>
+          <button onClick={() => router.push("/prs")}
+            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-surface shadow-card active:scale-95 transition-all text-center">
+            <span className="text-xl">🏆</span>
+            <div>
+              <p className="text-xs font-semibold text-dark">My PRs</p>
+              <p className="text-xs text-dark/35 font-body">Records</p>
+            </div>
+          </button>
+          <button onClick={() => router.push("/history")}
+            className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-2xl bg-surface shadow-card active:scale-95 transition-all text-center">
+            <span className="text-xl">📋</span>
+            <div>
+              <p className="text-xs font-semibold text-dark">History</p>
+              <p className="text-xs text-dark/35 font-body">All logs</p>
+            </div>
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-secondary/50 mt-8 font-body">HerPhase · Cycle-aware fitness</p>
+      </main>
+    </div>
+  );
+}
