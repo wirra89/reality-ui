@@ -213,4 +213,31 @@ describe("getPhaseAdjustedPrescription — layer 3 symptom override", () => {
     });
     expect(result.shouldSwapExercise).toBe(false);
   });
+
+  it("does NOT trigger swap at score exactly 35 (boundary, not < 35)", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({ readinessScore: 35, readinessLabel: "rest", symptomFlags: ["cramps"] }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(false);
+  });
+
+  it("triggers swap at score exactly 34 (just below threshold)", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: BASE,
+      signals: makeSignals({ readinessScore: 34, readinessLabel: "rest", symptomFlags: ["cramps"] }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(true);
+  });
+
+  it("does NOT trigger swap for duration_only even with severe symptoms and low readiness", () => {
+    const result = getPhaseAdjustedPrescription({
+      basePrescription: { sets: 1, reps: 0, loadType: "duration_only" },
+      signals: makeSignals({ readinessScore: 20, readinessLabel: "rest", symptomFlags: ["cramps"] }),
+      cycleParams: {},
+    });
+    expect(result.shouldSwapExercise).toBe(false);
+  });
 });

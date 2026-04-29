@@ -47,6 +47,8 @@ export const PHASE_MATRIX: Record<SubPhase, PhaseRow> = {
   late_luteal:  { intensityPercent: [55, 70], repRange: [10, 15], sets: [2, 4], rpe: [6, 7], rir: [3, 4], restSeconds: [60,  90]  },
 };
 
+const SEVERE_SYMPTOM_FLAGS = ["cramps", "fatigue", "pain", "heavy bleeding"] as const;
+
 /** Splits the luteal phase into early (first half) and late (second half). */
 export function getLutealSubPhase(cycleDay: number, cycleParams: CycleParams): "early_luteal" | "late_luteal" {
   const b = getPhaseBoundaries(cycleParams);
@@ -125,8 +127,7 @@ export function getPhaseAdjustedPrescription({
   // upper bound is reserved for future volume-progression logic
 
   // ── Layer 3: symptom override ──────────────────────────────────────────────
-  const SEVERE = ["cramps", "fatigue", "pain", "heavy bleeding"];
-  const hasSevereSymptom = (signals.symptomFlags ?? []).some(s => SEVERE.includes(s));
+  const hasSevereSymptom = (signals.symptomFlags ?? []).some(s => (SEVERE_SYMPTOM_FLAGS as readonly string[]).includes(s));
   const shouldSwap = hasSevereSymptom && signals.readinessScore < 35;
 
   return {
