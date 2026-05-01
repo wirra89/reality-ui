@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Baby Rose (default) ──────────────────────────────────────── */
+:root,
+[data-theme="rose"] {
+  --color-bg:          #F5E8EB;
+  --color-surface:     #FEF7F8;
+  --color-surface-2:   #FEF0F3;
+  --color-primary:     #E8829A;
+  --color-accent:      #F4B8C6;
+  --color-secondary:   #7D5C65;
+  --color-text:        #2C1A1F;
+  --color-text-mid:    #7D5C65;
+  --color-text-dim:    #C4A4AD;
+  --color-border:      #F5DEE2;
+  --color-track:       #F5DEE2;
+  --color-ghost:       #FEF7F8;
+  --color-text-rgb:    44, 26, 31;
+  --shadow-soft:       0 4px 24px rgba(232,130,154,0.14);
+  --shadow-card:       0 2px 16px rgba(232,130,154,0.08);
+  --shadow-lg:         0 8px 32px rgba(232,130,154,0.20);
+  --nav-bg:            rgba(255,255,255,0.97);
+  --nav-border:        rgba(244,184,198,0.60);
+}
+
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100dvh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), serif;
+  }
+
+  .font-body {
+    font-family: var(--font-body), sans-serif;
+  }
+}
+
+/* Slider custom styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--color-track);
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #C48A97;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(196, 138, 151, 0.4);
+  border: 3px solid #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(196, 138, 151, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #C48A97;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(196, 138, 151, 0.4);
+  border: 3px solid #fff;
+}
+
+/* Fade-in animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s ease forwards;
+}
+
+/* Pulse ring animation for readiness */
+@keyframes pulseRing {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 2.5s ease-in-out infinite;
+}
+
+/* Subtle shimmer for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Phase color tokens ─────────────────────────────────────── */
+:root {
+  --phase-menstrual:  #F87171;
+  --phase-follicular: #34D399;
+  --phase-ovulation:  #FBBF24;
+  --phase-luteal:     #A78BFA;
+}
+
+/* ── Button hierarchy ───────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #C48A97, #7B6D8D);
+  color: white;
+  border: none;
+}
+.btn-secondary {
+  background: transparent;
+  color: #C48A97;
+  border: 1.5px solid rgba(196,138,151,0.4);
+}
+.btn-ghost {
+  background: rgba(0,0,0,0.03);
+  color: rgba(46,46,46,0.5);
+  border: none;
+}
+
+/* ── Rose glow — Design V3 (stronger, two-layer) ────────────────── */
+.rose-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 300px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse 95% 80% at 50% -5%,
+      rgba(232, 130, 154, 0.44) 0%,
+      rgba(232, 130, 154, 0.14) 52%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 55% 38% at 50% 0%,
+      rgba(255, 195, 210, 0.28) 0%,
+      transparent 58%
+    );
+}
+
+/* ── Animated phase icons ────────────────────────────────────────── */
+@keyframes sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50%       { transform: rotate(3deg); }
+}
+@keyframes leaf-open {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+@keyframes sun-spin { to { transform: rotate(360deg); } }
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.12); opacity: 0.85; }
+}
+@keyframes moon-breath {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.7;  transform: scale(1.15); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50%       { opacity: 1;   transform: scale(1); }
+}
+@keyframes flicker {
+  0%,  100% { transform: scale(1)    rotate(-2deg); filter: drop-shadow(0 0 2px rgba(255,140,60,0.6)); }
+  25%        { transform: scale(1.12) rotate(2deg);  filter: drop-shadow(0 0 6px rgba(255,140,60,0.9)); }
+  50%        { transform: scale(0.95) rotate(-1deg); filter: drop-shadow(0 0 3px rgba(255,140,60,0.5)); }
+  75%        { transform: scale(1.08) rotate(3deg);  filter: drop-shadow(0 0 5px rgba(255,140,60,0.85)); }
+}
+
+.phase-glyph-stem   { transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite; }
+.phase-glyph-leaf-l { transform-origin: 50% 70%;  animation: leaf-open 3.2s ease-in-out infinite; }
+.phase-glyph-leaf-r { transform-origin: 50% 70%;  animation: leaf-open 3.2s ease-in-out infinite 0.6s; }
+.phase-glyph-rays   { transform-origin: 50% 50%;  animation: sun-spin 18s linear infinite; }
+.phase-glyph-core   { transform-origin: 50% 50%;  animation: sun-pulse 2.4s ease-in-out infinite; }
+.phase-glyph-halo   { transform-origin: 50% 50%;  animation: moon-breath 3s ease-in-out infinite; }
+.phase-glyph-star-a { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite; }
+.phase-glyph-star-b { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite 0.8s; }
+.phase-glyph-star-c { transform-origin: center;   animation: twinkle 2.2s ease-in-out infinite 1.5s; }
+.flame-icon         { display: inline-block; transform-origin: 50% 90%; animation: flicker 1.6s ease-in-out infinite; }
+
+@keyframes wbSplash {
+  0%   { r: 5;  opacity: 0.6; }
+  100% { r: 14; opacity: 0; }
+}
+.wb-splash { animation: wbSplash 0.45s ease-out forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .phase-glyph-stem, .phase-glyph-leaf-l, .phase-glyph-leaf-r,
+  .phase-glyph-rays, .phase-glyph-core, .phase-glyph-halo,
+  .phase-glyph-star-a, .phase-glyph-star-b, .phase-glyph-star-c,
+  .flame-icon, .wb-splash { animation: none; }
+}
+
