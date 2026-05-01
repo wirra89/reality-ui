@@ -163,6 +163,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
 
   function openAdd() {
     resetForm();
+    setTimelinePreview(null);
     setView("add");
   }
 
@@ -494,7 +495,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
                         {confirmDeleteId === entry.id ? (
                           <div className="flex items-center gap-1.5 flex-shrink-0">
                             <button
-                              onClick={() => { handleDelete(entry); setConfirmDeleteId(null); }}
+                              onClick={async () => { await handleDelete(entry); setConfirmDeleteId(null); }}
                               disabled={deletingId === entry.id}
                               className="px-2 py-1 rounded-lg text-[10px] font-bold text-white transition-all active:scale-90 disabled:opacity-40"
                               style={{ background: "#EF4444" }}
