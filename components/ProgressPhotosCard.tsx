@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type ProgressEntry, createProgressEntry } from "@/lib/progressEntries";
 
 interface ProgressPhotosCardProps {
@@ -34,6 +34,14 @@ export default function ProgressPhotosCard({
   const [afterIdx, setAfterIdx]       = useState(0);   // index in photos[] for "after"
   const [dragPct, setDragPct]         = useState(50);  // 0–100, slider divider position
 
+  const prevLengthRef = useRef(photos.length);
+  useEffect(() => {
+    if (photos.length > prevLengthRef.current) {
+      setAfterIdx(0);
+    }
+    prevLengthRef.current = photos.length;
+  }, [photos.length]);
+
   // photos is sorted newest-first, so photos[0]=newest, photos[length-1]=oldest
   const oldest     = photos.length > 0 ? photos[photos.length - 1] : null;
   const beforePhoto = oldest;                           // always locked to oldest
@@ -55,7 +63,10 @@ export default function ProgressPhotosCard({
     if (!isDraggingRef.current) return;
     setDragPct(calcPct(e.clientX));
   }
-  function onPointerUp() { isDraggingRef.current = false; }
+  function onPointerUp(e: React.PointerEvent) {
+    isDraggingRef.current = false;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  }
 
   // ── Upload ─────────────────────────────────────────────────────────────────
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -68,7 +79,6 @@ export default function ProgressPhotosCard({
     try {
       const today = new Date().toISOString().split("T")[0];
       const entry = await createProgressEntry({ file, date: today, phase: phase ?? null });
-      setAfterIdx(0);   // parent will prepend, so new entry lands at index 0
       onPhotoAdded(entry);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed.");
@@ -105,7 +115,7 @@ export default function ProgressPhotosCard({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="w-full py-8 rounded-2xl flex flex-col items-center gap-2 transition-all active:scale-98"
+            className="w-full py-8 rounded-2xl flex flex-col items-center gap-2 transition-all active:scale-95"
             style={{ border: "1.5px dashed rgba(167,139,250,0.3)", background: "rgba(167,139,250,0.04)" }}
           >
             <span className="text-2xl">📸</span>
@@ -127,7 +137,7 @@ export default function ProgressPhotosCard({
             <div className="flex-1 flex flex-col gap-1.5">
               <button
                 onClick={() => setPreviewUrl(oldest.imageUrl)}
-                className="w-full rounded-xl overflow-hidden block transition-all active:scale-98"
+                className="w-full rounded-xl overflow-hidden block transition-all active:scale-95"
                 style={{ aspectRatio: "2/3" }}
               >
                 <img src={oldest.imageUrl} alt="Progress" className="w-full h-full object-cover" />
@@ -141,7 +151,7 @@ export default function ProgressPhotosCard({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="w-full rounded-xl flex flex-col items-center justify-center gap-2 transition-all active:scale-98"
+                className="w-full rounded-xl flex flex-col items-center justify-center gap-2 transition-all active:scale-95"
                 style={{
                   aspectRatio: "2/3",
                   border: "1.5px dashed rgba(167,139,250,0.3)",
@@ -180,7 +190,6 @@ export default function ProgressPhotosCard({
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
-              onPointerLeave={onPointerUp}
             >
               {/* Before image — always full width underneath */}
               <img
@@ -311,7 +320,7 @@ export default function ProgressPhotosCard({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="w-full py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-98"
+              className="w-full py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
               style={{
                 border: "1px dashed rgba(167,139,250,0.3)",
                 color: "#A78BFA",
@@ -337,7 +346,7 @@ export default function ProgressPhotosCard({
       {/* Timeline CTA */}
       <button
         onClick={onViewTimeline}
-        className="w-full py-3 text-xs font-semibold text-center transition-all active:scale-98 border-t flex items-center justify-center gap-1.5"
+        className="w-full py-3 text-xs font-semibold text-center transition-all active:scale-95 border-t flex items-center justify-center gap-1.5"
         style={{ color: "#A78BFA", borderColor: "var(--color-border)" }}
       >
         <span>📅</span> View Progress Timeline →
