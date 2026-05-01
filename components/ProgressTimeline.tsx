@@ -84,6 +84,8 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
   const [saving, setSaving]           = useState(false);
   const [saveError, setSaveError]     = useState<string | null>(null);
   const [deletingId, setDeletingId]   = useState<string | null>(null);
+  const [timelinePreview, setTimelinePreview] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { load(); }, []);
@@ -456,13 +458,19 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
                 >
                   <div className="flex gap-0">
                     {/* Photo */}
-                    <div className="w-24 flex-shrink-0" style={{ minHeight: "120px" }}>
-                      <img
-                        src={entry.imageUrl}
-                        alt="Progress"
-                        className="w-full h-full object-cover"
-                        style={{ minHeight: "120px" }}
-                      />
+                    <div className="w-32 flex-shrink-0" style={{ minHeight: "128px" }}>
+                      <button
+                        onClick={() => setTimelinePreview(entry.imageUrl)}
+                        className="w-full h-full block"
+                        style={{ minHeight: "128px" }}
+                      >
+                        <img
+                          src={entry.imageUrl}
+                          alt="Progress"
+                          className="w-full h-full object-cover"
+                          style={{ minHeight: "128px" }}
+                        />
+                      </button>
                     </div>
 
                     {/* Info */}
@@ -483,19 +491,42 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
                             </span>
                           )}
                         </div>
-                        <button
-                          onClick={() => handleDelete(entry)}
-                          disabled={deletingId === entry.id}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all active:scale-90 disabled:opacity-40"
-                          style={{
-                            background: "rgba(248,113,113,0.10)",
-                            color: "#EF4444",
-                            border: "1px solid rgba(248,113,113,0.2)",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          {deletingId === entry.id ? "…" : "✕"}
-                        </button>
+                        {confirmDeleteId === entry.id ? (
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            <button
+                              onClick={() => { handleDelete(entry); setConfirmDeleteId(null); }}
+                              disabled={deletingId === entry.id}
+                              className="px-2 py-1 rounded-lg text-[10px] font-bold text-white transition-all active:scale-90 disabled:opacity-40"
+                              style={{ background: "#EF4444" }}
+                            >
+                              {deletingId === entry.id ? "…" : "Delete"}
+                            </button>
+                            <button
+                              onClick={() => setConfirmDeleteId(null)}
+                              className="px-2 py-1 rounded-lg text-[10px] font-bold transition-all active:scale-90"
+                              style={{
+                                background: "var(--color-surface-2)",
+                                color: "var(--color-text-mid)",
+                                border: "1px solid var(--color-border)",
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmDeleteId(entry.id)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all active:scale-90"
+                            style={{
+                              background: "rgba(248,113,113,0.10)",
+                              color: "#EF4444",
+                              border: "1px solid rgba(248,113,113,0.2)",
+                              fontSize: "0.85rem",
+                            }}
+                          >
+                            ✕
+                          </button>
+                        )}
                       </div>
 
                       {/* Stats row */}
@@ -530,6 +561,30 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
           </div>
         )}
       </div>
+
+      {/* Fullscreen photo preview */}
+      {timelinePreview && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.85)" }}
+          onClick={() => setTimelinePreview(null)}
+        >
+          <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={timelinePreview}
+              alt="Progress photo"
+              className="w-full rounded-2xl object-contain max-h-[80vh]"
+            />
+            <button
+              onClick={() => setTimelinePreview(null)}
+              className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg"
+              style={{ background: "rgba(0,0,0,0.5)" }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
