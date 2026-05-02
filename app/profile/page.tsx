@@ -89,6 +89,7 @@ export default function ProfilePage() {
   const [toast, setToast]                     = useState<string | null>(null);
   // dirty flag — set true on any field change, cleared after successful save
   const [dirty, setDirty]                     = useState(false);
+  const [activeTab, setActiveTab]             = useState<"overview" | "settings">("overview");
 
   // ── Macro calculator state ─────────────────────────────────────────────────
   const [showCalc, setShowCalc]                         = useState(false);
@@ -555,29 +556,56 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Stat tiles */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          {[
-            { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "—",    sub: "days" },
-            { label: "Workouts", value: workoutCount ?? "—",                   sub: "logged" },
-            { label: "PRs",      value: prCount ?? "—",                        sub: "set" },
-          ].map(s => (
-            <div key={s.label} className="rounded-[18px] p-3 text-center"
-              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)" }}>
-              <p className="font-accent text-lg font-bold text-dark leading-none">{s.value}</p>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.10em] mt-1" style={{ color: "var(--color-text-dim)" }}>{s.label}</p>
-            </div>
+        {/* Tab bar */}
+        <div className="flex gap-1 mb-4 p-1 rounded-2xl" style={{ background: "var(--color-ghost)" }}>
+          {(["overview", "settings"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="flex-1 py-2 rounded-xl text-xs font-semibold capitalize transition-all duration-200"
+              style={{
+                background: activeTab === tab ? "var(--color-surface)" : "transparent",
+                color:      activeTab === tab ? "var(--color-text)" : "var(--color-text-dim)",
+                boxShadow:  activeTab === tab ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+              }}
+            >
+              {tab === "overview" ? "Overview" : "Settings"}
+            </button>
           ))}
         </div>
 
-        {/* New profile cards */}
-        <TopLiftsCard prs={topPrs} />
-        <ProgressPhotosCard
-          photos={progressPhotos}
-          onPhotoAdded={(entry) => setProgressPhotos(prev => [entry, ...prev])}
-          onViewTimeline={() => setShowTimeline(true)}
-        />
-        {achievements.length > 0 && <AchievementsCard achievements={achievements} />}
+        {/* ── OVERVIEW TAB ─────────────────────────────────────────────────── */}
+        {activeTab === "overview" && (
+          <>
+            {/* Stat tiles */}
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {[
+                { label: "Streak",   value: streak > 0 ? `${streak}🔥` : "—",    sub: "days" },
+                { label: "Workouts", value: workoutCount ?? "—",                   sub: "logged" },
+                { label: "PRs",      value: prCount ?? "—",                        sub: "set" },
+              ].map(s => (
+                <div key={s.label} className="rounded-[18px] p-3 text-center"
+                  style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-soft)" }}>
+                  <p className="font-accent text-lg font-bold text-dark leading-none">{s.value}</p>
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.10em] mt-1" style={{ color: "var(--color-text-dim)" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Profile cards */}
+            <TopLiftsCard prs={topPrs} />
+            <ProgressPhotosCard
+              photos={progressPhotos}
+              onPhotoAdded={(entry) => setProgressPhotos(prev => [entry, ...prev])}
+              onViewTimeline={() => setShowTimeline(true)}
+            />
+            {achievements.length > 0 && <AchievementsCard achievements={achievements} />}
+          </>
+        )}
+
+        {/* ── SETTINGS TAB ─────────────────────────────────────────────────── */}
+        {activeTab === "settings" && (
+          <>
 
         {/* ════════════════════════════════════════════════════
             Section 2 — Cycle
@@ -992,6 +1020,8 @@ export default function ProfilePage() {
             Privacy Policy
           </a>
         </p>
+          </>
+        )}
 
       </main>
 
