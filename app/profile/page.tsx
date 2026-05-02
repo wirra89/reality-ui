@@ -13,7 +13,7 @@ import {
 } from "@/lib/macros";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { getBestPRPerExercise, type PersonalRecord } from "@/lib/supabase";
-import { getProgressPhotos, type ProgressPhoto } from "@/lib/progressPhotos";
+import { getProgressEntries, type ProgressEntry } from "@/lib/progressEntries";
 import { computeAchievements, type AchievementDef, type AchievementCounts } from "@/lib/achievements";
 import TopLiftsCard from "@/components/TopLiftsCard";
 import ProgressPhotosCard from "@/components/ProgressPhotosCard";
@@ -112,7 +112,7 @@ export default function ProfilePage() {
   // ── New profile additions ─────────────────────────────────────────────────
   const [weightDelta, setWeightDelta]       = useState<{ latest: number; delta: number } | null>(null);
   const [topPrs, setTopPrs]                 = useState<PersonalRecord[]>([]);
-  const [progressPhotos, setProgressPhotos] = useState<ProgressPhoto[]>([]);
+  const [progressPhotos, setProgressPhotos] = useState<ProgressEntry[]>([]);
   const [achievements, setAchievements]     = useState<AchievementDef[]>([]);
   const [showTimeline, setShowTimeline]     = useState(false);
 
@@ -176,7 +176,7 @@ export default function ProfilePage() {
     getBestPRPerExercise().then(setTopPrs);
 
     // Progress photos
-    getProgressPhotos().then(setProgressPhotos);
+    getProgressEntries().then(setProgressPhotos);
 
     // Achievement counts
     Promise.all([
@@ -186,7 +186,7 @@ export default function ProfilePage() {
       supabase.from("weight_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("personal_records").select("exercise").eq("user_id", user.id),
       supabase.from("mood_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-      getProgressPhotos(),
+      getProgressEntries(),
       supabase.from("meal_log_entries").select("date, meal_type").eq("user_id", user.id),
     ]).then(([workoutsRes, mealsRes, prsRes, weightRes, exercisesRes, moodRes, photos, mealTypesRes]) => {
       const uniqueExercises = new Set(
@@ -211,7 +211,7 @@ export default function ProfilePage() {
         uniqueExercises,
         streak:          0,
         moodLogs:        moodRes.count      ?? 0,
-        progressPhotos:  (photos as import("@/lib/progressPhotos").ProgressPhoto[]).length,
+        progressPhotos:  (photos as ProgressEntry[]).length,
         allMealTypesDay,
       };
       getCheckinStreak().then((s) => {
@@ -574,7 +574,7 @@ export default function ProfilePage() {
         <TopLiftsCard prs={topPrs} />
         <ProgressPhotosCard
           photos={progressPhotos}
-          onPhotoAdded={() => getProgressPhotos().then(setProgressPhotos)}
+          onPhotoAdded={(entry) => setProgressPhotos(prev => [entry, ...prev])}
           onViewTimeline={() => setShowTimeline(true)}
         />
         {achievements.length > 0 && <AchievementsCard achievements={achievements} />}
