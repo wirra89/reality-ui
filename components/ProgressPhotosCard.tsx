@@ -56,6 +56,7 @@ export default function ProgressPhotosCard({
   const [uploading, setUploading]     = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl]   = useState<string | null>(null);
+  const [beforeIdx, setBeforeIdx]     = useState(() => Math.max(0, photos.length - 1));
   const [afterIdx, setAfterIdx]       = useState(0);
   const [dragPct, setDragPct]         = useState(50);
 
@@ -72,13 +73,27 @@ export default function ProgressPhotosCard({
 
   const prevLengthRef = useRef(photos.length);
   useEffect(() => {
-    if (photos.length > prevLengthRef.current) setAfterIdx(0);
+    if (photos.length > prevLengthRef.current) {
+      setAfterIdx(0);
+      setBeforeIdx(photos.length - 1);
+    }
     prevLengthRef.current = photos.length;
   }, [photos.length]);
 
   const oldest      = photos.length > 0 ? photos[photos.length - 1] : null;
-  const beforePhoto = oldest;
+  const beforePhoto = photos[beforeIdx] ?? oldest;
   const afterPhoto  = photos[afterIdx] ?? null;
+
+  function handleThumbnailTap(idx: number) {
+    if (idx === afterIdx) {
+      // Tap current After → promote to Before, swap old Before to After
+      setBeforeIdx(idx);
+      setAfterIdx(beforeIdx);
+    } else {
+      // Tap any other photo → set as After
+      setAfterIdx(idx);
+    }
+  }
 
   // ── Slider pointer events ──────────────────────────────────────────────────
   function calcPct(clientX: number) {
@@ -261,27 +276,31 @@ export default function ProgressPhotosCard({
             </div>
 
             <p className="text-center mb-2" style={{ fontSize: 10, color: "#c0b0c8", letterSpacing: "0.02em" }}>
-              drag ◀▶ to compare · tap photos below to swap
+              drag ◀▶ to compare · tap to set After · tap again to set Before
             </p>
 
             <div className="flex gap-1.5 px-4 pb-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
               {photos.map((photo, idx) => {
-                const isBefore = photo.id === beforePhoto.id;
+                const isBefore = idx === beforeIdx;
                 const isAfter  = idx === afterIdx;
                 return (
                   <button
                     key={photo.id}
-                    onClick={() => { if (!isBefore) setAfterIdx(idx); }}
+                    onClick={() => handleThumbnailTap(idx)}
                     className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all active:scale-95"
                     style={{
                       width: 52, height: 52,
                       border: isBefore ? "2px solid #9ca3af" : isAfter ? "2px solid #a78bfa" : "2px solid transparent",
-                      boxShadow: isAfter && !isBefore ? "0 0 0 2px rgba(167,139,250,0.2)" : "none",
+                      boxShadow: isAfter ? "0 0 0 2px rgba(167,139,250,0.2)" : "none",
                     }}
                   >
                     <img src={photo.imageUrl} alt="" className="w-full h-full object-cover" />
-                    {isBefore && <span className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full" style={{ background: "#9ca3af", border: "1.5px solid white" }} />}
-                    {isAfter && !isBefore && <span className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full" style={{ background: "#a78bfa", border: "1.5px solid white" }} />}
+                    {isBefore && (
+                      <span className="absolute bottom-0.5 left-0.5 text-[8px] font-bold text-white leading-none px-1 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>B</span>
+                    )}
+                    {isAfter && (
+                      <span className="absolute bottom-0.5 right-0.5 text-[8px] font-bold text-white leading-none px-1 py-0.5 rounded" style={{ background: "rgba(167,139,250,0.85)" }}>A</span>
+                    )}
                   </button>
                 );
               })}
