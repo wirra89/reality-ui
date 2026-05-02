@@ -360,7 +360,7 @@ export default function ProgressPhotosCard({
               image={cropSrc}
               crop={crop}
               zoom={zoom}
-              aspect={undefined}
+              aspect={2 / 3}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
