@@ -60,6 +60,8 @@ export default function ProgressPhotosCard({
   const [afterIdx, setAfterIdx]       = useState(0);
   const [dragPct, setDragPct]         = useState(50);
   const [showCompareModal, setShowCompareModal] = useState(false);
+  const [compareViewMode, setCompareViewMode] = useState<"slider" | "toggle">("slider");
+  const [showingAfter, setShowingAfter] = useState(true);
 
   // ── Crop state ─────────────────────────────────────────────────────────────
   const [cropSrc, setCropSrc]                   = useState<string | null>(null);
@@ -274,7 +276,7 @@ export default function ProgressPhotosCard({
                 </div>
               </div>
               <button
-                onClick={() => { setDragPct(50); setShowCompareModal(true); }}
+                onClick={() => { setDragPct(50); setCompareViewMode("slider"); setShowingAfter(true); setShowCompareModal(true); }}
                 className="w-full py-3 rounded-2xl text-sm font-display font-bold text-white transition-all active:scale-95"
                 style={{ background: "linear-gradient(135deg, #a78bfa, #7B6D8D)", boxShadow: "0 4px 16px rgba(167,139,250,0.35)" }}
               >
@@ -385,43 +387,93 @@ export default function ProgressPhotosCard({
             </div>
           </div>
 
-          {/* Slider fills all remaining space */}
-          <div
-            ref={sliderRef}
-            className="flex-1 relative overflow-hidden"
-            style={{ cursor: "ew-resize", userSelect: "none", touchAction: "none" }}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-          >
-            <img src={beforePhoto.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
-            <img
-              src={afterPhoto.imageUrl} alt="After"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ clipPath: `inset(0 0 0 ${dragPct}%)` }}
-              draggable={false}
-            />
-            {/* Divider line + handle */}
+          {/* Image area — slider or tap-to-toggle */}
+          {compareViewMode === "slider" ? (
             <div
-              className="absolute top-0 bottom-0 flex items-center justify-center"
-              style={{ left: `${dragPct}%`, width: 3, background: "white", boxShadow: "0 0 12px rgba(0,0,0,0.5)", transform: "translateX(-50%)", zIndex: 3 }}
+              ref={sliderRef}
+              className="flex-1 relative overflow-hidden"
+              style={{ cursor: "ew-resize", userSelect: "none", touchAction: "none" }}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
             >
+              <img src={beforePhoto.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+              <img
+                src={afterPhoto.imageUrl} alt="After"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ clipPath: `inset(0 0 0 ${dragPct}%)` }}
+                draggable={false}
+              />
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                style={{ background: "white", boxShadow: "0 2px 14px rgba(0,0,0,0.35)", color: "#A78BFA", fontSize: 12, letterSpacing: -1 }}
-              >◀▶</div>
+                className="absolute top-0 bottom-0 flex items-center justify-center"
+                style={{ left: `${dragPct}%`, width: 3, background: "white", boxShadow: "0 0 12px rgba(0,0,0,0.5)", transform: "translateX(-50%)", zIndex: 3 }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                  style={{ background: "white", boxShadow: "0 2px 14px rgba(0,0,0,0.35)", color: "#A78BFA", fontSize: 12, letterSpacing: -1 }}
+                >◀▶</div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className="flex-1 relative overflow-hidden"
+              style={{ cursor: "pointer", userSelect: "none", touchAction: "none" }}
+              onClick={() => setShowingAfter(prev => !prev)}
+            >
+              <img
+                src={showingAfter ? afterPhoto.imageUrl : beforePhoto.imageUrl}
+                alt={showingAfter ? "After" : "Before"}
+                className="absolute inset-0 w-full h-full object-cover"
+                draggable={false}
+              />
+              <div className="absolute top-3 left-0 right-0 flex justify-center" style={{ zIndex: 3 }}>
+                <div
+                  className="px-3 py-1 rounded-full text-[10px] font-medium"
+                  style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+                >Tap to toggle</div>
+              </div>
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center" style={{ zIndex: 3 }}>
+                <div
+                  className="px-4 py-1.5 rounded-full text-xs font-bold"
+                  style={{
+                    background: showingAfter ? "rgba(167,139,250,0.85)" : "rgba(255,255,255,0.2)",
+                    color: "white",
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                    transition: "background 0.15s",
+                  }}
+                >{showingAfter ? "After" : "Before"}</div>
+              </div>
+            </div>
+          )}
 
-          {/* Bottom hint */}
+          {/* Bottom bar — mode switcher */}
           <div
+            className="flex items-center justify-center gap-2 flex-shrink-0"
             style={{
               background: "rgba(0,0,0,0.85)",
               padding: "10px 20px",
               paddingBottom: "max(env(safe-area-inset-bottom, 0px), 10px)",
             }}
           >
-            <p className="text-center text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>Drag to compare</p>
+            <button
+              onClick={() => setCompareViewMode("slider")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+              style={{
+                background: compareViewMode === "slider" ? "rgba(167,139,250,0.25)" : "rgba(255,255,255,0.08)",
+                color: compareViewMode === "slider" ? "#a78bfa" : "rgba(255,255,255,0.4)",
+                border: `1px solid ${compareViewMode === "slider" ? "rgba(167,139,250,0.45)" : "transparent"}`,
+              }}
+            >◀▶ Slider</button>
+            <button
+              onClick={() => setCompareViewMode("toggle")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+              style={{
+                background: compareViewMode === "toggle" ? "rgba(167,139,250,0.25)" : "rgba(255,255,255,0.08)",
+                color: compareViewMode === "toggle" ? "#a78bfa" : "rgba(255,255,255,0.4)",
+                border: `1px solid ${compareViewMode === "toggle" ? "rgba(167,139,250,0.45)" : "transparent"}`,
+              }}
+            >👆 Tap</button>
           </div>
         </div>
       )}

@@ -189,6 +189,8 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
   const [compareDragPct, setCompareDragPct]     = useState(50);
   const compareSliderRef  = useRef<HTMLDivElement>(null);
   const isCompareDragging = useRef(false);
+  const [compareViewMode, setCompareViewMode] = useState<"slider" | "toggle">("slider");
+  const [compareShowingAfter, setCompareShowingAfter] = useState(true);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -309,6 +311,8 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
     if (!compareB) {
       setCompareB(entry);
       setCompareDragPct(50);
+      setCompareViewMode("slider");
+      setCompareShowingAfter(true);
       setShowCompareSlider(true);
     }
   }
@@ -842,32 +846,67 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
             </div>
           </div>
 
-          <div
-            ref={compareSliderRef}
-            className="flex-1 relative overflow-hidden"
-            style={{ cursor: "ew-resize", userSelect: "none", touchAction: "none" }}
-            onPointerDown={onPD}
-            onPointerMove={onPM}
-            onPointerUp={onPU}
-          >
-            <img src={compareA.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
-            <img
-              src={compareB.imageUrl} alt="After"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ clipPath: `inset(0 0 0 ${compareDragPct}%)` }}
-              draggable={false}
-            />
+          {/* Image area — slider or tap-to-toggle */}
+          {compareViewMode === "slider" ? (
             <div
-              className="absolute top-0 bottom-0 flex items-center justify-center"
-              style={{ left: `${compareDragPct}%`, width: 3, background: "white", boxShadow: "0 0 12px rgba(0,0,0,0.5)", transform: "translateX(-50%)", zIndex: 3 }}
+              ref={compareSliderRef}
+              className="flex-1 relative overflow-hidden"
+              style={{ cursor: "ew-resize", userSelect: "none", touchAction: "none" }}
+              onPointerDown={onPD}
+              onPointerMove={onPM}
+              onPointerUp={onPU}
             >
+              <img src={compareA.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+              <img
+                src={compareB.imageUrl} alt="After"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ clipPath: `inset(0 0 0 ${compareDragPct}%)` }}
+                draggable={false}
+              />
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                style={{ background: "white", boxShadow: "0 2px 14px rgba(0,0,0,0.35)", color: "#A78BFA", fontSize: 12, letterSpacing: -1 }}
-              >◀▶</div>
+                className="absolute top-0 bottom-0 flex items-center justify-center"
+                style={{ left: `${compareDragPct}%`, width: 3, background: "white", boxShadow: "0 0 12px rgba(0,0,0,0.5)", transform: "translateX(-50%)", zIndex: 3 }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                  style={{ background: "white", boxShadow: "0 2px 14px rgba(0,0,0,0.35)", color: "#A78BFA", fontSize: 12, letterSpacing: -1 }}
+                >◀▶</div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className="flex-1 relative overflow-hidden"
+              style={{ cursor: "pointer", userSelect: "none", touchAction: "none" }}
+              onClick={() => setCompareShowingAfter(prev => !prev)}
+            >
+              <img
+                src={compareShowingAfter ? compareB.imageUrl : compareA.imageUrl}
+                alt={compareShowingAfter ? "After" : "Before"}
+                className="absolute inset-0 w-full h-full object-cover"
+                draggable={false}
+              />
+              <div className="absolute top-3 left-0 right-0 flex justify-center" style={{ zIndex: 3 }}>
+                <div
+                  className="px-3 py-1 rounded-full text-[10px] font-medium"
+                  style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+                >Tap to toggle</div>
+              </div>
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center" style={{ zIndex: 3 }}>
+                <div
+                  className="px-4 py-1.5 rounded-full text-xs font-bold"
+                  style={{
+                    background: compareShowingAfter ? "rgba(167,139,250,0.85)" : "rgba(255,255,255,0.2)",
+                    color: "white",
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                    transition: "background 0.15s",
+                  }}
+                >{compareShowingAfter ? "After" : "Before"}</div>
+              </div>
+            </div>
+          )}
 
+          {/* Bottom bar — mode switcher + swap */}
           <div
             className="flex items-center justify-between flex-shrink-0"
             style={{
@@ -876,9 +915,28 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
               paddingBottom: "max(env(safe-area-inset-bottom, 0px), 10px)",
             }}
           >
-            <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>Drag to compare</p>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setCompareViewMode("slider")}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+                style={{
+                  background: compareViewMode === "slider" ? "rgba(167,139,250,0.25)" : "rgba(255,255,255,0.08)",
+                  color: compareViewMode === "slider" ? "#a78bfa" : "rgba(255,255,255,0.4)",
+                  border: `1px solid ${compareViewMode === "slider" ? "rgba(167,139,250,0.45)" : "transparent"}`,
+                }}
+              >◀▶ Slider</button>
+              <button
+                onClick={() => setCompareViewMode("toggle")}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+                style={{
+                  background: compareViewMode === "toggle" ? "rgba(167,139,250,0.25)" : "rgba(255,255,255,0.08)",
+                  color: compareViewMode === "toggle" ? "#a78bfa" : "rgba(255,255,255,0.4)",
+                  border: `1px solid ${compareViewMode === "toggle" ? "rgba(167,139,250,0.45)" : "transparent"}`,
+                }}
+              >👆 Tap</button>
+            </div>
             <button
-              onClick={() => { const a = compareA; setCompareA(compareB); setCompareB(a); setCompareDragPct(50); }}
+              onClick={() => { const a = compareA; setCompareA(compareB); setCompareB(a); setCompareDragPct(50); setCompareShowingAfter(true); }}
               className="text-[11px] font-semibold px-3 py-1.5 rounded-xl"
               style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}
             >Swap ⇄</button>
