@@ -85,6 +85,11 @@ export default function ProgressPhotosCard({
   const beforePhoto = photos[beforeIdx] ?? oldest;
   const afterPhoto  = photos[afterIdx] ?? null;
 
+  const weightedPhotos = photos.filter(p => p.weight !== null);
+  const weightDelta = weightedPhotos.length >= 2
+    ? (weightedPhotos[0].weight! - weightedPhotos[weightedPhotos.length - 1].weight!)
+    : null;
+
   function handleThumbnailTap(idx: number) {
     if (idx === afterIdx) {
       // Tap current After → promote to Before, swap old Before to After
@@ -174,6 +179,11 @@ export default function ProgressPhotosCard({
           {photos.length >= 2 && oldest && (
             <p className="text-xs font-body" style={{ color: "var(--color-text-dim)" }}>
               {photos.length} photos · {monthsBetween(oldest.date, photos[0].date)} months
+              {weightDelta !== null && (
+                <span style={{ fontWeight: 600, color: weightDelta <= 0 ? "#34D399" : "#F87171" }}>
+                  {" · "}{weightDelta > 0 ? "+" : ""}{weightDelta.toFixed(1)} kg
+                </span>
+              )}
             </p>
           )}
         </div>
