@@ -732,8 +732,8 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
               <div className="w-10 h-1 rounded-full" style={{ background: "var(--color-border)" }} />
             </div>
 
-            <div className="flex-shrink-0 overflow-hidden" style={{ maxHeight: "48vh" }}>
-              <img src={detailEntry.imageUrl} className="w-full object-cover" style={{ maxHeight: "48vh" }} alt="" />
+            <div className="flex-shrink-0 flex items-center justify-center" style={{ height: "52vh", background: "#111" }}>
+              <img src={detailEntry.imageUrl} className="h-full w-auto block" alt="" />
             </div>
 
             <div className="px-5 pt-4 pb-2 overflow-y-auto flex-1">
