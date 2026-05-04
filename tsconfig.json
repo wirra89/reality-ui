@@ -17,5 +17,5 @@
     "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "AppData", "Desktop", "Documents", "Downloads", ".claude", ".cursor", ".vscode", ".codex", ".config", ".gemini", "Contacts", "3D Objects"]
 }
