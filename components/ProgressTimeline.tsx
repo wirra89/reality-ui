@@ -310,10 +310,6 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
     if (!compareA) { setCompareA(entry); return; }
     if (!compareB) {
       setCompareB(entry);
-      setCompareDragPct(50);
-      setCompareViewMode("slider");
-      setCompareShowingAfter(true);
-      setShowCompareSlider(true);
     }
   }
 
@@ -520,7 +516,7 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
                 <>
                   <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>Compare mode</p>
                   <p className="text-sm font-semibold text-dark leading-tight mt-0.5">
-                    {!compareA ? "Tap Before photo" : !compareB ? "Now tap After photo" : "Opening…"}
+                    {!compareA ? "Tap Before photo" : !compareB ? "Now tap After photo" : "Ready — tap Compare"}
                   </p>
                 </>
               ) : (
@@ -571,9 +567,21 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
                 className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
                 style={{ background: compareB ? "#A78BFA" : "transparent", border: compareB ? "none" : "2px solid #A78BFA" }}
               >{compareB ? "A" : ""}</span>
-              <p className="text-xs font-semibold" style={{ color: "#A78BFA" }}>
-                {!compareA ? "Tap a photo to set Before" : !compareB ? "Tap a second photo to set After" : "Opening comparison…"}
+              <p className="flex-1 text-xs font-semibold" style={{ color: "#A78BFA" }}>
+                {!compareA ? "Tap a photo to set Before" : !compareB ? "Tap a second photo to set After" : "Both selected"}
               </p>
+              {compareA && compareB && (
+                <button
+                  onClick={() => {
+                    setCompareDragPct(50);
+                    setCompareViewMode("slider");
+                    setCompareShowingAfter(true);
+                    setShowCompareSlider(true);
+                  }}
+                  className="flex-shrink-0 px-3 py-1 rounded-xl text-[11px] font-bold text-white transition-all active:scale-95"
+                  style={{ background: "linear-gradient(135deg, #A78BFA, #7B6D8D)" }}
+                >Compare →</button>
+              )}
             </div>
           )}
 
@@ -856,10 +864,10 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
               onPointerMove={onPM}
               onPointerUp={onPU}
             >
-              <img src={compareA.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+              <img src={compareA.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-contain" draggable={false} />
               <img
                 src={compareB.imageUrl} alt="After"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-contain"
                 style={{ clipPath: `inset(0 0 0 ${compareDragPct}%)` }}
                 draggable={false}
               />
@@ -880,9 +888,17 @@ export default function ProgressTimeline({ onClose, currentPhase }: ProgressTime
               onClick={() => setCompareShowingAfter(prev => !prev)}
             >
               <img
-                src={compareShowingAfter ? compareB.imageUrl : compareA.imageUrl}
-                alt={compareShowingAfter ? "After" : "Before"}
-                className="absolute inset-0 w-full h-full object-cover"
+                src={compareA.imageUrl}
+                alt="Before"
+                className="absolute inset-0 w-full h-full object-contain"
+                style={{ opacity: compareShowingAfter ? 0 : 1, transition: "opacity 0.18s ease" }}
+                draggable={false}
+              />
+              <img
+                src={compareB.imageUrl}
+                alt="After"
+                className="absolute inset-0 w-full h-full object-contain"
+                style={{ opacity: compareShowingAfter ? 1 : 0, transition: "opacity 0.18s ease" }}
                 draggable={false}
               />
               <div className="absolute top-3 left-0 right-0 flex justify-center" style={{ zIndex: 3 }}>

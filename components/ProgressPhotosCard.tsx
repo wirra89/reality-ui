@@ -282,6 +282,11 @@ export default function ProgressPhotosCard({
               >
                 Compare ◀▶
               </button>
+              {weightedPhotos.length === 0 && (
+                <p className="text-center text-[10px] mt-2.5" style={{ color: "rgba(167,139,250,0.55)" }}>
+                  ⚖️ Add weight to your next check-in to track your trend
+                </p>
+              )}
             </div>
 
             <p className="text-center mb-2" style={{ fontSize: 10, color: "#c0b0c8", letterSpacing: "0.02em" }}>
@@ -397,10 +402,10 @@ export default function ProgressPhotosCard({
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
             >
-              <img src={beforePhoto.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+              <img src={beforePhoto.imageUrl} alt="Before" className="absolute inset-0 w-full h-full object-contain" draggable={false} />
               <img
                 src={afterPhoto.imageUrl} alt="After"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-contain"
                 style={{ clipPath: `inset(0 0 0 ${dragPct}%)` }}
                 draggable={false}
               />
@@ -421,9 +426,17 @@ export default function ProgressPhotosCard({
               onClick={() => setShowingAfter(prev => !prev)}
             >
               <img
-                src={showingAfter ? afterPhoto.imageUrl : beforePhoto.imageUrl}
-                alt={showingAfter ? "After" : "Before"}
-                className="absolute inset-0 w-full h-full object-cover"
+                src={beforePhoto.imageUrl}
+                alt="Before"
+                className="absolute inset-0 w-full h-full object-contain"
+                style={{ opacity: showingAfter ? 0 : 1, transition: "opacity 0.18s ease" }}
+                draggable={false}
+              />
+              <img
+                src={afterPhoto.imageUrl}
+                alt="After"
+                className="absolute inset-0 w-full h-full object-contain"
+                style={{ opacity: showingAfter ? 1 : 0, transition: "opacity 0.18s ease" }}
                 draggable={false}
               />
               <div className="absolute top-3 left-0 right-0 flex justify-center" style={{ zIndex: 3 }}>
