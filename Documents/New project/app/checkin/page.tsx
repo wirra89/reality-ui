@@ -10,6 +10,7 @@ import { saveCheckin } from '@/lib/storage'
 import { predictDominantLens } from '@/lib/realityEngine'
 import { getLens } from '@/lib/lenses'
 import type { LensId } from '@/types/reality'
+import { NotificationSetup } from '@/components/NotificationSetup'
 
 export default function CheckInPage() {
   const router = useRouter()
@@ -58,6 +59,8 @@ export default function CheckInPage() {
               <p className="text-xs leading-5 text-[--text-muted]">{lens.coreQuestion}</p>
             )}
           </GlassCard>
+
+          <NotificationSetup />
 
           <button
             onClick={() => router.push('/')}
