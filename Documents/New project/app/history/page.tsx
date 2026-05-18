@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { GlassCard } from '@/components/GlassCard'
 import { LensTag } from '@/components/LensTag'
+import { ClaritySparkline } from '@/components/ClaritySparkline'
+import { LensDistribution } from '@/components/LensDistribution'
 import { loadEntries } from '@/lib/storage'
 import type { RealityEntry, LensId } from '@/types/reality'
 
@@ -29,6 +31,35 @@ function detectBlindSpot(entries: RealityEntry[]): { lens: LensId; count: number
   return { lens: top[0] as LensId, count: top[1] }
 }
 
+function sparklineData(entries: RealityEntry[]): number[] {
+  return entries.slice(0, 14).reverse().map(e => e.clarityScore)
+}
+
+function weekComparison(entries: RealityEntry[]): { thisWeek: number; lastWeek: number } | null {
+  const day = 86400000
+  const now = Date.now()
+  const thisWeek = entries.filter(e => now - new Date(e.createdAt).getTime() < 7 * day)
+  const lastWeek = entries.filter(e => {
+    const age = now - new Date(e.createdAt).getTime()
+    return age >= 7 * day && age < 14 * day
+  })
+  if (thisWeek.length === 0 || lastWeek.length === 0) return null
+  const avg = (arr: RealityEntry[]) =>
+    Math.round(arr.reduce((s, e) => s + e.clarityScore, 0) / arr.length)
+  return { thisWeek: avg(thisWeek), lastWeek: avg(lastWeek) }
+}
+
+function lensCountsSorted(entries: RealityEntry[]): Array<{ lens: LensId; count: number }> {
+  const counts: Partial<Record<LensId, number>> = {}
+  for (const e of entries) {
+    counts[e.primaryLens] = (counts[e.primaryLens] ?? 0) + 1
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([lens, count]) => ({ lens: lens as LensId, count }))
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
@@ -44,13 +75,18 @@ export default function HistoryPage() {
 
   const blindSpot = detectBlindSpot(entries)
   const showBanner = blindSpot && !bannerDismissed
+  const sparkline = sparklineData(entries)
+  const comparison = weekComparison(entries)
+  const lensItems = lensCountsSorted(entries)
 
   return (
     <main className="mx-auto min-h-screen max-w-md px-4 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-32">
       <header className="mb-6">
         <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[--text-dim]">Reality UI</p>
         <h1 className="mt-1 text-2xl font-light text-[--text]">Pattern History</h1>
-        <p className="mt-1 text-xs text-[--text-muted]">{entries.length} decode{entries.length !== 1 ? 's' : ''} stored</p>
+        <p className="mt-1 text-xs text-[--text-muted]">
+          {entries.length} decode{entries.length !== 1 ? 's' : ''} stored
+        </p>
       </header>
 
       {/* Blind spot banner */}
@@ -62,11 +98,13 @@ export default function HistoryPage() {
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-[--text-dim] mb-1">Blind spot detected</p>
-              <p className="text-sm text-[--text] mb-1">
+              <p className="mb-1 text-[10px] uppercase tracking-widest text-[--text-dim]">
+                Blind spot detected
+              </p>
+              <p className="mb-1 text-sm text-[--text]">
                 <strong>{PATTERN_LABELS[blindSpot.lens] ?? blindSpot.lens}</strong> — {blindSpot.count}× this month
               </p>
-              <p className="text-xs text-[--text-muted] leading-5">
+              <p className="text-xs leading-5 text-[--text-muted]">
                 You repeatedly decode situations through this lens. It may be a recurring blind spot worth examining.
               </p>
             </div>
@@ -80,10 +118,46 @@ export default function HistoryPage() {
         </motion.div>
       )}
 
+      {/* Insights */}
+      {entries.length >= 2 && (
+        <section className="mb-6 space-y-3">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-[--text-dim]">Insights</p>
+
+          <GlassCard>
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-xs text-[--text-muted]">Clarity trend</p>
+              {comparison && (
+                <p
+                  className={`text-[10px] font-semibold ${
+                    comparison.thisWeek >= comparison.lastWeek
+                      ? 'text-emerald-400/80'
+                      : 'text-rose-400/80'
+                  }`}
+                >
+                  {comparison.thisWeek >= comparison.lastWeek ? '+' : ''}
+                  {comparison.thisWeek - comparison.lastWeek} vs last week
+                </p>
+              )}
+            </div>
+            <ClaritySparkline scores={sparkline} />
+            <p className="mt-1 text-right text-[9px] text-[--text-dim]">
+              last {sparkline.length} decodes
+            </p>
+          </GlassCard>
+
+          {lensItems.length > 0 && (
+            <GlassCard>
+              <p className="mb-3 text-xs text-[--text-muted]">Top lenses</p>
+              <LensDistribution items={lensItems} />
+            </GlassCard>
+          )}
+        </section>
+      )}
+
       {/* Empty state */}
       {entries.length === 0 && (
         <GlassCard>
-          <p className="text-sm text-[--text-muted] leading-6">
+          <p className="text-sm leading-6 text-[--text-muted]">
             No decodes yet. Analyze a situation and your history will appear here.
           </p>
           <button
@@ -107,7 +181,9 @@ export default function HistoryPage() {
             <GlassCard onClick={() => router.push(`/result?id=${entry.id}`)}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-sm leading-6 text-[--text] mb-2">{entry.situation}</p>
+                  <p className="mb-2 line-clamp-2 text-sm leading-6 text-[--text]">
+                    {entry.situation}
+                  </p>
                   <div className="flex items-center gap-2">
                     <LensTag lensId={entry.primaryLens} />
                     <span className="text-[10px] text-[--text-dim]">{formatDate(entry.createdAt)}</span>
