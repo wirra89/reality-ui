@@ -9,6 +9,8 @@ import { ScoreRing } from '@/components/ScoreRing'
 import { loadEntries, loadCheckins, saveSettings, loadSettings } from '@/lib/storage'
 import { getLens } from '@/lib/lenses'
 import type { RealityEntry, LensId } from '@/types/reality'
+import { StreakBadge } from '@/components/StreakBadge'
+import { calculateStreak } from '@/lib/streak'
 
 function dominantLens(entries: RealityEntry[]): LensId | null {
   if (entries.length === 0) return null
@@ -52,6 +54,7 @@ export default function HomePage() {
   const primary = dominantLens(entries)
   const clarity = avgClarity(entries)
   const recent = entries.slice(0, 3)
+  const streak = calculateStreak(entries)
 
   function dismissOnboarding() {
     saveSettings({ onboardingDone: true })
@@ -61,12 +64,17 @@ export default function HomePage() {
   return (
     <main className="mx-auto min-h-screen max-w-md px-4 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-32">
       <header className="mb-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[--text-dim]">
-          Reality UI
-        </p>
-        <h1 className="mt-1 text-2xl font-light text-[--text] leading-snug">
-          What reality are you<br />operating from today?
-        </h1>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[--text-dim]">
+              Reality UI
+            </p>
+            <h1 className="mt-1 text-2xl font-light text-[--text] leading-snug">
+              What reality are you<br />operating from today?
+            </h1>
+          </div>
+          {streak > 0 && <StreakBadge streak={streak} />}
+        </div>
       </header>
 
       {/* State strip */}
