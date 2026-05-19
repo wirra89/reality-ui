@@ -4,6 +4,7 @@ import { NavGuard } from '@/components/NavGuard'
 import { PageTransition } from '@/components/PageTransition'
 import { InstallPrompt } from '@/components/InstallPrompt'
 import { AppInit } from '@/components/AppInit'
+import { AuthSync } from '@/components/AuthSync'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NavGuard />
         <InstallPrompt />
         <AppInit />
+        <AuthSync />
       </body>
     </html>
   )

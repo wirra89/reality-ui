@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { GlassCard } from '@/components/GlassCard'
 import { SliderInput } from '@/components/SliderInput'
 import { LensTag } from '@/components/LensTag'
-import { saveCheckin } from '@/lib/storage'
+import { saveCheckinWithSync } from '@/lib/db'
 import { predictDominantLens } from '@/lib/realityEngine'
 import { getLens } from '@/lib/lenses'
 import type { LensId } from '@/types/reality'
@@ -22,7 +22,7 @@ export default function CheckInPage() {
   const [submitted, setSubmitted] = useState(false)
   const [predictedLens, setPredictedLens] = useState<LensId | null>(null)
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const lens = predictDominantLens(thought)
     const checkin = {
       id: crypto.randomUUID(),
@@ -35,7 +35,7 @@ export default function CheckInPage() {
       predictedLens: lens,
       createdAt: new Date().toISOString(),
     }
-    saveCheckin(checkin)
+    await saveCheckinWithSync(checkin)
     setPredictedLens(lens)
     setSubmitted(true)
   }

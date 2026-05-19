@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { GlassCard } from '@/components/GlassCard'
 import { SliderInput } from '@/components/SliderInput'
 import { analyzeReality } from '@/lib/realityEngine'
-import { saveEntry } from '@/lib/storage'
+import { saveEntryWithSync } from '@/lib/db'
 
 export default function DecodePage() {
   const router = useRouter()
@@ -18,11 +18,11 @@ export default function DecodePage() {
 
   const ready = situation.trim().length > 10
 
-  function handleDecode() {
+  async function handleDecode() {
     if (!ready || loading) return
     setLoading(true)
     const entry = analyzeReality({ situation: situation.trim(), mood, stress, confidence })
-    saveEntry(entry)
+    await saveEntryWithSync(entry)
     router.push(`/result?id=${entry.id}`)
   }
 

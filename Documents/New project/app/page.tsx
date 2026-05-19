@@ -10,6 +10,7 @@ import { loadEntries, loadCheckins, saveSettings, loadSettings } from '@/lib/sto
 import { getLens } from '@/lib/lenses'
 import type { RealityEntry, LensId } from '@/types/reality'
 import { StreakBadge } from '@/components/StreakBadge'
+import { SyncStatus } from '@/components/SyncStatus'
 import { calculateStreak } from '@/lib/streak'
 
 function dominantLens(entries: RealityEntry[]): LensId | null {
@@ -74,6 +75,9 @@ export default function HomePage() {
             </h1>
           </div>
           {streak > 0 && <StreakBadge streak={streak} />}
+        </div>
+        <div className="mt-2">
+          <SyncStatus />
         </div>
       </header>
 
