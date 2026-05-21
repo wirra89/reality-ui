@@ -444,10 +444,12 @@ Create `components/CreateRideModal.tsx`:
 ```typescript
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { geocodeAddress, getDistanceKm } from '@/lib/mapbox'
 import { estimateFare, formatPrice } from '@/lib/pricing'
 import type { CompanySettings } from '@/lib/types'
+import type { GeocodingFeature } from '@/lib/mapbox'
 
 interface CreateRideModalProps {
   onClose: () => void
@@ -460,51 +462,52 @@ export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
   const [destination, setDestination] = useState('')
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [destCoords, setDestCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [pickupSuggestions, setPickupSuggestions] = useState<GeocodingFeature[]>([])
+  const [destSuggestions, setDestSuggestions] = useState<GeocodingFeature[]>([])
   const [distanceKm, setDistanceKm] = useState<number | null>(null)
   const [notes, setNotes] = useState('')
   const [settings, setSettings] = useState<CompanySettings | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const pickupRef = useRef<HTMLInputElement>(null)
-  const destRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.from('company_settings').select('*').single().then(({ data }) => setSettings(data))
   }, [])
 
+  // Debounced pickup search
   useEffect(() => {
-    if (!window.google) return
-    const pAC = new google.maps.places.Autocomplete(pickupRef.current!, { types: ['address'] })
-    pAC.addListener('place_changed', () => {
-      const place = pAC.getPlace()
-      setPickup(place.formatted_address ?? '')
-      const loc = place.geometry?.location
-      if (loc) setPickupCoords({ lat: loc.lat(), lng: loc.lng() })
-    })
-    const dAC = new google.maps.places.Autocomplete(destRef.current!, { types: ['address'] })
-    dAC.addListener('place_changed', () => {
-      const place = dAC.getPlace()
-      setDestination(place.formatted_address ?? '')
-      const loc = place.geometry?.location
-      if (loc) setDestCoords({ lat: loc.lat(), lng: loc.lng() })
-    })
-  }, [])
+    const t = setTimeout(async () => {
+      setPickupSuggestions(await geocodeAddress(pickup))
+    }, 300)
+    return () => clearTimeout(t)
+  }, [pickup])
 
+  // Debounced destination search
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      setDestSuggestions(await geocodeAddress(destination))
+    }, 300)
+    return () => clearTimeout(t)
+  }, [destination])
+
+  // Fetch distance when both coords are set
   useEffect(() => {
     if (!pickupCoords || !destCoords) return
-    const service = new google.maps.DistanceMatrixService()
-    service.getDistanceMatrix(
-      {
-        origins: [new google.maps.LatLng(pickupCoords.lat, pickupCoords.lng)],
-        destinations: [new google.maps.LatLng(destCoords.lat, destCoords.lng)],
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        if (status === 'OK') setDistanceKm(result!.rows[0].elements[0].distance.value / 1000)
-      }
-    )
+    getDistanceKm(pickupCoords, destCoords).then(setDistanceKm)
   }, [pickupCoords, destCoords])
+
+  function selectPickup(f: GeocodingFeature) {
+    setPickup(f.place_name)
+    setPickupCoords({ lat: f.center[1], lng: f.center[0] })
+    setPickupSuggestions([])
+  }
+
+  function selectDest(f: GeocodingFeature) {
+    setDestination(f.place_name)
+    setDestCoords({ lat: f.center[1], lng: f.center[0] })
+    setDestSuggestions([])
+  }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
@@ -514,7 +517,7 @@ export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
 
     const supabase = createClient()
 
-    // Find or note customer by phone
+    // Find customer by phone (optional)
     const { data: profiles } = await supabase
       .from('profiles')
       .select('id')
@@ -567,18 +570,44 @@ export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
               className="w-full bg-taxi-dark border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow text-sm" />
           </div>
 
+          {/* Pickup with autocomplete */}
           <div>
             <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">Pickup</label>
-            <input ref={pickupRef} type="text" value={pickup} onChange={e => setPickup(e.target.value)} required
-              placeholder="Enter pickup address"
-              className="w-full bg-taxi-dark border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow text-sm" />
+            <div className="relative">
+              <input type="text" value={pickup} onChange={e => setPickup(e.target.value)} required
+                placeholder="Enter pickup address"
+                className="w-full bg-taxi-dark border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow text-sm" />
+              {pickupSuggestions.length > 0 && (
+                <ul className="absolute z-50 w-full mt-1 bg-[#151515] border border-taxi-border rounded-lg overflow-hidden shadow-xl">
+                  {pickupSuggestions.map(f => (
+                    <li key={f.id} onClick={() => selectPickup(f)}
+                      className="px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-white border-b border-taxi-border last:border-0">
+                      {f.place_name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
+          {/* Destination with autocomplete */}
           <div>
             <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">Destination</label>
-            <input ref={destRef} type="text" value={destination} onChange={e => setDestination(e.target.value)} required
-              placeholder="Enter destination"
-              className="w-full bg-taxi-dark border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow text-sm" />
+            <div className="relative">
+              <input type="text" value={destination} onChange={e => setDestination(e.target.value)} required
+                placeholder="Enter destination"
+                className="w-full bg-taxi-dark border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow text-sm" />
+              {destSuggestions.length > 0 && (
+                <ul className="absolute z-50 w-full mt-1 bg-[#151515] border border-taxi-border rounded-lg overflow-hidden shadow-xl">
+                  {destSuggestions.map(f => (
+                    <li key={f.id} onClick={() => selectDest(f)}
+                      className="px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-white border-b border-taxi-border last:border-0">
+                      {f.place_name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <div>

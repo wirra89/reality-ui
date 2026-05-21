@@ -6,7 +6,7 @@
 
 **Architecture:** Customer creates a ride row in Supabase. Dispatcher and driver subscribe to Supabase Realtime channels to receive updates instantly. Status transitions are enforced by a shared state machine. All three apps share `RideStatusBadge` and `DriverStatusBadge` components.
 
-**Tech Stack:** Supabase Realtime (postgres_changes) · Google Maps Places Autocomplete · React hooks for subscriptions · Tailwind dark theme
+**Tech Stack:** Supabase Realtime (postgres_changes) · Mapbox Geocoding API · React hooks for subscriptions · Tailwind dark theme
 
 **Prerequisite:** Plan 1 complete (schema, auth, routing all working).
 
@@ -559,8 +559,51 @@ git commit -m "feat: realtime hooks for rides and drivers"
 ## Task 4: Customer — request ride
 
 **Files:**
+- Create: `lib/mapbox.ts`
 - Create: `app/(customer)/request/page.tsx`
 - Modify: `app/(customer)/dashboard/page.tsx`
+
+- [ ] **Step 0: Create Mapbox helper**
+
+Create `lib/mapbox.ts`:
+
+```typescript
+export interface GeocodingFeature {
+  id: string
+  place_name: string
+  center: [number, number] // [lng, lat]
+}
+
+const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!
+
+export async function geocodeAddress(query: string): Promise<GeocodingFeature[]> {
+  if (!query || query.length < 3) return []
+  const res = await fetch(
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${TOKEN}&autocomplete=true&limit=5&types=address,place`
+  )
+  const data = await res.json()
+  return data.features ?? []
+}
+
+export async function getDistanceKm(
+  from: { lat: number; lng: number },
+  to: { lat: number; lng: number }
+): Promise<number> {
+  const res = await fetch(
+    `https://api.mapbox.com/directions/v5/mapbox/driving/${from.lng},${from.lat};${to.lng},${to.lat}?access_token=${TOKEN}&overview=false`
+  )
+  const data = await res.json()
+  return (data.routes?.[0]?.distance ?? 0) / 1000
+}
+
+export async function reverseGeocode(lat: number, lng: number): Promise<string> {
+  const res = await fetch(
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${TOKEN}&types=address,place&limit=1`
+  )
+  const data = await res.json()
+  return data.features?.[0]?.place_name ?? `${lat.toFixed(5)}, ${lng.toFixed(5)}`
+}
+```
 
 - [ ] **Step 1: Write request page**
 
@@ -569,11 +612,13 @@ Create `app/(customer)/request/page.tsx`:
 ```typescript
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { estimateFare, formatPrice } from '@/lib/pricing'
-import type { CompanySettings } from '@/lib/types'
+import { geocodeAddress, getDistanceKm, reverseGeocode } from '@/lib/mapbox'
+import type { CompanySettings, GeocodingFeature } from '@/lib/types'
+import type { GeocodingFeature as MbFeature } from '@/lib/mapbox'
 
 export default function RequestRidePage() {
   const router = useRouter()
@@ -581,67 +626,61 @@ export default function RequestRidePage() {
   const [destination, setDestination] = useState('')
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [destCoords, setDestCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [pickupSuggestions, setPickupSuggestions] = useState<MbFeature[]>([])
+  const [destSuggestions, setDestSuggestions] = useState<MbFeature[]>([])
   const [distanceKm, setDistanceKm] = useState<number | null>(null)
   const [settings, setSettings] = useState<CompanySettings | null>(null)
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const pickupRef = useRef<HTMLInputElement>(null)
-  const destRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('*').single().then(({ data }) => {
-      setSettings(data)
-    })
+    supabase.from('company_settings').select('*').single().then(({ data }) => setSettings(data))
   }, [])
 
+  // Debounced pickup search
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.google) return
+    const t = setTimeout(async () => {
+      setPickupSuggestions(await geocodeAddress(pickup))
+    }, 300)
+    return () => clearTimeout(t)
+  }, [pickup])
 
-    const pickupAC = new google.maps.places.Autocomplete(pickupRef.current!, { types: ['address'] })
-    pickupAC.addListener('place_changed', () => {
-      const place = pickupAC.getPlace()
-      setPickup(place.formatted_address ?? '')
-      const loc = place.geometry?.location
-      if (loc) setPickupCoords({ lat: loc.lat(), lng: loc.lng() })
-    })
+  // Debounced destination search
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      setDestSuggestions(await geocodeAddress(destination))
+    }, 300)
+    return () => clearTimeout(t)
+  }, [destination])
 
-    const destAC = new google.maps.places.Autocomplete(destRef.current!, { types: ['address'] })
-    destAC.addListener('place_changed', () => {
-      const place = destAC.getPlace()
-      setDestination(place.formatted_address ?? '')
-      const loc = place.geometry?.location
-      if (loc) setDestCoords({ lat: loc.lat(), lng: loc.lng() })
-    })
-  }, [])
-
+  // Fetch distance when both coords set
   useEffect(() => {
     if (!pickupCoords || !destCoords) return
-    const service = new google.maps.DistanceMatrixService()
-    service.getDistanceMatrix(
-      {
-        origins: [new google.maps.LatLng(pickupCoords.lat, pickupCoords.lng)],
-        destinations: [new google.maps.LatLng(destCoords.lat, destCoords.lng)],
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        if (status === 'OK') {
-          const meters = result!.rows[0].elements[0].distance.value
-          setDistanceKm(meters / 1000)
-        }
-      }
-    )
+    getDistanceKm(pickupCoords, destCoords).then(setDistanceKm)
   }, [pickupCoords, destCoords])
 
   async function useCurrentLocation() {
     navigator.geolocation.getCurrentPosition(async pos => {
       const { latitude: lat, longitude: lng } = pos.coords
       setPickupCoords({ lat, lng })
-      const geocoder = new google.maps.Geocoder()
-      const { results } = await geocoder.geocode({ location: { lat, lng } })
-      if (results[0]) setPickup(results[0].formatted_address)
+      const address = await reverseGeocode(lat, lng)
+      setPickup(address)
+      setPickupSuggestions([])
     })
+  }
+
+  function selectPickup(feature: MbFeature) {
+    setPickup(feature.place_name)
+    setPickupCoords({ lat: feature.center[1], lng: feature.center[0] })
+    setPickupSuggestions([])
+  }
+
+  function selectDest(feature: MbFeature) {
+    setDestination(feature.place_name)
+    setDestCoords({ lat: feature.center[1], lng: feature.center[0] })
+    setDestSuggestions([])
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -696,11 +735,11 @@ export default function RequestRidePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Pickup */}
         <div>
           <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">Pickup</label>
           <div className="relative">
             <input
-              ref={pickupRef}
               type="text"
               value={pickup}
               onChange={e => setPickup(e.target.value)}
@@ -716,20 +755,48 @@ export default function RequestRidePage() {
             >
               📍
             </button>
+            {pickupSuggestions.length > 0 && (
+              <ul className="absolute z-50 w-full mt-1 bg-taxi-card border border-taxi-border rounded-lg overflow-hidden shadow-xl">
+                {pickupSuggestions.map(f => (
+                  <li
+                    key={f.id}
+                    onClick={() => selectPickup(f)}
+                    className="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm text-white border-b border-taxi-border last:border-0"
+                  >
+                    {f.place_name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
+        {/* Destination */}
         <div>
           <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">Destination</label>
-          <input
-            ref={destRef}
-            type="text"
-            value={destination}
-            onChange={e => setDestination(e.target.value)}
-            required
-            className="w-full bg-taxi-card border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow"
-            placeholder="Enter destination"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={destination}
+              onChange={e => setDestination(e.target.value)}
+              required
+              className="w-full bg-taxi-card border border-taxi-border rounded-lg px-4 py-3 text-white placeholder-taxi-muted focus:outline-none focus:border-taxi-yellow"
+              placeholder="Enter destination"
+            />
+            {destSuggestions.length > 0 && (
+              <ul className="absolute z-50 w-full mt-1 bg-taxi-card border border-taxi-border rounded-lg overflow-hidden shadow-xl">
+                {destSuggestions.map(f => (
+                  <li
+                    key={f.id}
+                    onClick={() => selectDest(f)}
+                    className="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm text-white border-b border-taxi-border last:border-0"
+                  >
+                    {f.place_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         <div>
@@ -855,14 +922,13 @@ export default function CustomerDashboard() {
 }
 ```
 
-- [ ] **Step 3: Add Google Maps script to root layout**
+- [ ] **Step 3: Confirm root layout (no external script needed)**
 
-Edit `app/layout.tsx` — add the Maps script before `</body>`:
+Mapbox GL JS is installed as an npm package — no external script tag needed in `app/layout.tsx`. Verify the layout created in Plan 1 Task 4 looks like this (do not add any Script tags):
 
 ```typescript
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -884,10 +950,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-taxi-dark text-white antialiased`}>
         {children}
-        <Script
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-          strategy="beforeInteractive"
-        />
       </body>
     </html>
   )
@@ -1605,7 +1667,7 @@ export default function DispatcherDashboard() {
             <p className="text-taxi-muted text-sm">Live map loads in Plan 3</p>
           </div>
           <div className="absolute bottom-3 right-3 bg-black/50 text-taxi-muted text-xs px-2 py-1 rounded">
-            Google Maps · Live
+            Mapbox · Live
           </div>
         </div>
 

@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Wire the driver phone as a GPS beacon, display all online drivers on the dispatcher's live Google Map with moving markers, and show the customer their assigned driver moving on a map in realtime.
+**Goal:** Wire the driver phone as a GPS beacon, display all online drivers on the dispatcher's live Mapbox map with moving markers, and show the customer their assigned driver moving on a map in realtime.
 
-**Architecture:** `useGPSTracking` hook in driver app calls `watchPosition` and writes to Supabase at intervals that tighten as the ride progresses. Dispatcher and customer subscribe to `drivers` table changes via Supabase Realtime and update Google Maps markers without re-rendering the map. Map instances are held in refs to avoid recreation.
+**Architecture:** `useGPSTracking` hook in driver app calls `watchPosition` and writes to Supabase at intervals that tighten as the ride progresses. Dispatcher and customer subscribe to `drivers` table changes via Supabase Realtime and update Mapbox GL markers without re-rendering the map. Map instances are held in refs to avoid recreation.
 
-**Tech Stack:** Google Maps JS API (`@googlemaps/js-api-loader`) · `navigator.geolocation.watchPosition` · Supabase Realtime · React refs for map lifecycle
+**Tech Stack:** Mapbox GL JS (`mapbox-gl`) · `navigator.geolocation.watchPosition` · Supabase Realtime · React refs for map lifecycle
 
 **Prerequisite:** Plan 2 complete (full ride flow working).
 
@@ -18,7 +18,7 @@
 |---|---|
 | `hooks/useGPSTracking.ts` | driver location beacon — watches position + writes to Supabase |
 | `hooks/useGPSTracking.test.ts` | interval logic tests |
-| `components/MapView.tsx` | reusable Google Map wrapper component |
+| `components/MapView.tsx` | reusable Mapbox GL map wrapper component |
 | `components/DriverMarker.tsx` | coloured driver marker + label |
 | `app/(driver)/dashboard/page.tsx` | add GPS hook when online |
 | `app/(dispatcher)/dashboard/page.tsx` | replace map placeholder with live map |
@@ -318,7 +318,9 @@ Create `components/MapView.tsx`:
 ```typescript
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
+import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 interface LatLng { lat: number; lng: number }
 
@@ -326,59 +328,48 @@ interface MapViewProps {
   center?: LatLng
   zoom?: number
   className?: string
-  onMapReady?: (map: google.maps.Map) => void
+  onMapReady?: (map: mapboxgl.Map) => void
 }
 
 export function MapView({ center, zoom = 13, className = '', onMapReady }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<google.maps.Map | null>(null)
+  const mapRef = useRef<mapboxgl.Map | null>(null)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
-    if (typeof window === 'undefined' || !window.google) return
 
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!
     const defaultCenter = center ?? { lat: 44.8176, lng: 20.4633 } // Belgrade default
 
-    const map = new google.maps.Map(containerRef.current, {
-      center: defaultCenter,
+    const map = new mapboxgl.Map({
+      container: containerRef.current,
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: [defaultCenter.lng, defaultCenter.lat],
       zoom,
-      mapTypeId: 'roadmap',
-      disableDefaultUI: false,
-      zoomControl: true,
-      streetViewControl: false,
-      mapTypeControl: false,
-      fullscreenControl: false,
-      styles: DARK_MAP_STYLES,
     })
 
-    mapRef.current = map
-    onMapReady?.(map)
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+
+    map.on('load', () => {
+      mapRef.current = map
+      onMapReady?.(map)
+    })
+
+    return () => {
+      map.remove()
+      mapRef.current = null
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update center when prop changes
+  // Pan to new center when prop changes
   useEffect(() => {
     if (mapRef.current && center) {
-      mapRef.current.panTo(center)
+      mapRef.current.panTo([center.lng, center.lat])
     }
   }, [center?.lat, center?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <div ref={containerRef} className={`w-full h-full ${className}`} />
 }
-
-const DARK_MAP_STYLES: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#1a1f2e' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
-  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#746855' }] },
-  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1f2835' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
-  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#515c6d' }] },
-  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-]
 ```
 
 - [ ] **Step 2: Create DriverMarker helper**
@@ -386,8 +377,9 @@ const DARK_MAP_STYLES: google.maps.MapTypeStyle[] = [
 Create `components/DriverMarker.tsx`:
 
 ```typescript
-// Not a React component — a factory that creates/updates Google Maps markers
+// Not a React component — a factory that creates/updates Mapbox GL markers
 
+import mapboxgl from 'mapbox-gl'
 import type { Driver } from '@/lib/types'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -398,53 +390,45 @@ const STATUS_COLORS: Record<string, string> = {
   on_trip:  '#34d399',
 }
 
-export function createDriverMarker(driver: Driver, map: google.maps.Map): google.maps.Marker | null {
+function createMarkerElement(driver: Driver): HTMLElement {
+  const color = STATUS_COLORS[driver.status] ?? '#9ca3af'
+  const name = driver.profile?.full_name ?? 'Driver'
+  const el = document.createElement('div')
+  el.style.cssText = 'position:relative;width:32px;height:50px;'
+  el.innerHTML = `
+    <div style="background:${color};border:2px solid #fff;border-radius:50%;
+      width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 8px rgba(0,0,0,0.5);cursor:pointer;">
+      <span style="color:#000;font-size:10px;font-weight:bold;">${name.split(' ')[0].charAt(0)}</span>
+    </div>
+    <div style="position:absolute;top:36px;left:50%;transform:translateX(-50%);
+      background:rgba(0,0,0,0.8);color:#fff;font-size:9px;padding:2px 4px;
+      border-radius:3px;white-space:nowrap;">${name.split(' ')[0]}</div>
+  `
+  return el
+}
+
+export function createDriverMarker(driver: Driver, map: mapboxgl.Map): mapboxgl.Marker | null {
   if (!driver.current_lat || !driver.current_lng) return null
+  const el = createMarkerElement(driver)
+  return new mapboxgl.Marker({ element: el })
+    .setLngLat([driver.current_lng, driver.current_lat])
+    .addTo(map)
+}
+
+export function updateDriverMarker(marker: mapboxgl.Marker, driver: Driver): void {
+  if (!driver.current_lat || !driver.current_lng) return
+  marker.setLngLat([driver.current_lng, driver.current_lat])
 
   const color = STATUS_COLORS[driver.status] ?? '#9ca3af'
   const name = driver.profile?.full_name ?? 'Driver'
-
-  const marker = new google.maps.Marker({
-    position: { lat: driver.current_lat, lng: driver.current_lng },
-    map,
-    title: name,
-    icon: {
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: 10,
-      fillColor: color,
-      fillOpacity: 1,
-      strokeColor: '#ffffff',
-      strokeWeight: 2,
-    },
-    label: {
-      text: name.split(' ')[0],
-      color: '#ffffff',
-      fontSize: '10px',
-      fontWeight: 'bold',
-    },
-    optimized: true,
-  })
-
-  return marker
-}
-
-export function updateDriverMarker(
-  marker: google.maps.Marker,
-  driver: Driver
-): void {
-  if (!driver.current_lat || !driver.current_lng) return
-
-  marker.setPosition({ lat: driver.current_lat, lng: driver.current_lng })
-
-  const color = STATUS_COLORS[driver.status] ?? '#9ca3af'
-  marker.setIcon({
-    path: google.maps.SymbolPath.CIRCLE,
-    scale: 10,
-    fillColor: color,
-    fillOpacity: 1,
-    strokeColor: '#ffffff',
-    strokeWeight: 2,
-  })
+  const el = marker.getElement()
+  const inner = el.firstElementChild as HTMLElement | null
+  if (inner) {
+    inner.style.background = color
+    const initial = inner.firstElementChild as HTMLElement | null
+    if (initial) initial.textContent = name.split(' ')[0].charAt(0)
+  }
 }
 ```
 
@@ -471,14 +455,15 @@ Create `hooks/useDispatcherMap.ts`:
 'use client'
 
 import { useRef, useCallback } from 'react'
+import mapboxgl from 'mapbox-gl'
 import { createDriverMarker, updateDriverMarker } from '@/components/DriverMarker'
 import type { Driver } from '@/lib/types'
 
 export function useDispatcherMap() {
-  const mapRef = useRef<google.maps.Map | null>(null)
-  const markersRef = useRef<Map<string, google.maps.Marker>>(new Map())
+  const mapRef = useRef<mapboxgl.Map | null>(null)
+  const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map())
 
-  const handleMapReady = useCallback((map: google.maps.Map) => {
+  const handleMapReady = useCallback((map: mapboxgl.Map) => {
     mapRef.current = map
   }, [])
 
@@ -503,7 +488,7 @@ export function useDispatcherMap() {
     // Remove markers for drivers no longer online
     for (const [id, marker] of markersRef.current.entries()) {
       if (!seen.has(id)) {
-        marker.setMap(null)
+        marker.remove()
         markersRef.current.delete(id)
       }
     }
@@ -511,21 +496,12 @@ export function useDispatcherMap() {
 
   const addPickupMarker = useCallback((lat: number, lng: number, label: string) => {
     if (!mapRef.current) return null
-    return new google.maps.Marker({
-      position: { lat, lng },
-      map: mapRef.current,
-      title: label,
-      icon: {
-        url: 'data:image/svg+xml;utf-8,' + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="32" viewBox="0 0 24 32">
-            <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="white" stroke-width="2"/>
-            <line x1="12" y1="22" x2="12" y2="32" stroke="#FFD700" stroke-width="2"/>
-          </svg>
-        `),
-        scaledSize: new google.maps.Size(24, 32),
-        anchor: new google.maps.Point(12, 32),
-      },
-    })
+    const el = document.createElement('div')
+    el.style.cssText = 'width:20px;height:20px;background:#FFD700;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);'
+    el.title = label
+    return new mapboxgl.Marker({ element: el })
+      .setLngLat([lng, lat])
+      .addTo(mapRef.current)
   }, [])
 
   return { handleMapReady, syncDriverMarkers, addPickupMarker, mapRef }
@@ -624,11 +600,11 @@ export default function DispatcherDashboard() {
           </div>
         </div>
 
-        {/* Center: live Google Map */}
+        {/* Center: live Mapbox map */}
         <div className="flex-1 relative overflow-hidden">
           <MapView onMapReady={handleMapReady} className="w-full h-full" />
           <div className="absolute bottom-3 right-3 bg-black/60 text-taxi-muted text-xs px-2 py-1 rounded">
-            Google Maps · Live
+            Mapbox · Live
           </div>
         </div>
 
@@ -716,6 +692,7 @@ Replace `app/(customer)/ride/[id]/page.tsx` — add the map section after the dr
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import mapboxgl from 'mapbox-gl'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtime } from '@/hooks/useRealtime'
 import { useDriverLocation } from '@/hooks/useDriverLocation'
@@ -731,9 +708,9 @@ export default function CustomerRidePage() {
   const rideId = params.id as string
   const [ride, setRide] = useState<Ride | null>(null)
   const [loading, setLoading] = useState(true)
-  const mapRef = useRef<google.maps.Map | null>(null)
-  const driverMarkerRef = useRef<google.maps.Marker | null>(null)
-  const pickupMarkerRef = useRef<google.maps.Marker | null>(null)
+  const mapRef = useRef<mapboxgl.Map | null>(null)
+  const driverMarkerRef = useRef<mapboxgl.Marker | null>(null)
+  const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -761,45 +738,32 @@ export default function CustomerRidePage() {
   // Update driver marker when location changes
   useEffect(() => {
     if (!mapRef.current || !driverLocation?.current_lat || !driverLocation?.current_lng) return
-    const pos = { lat: driverLocation.current_lat, lng: driverLocation.current_lng }
+    const lngLat: [number, number] = [driverLocation.current_lng, driverLocation.current_lat]
 
     if (driverMarkerRef.current) {
-      driverMarkerRef.current.setPosition(pos)
+      driverMarkerRef.current.setLngLat(lngLat)
     } else {
-      driverMarkerRef.current = new google.maps.Marker({
-        position: pos,
-        map: mapRef.current,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 12,
-          fillColor: '#FFD700',
-          fillOpacity: 1,
-          strokeColor: '#fff',
-          strokeWeight: 2,
-        },
-        title: 'Your Driver',
-      })
+      const el = document.createElement('div')
+      el.style.cssText = 'width:32px;height:32px;background:#FFD700;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:16px;'
+      el.title = 'Your Driver'
+      el.textContent = '🚕'
+      driverMarkerRef.current = new mapboxgl.Marker({ element: el })
+        .setLngLat(lngLat)
+        .addTo(mapRef.current)
     }
 
-    mapRef.current.panTo(pos)
+    mapRef.current.panTo(lngLat)
   }, [driverLocation?.current_lat, driverLocation?.current_lng])
 
-  function handleMapReady(map: google.maps.Map) {
+  function handleMapReady(map: mapboxgl.Map) {
     mapRef.current = map
     if (ride?.pickup_lat && ride?.pickup_lng) {
-      pickupMarkerRef.current = new google.maps.Marker({
-        position: { lat: ride.pickup_lat, lng: ride.pickup_lng },
-        map,
-        title: 'Pickup',
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: '#4ade80',
-          fillOpacity: 1,
-          strokeColor: '#fff',
-          strokeWeight: 2,
-        },
-      })
+      const el = document.createElement('div')
+      el.style.cssText = 'width:16px;height:16px;background:#4ade80;border:2px solid #fff;border-radius:50%;'
+      el.title = 'Pickup'
+      pickupMarkerRef.current = new mapboxgl.Marker({ element: el })
+        .setLngLat([ride.pickup_lng, ride.pickup_lat])
+        .addTo(map)
     }
   }
 

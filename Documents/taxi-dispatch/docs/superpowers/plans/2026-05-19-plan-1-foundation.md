@@ -63,9 +63,9 @@ cd taxi-dispatch
 
 ```bash
 npm install @supabase/supabase-js @supabase/ssr
-npm install @googlemaps/js-api-loader
+npm install mapbox-gl
 npm install lucide-react
-npm install -D jest @types/jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event ts-jest
+npm install -D @types/mapbox-gl jest @types/jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event ts-jest
 ```
 
 - [ ] **Step 3: Configure tsconfig.json**
@@ -131,7 +131,7 @@ export default config
 cat > .env.local.example << 'EOF'
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_public_token
 EOF
 ```
 
