@@ -4,6 +4,12 @@ import { useEffect, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+if (!MAPBOX_TOKEN) {
+  throw new Error('NEXT_PUBLIC_MAPBOX_TOKEN is not set')
+}
+mapboxgl.accessToken = MAPBOX_TOKEN
+
 interface LatLng { lat: number; lng: number }
 
 interface MapViewProps {
@@ -16,11 +22,12 @@ interface MapViewProps {
 export function MapView({ center, zoom = 13, className = '', onMapReady }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
+  const onMapReadyRef = useRef(onMapReady)
+  useEffect(() => { onMapReadyRef.current = onMapReady }, [onMapReady])
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!
     const defaultCenter = center ?? { lat: 44.8176, lng: 20.4633 } // Belgrade default
 
     const map = new mapboxgl.Map({
@@ -34,7 +41,7 @@ export function MapView({ center, zoom = 13, className = '', onMapReady }: MapVi
 
     map.on('load', () => {
       mapRef.current = map
-      onMapReady?.(map)
+      onMapReadyRef.current?.(map)
     })
 
     return () => {
