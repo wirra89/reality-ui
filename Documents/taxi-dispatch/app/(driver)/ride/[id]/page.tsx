@@ -27,16 +27,19 @@ export default function DriverRidePage() {
 
   useEffect(() => {
     const supabase = createClient()
-    Promise.all([
-      supabase.from('rides').select('*, customer:profiles!customer_id(*)').eq('id', rideId).single(),
-      supabase.auth.getUser().then(({ data: { user } }) =>
-        user ? supabase.from('drivers').select('*').eq('user_id', user.id).single() : { data: null }
-      ),
-    ]).then(([{ data: rideData }, { data: driverData }]) => {
+    async function load() {
+      const [{ data: rideData }, { data: { user } }] = await Promise.all([
+        supabase.from('rides').select('*, customer:profiles!customer_id(*)').eq('id', rideId).single(),
+        supabase.auth.getUser(),
+      ])
       setRide(rideData as Ride | null)
-      setDriverRecord(driverData as Driver | null)
+      if (user) {
+        const { data: driverData } = await supabase.from('drivers').select('*').eq('user_id', user.id).single()
+        setDriverRecord(driverData as Driver | null)
+      }
       setLoading(false)
-    })
+    }
+    load()
   }, [rideId])
 
   useRealtime({
