@@ -25,7 +25,6 @@ export function useRealtime(options: RealtimeOptions) {
     const channel = supabase.channel(channelName)
 
     channel.on(
-      // @ts-expect-error — Supabase JS v2 type overloads require this pattern
       'postgres_changes',
       {
         event: options.event ?? '*',
