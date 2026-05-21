@@ -29,8 +29,8 @@ export default function CustomerRidePage() {
       .select('*, driver:drivers(*, profile:profiles(*))')
       .eq('id', rideId)
       .single()
-      .then(({ data }) => {
-        setRide(data as Ride | null)
+      .then(({ data, error }) => {
+        if (!error && data) setRide(data as Ride)
         setLoading(false)
       })
   }, [rideId])
@@ -67,23 +67,41 @@ export default function CustomerRidePage() {
 
   function handleMapReady(map: mapboxgl.Map) {
     mapRef.current = map
-    if (ride?.pickup_lat && ride?.pickup_lng) {
-      const el = document.createElement('div')
-      el.style.cssText = 'width:16px;height:16px;background:#4ade80;border:2px solid #fff;border-radius:50%;'
-      el.title = 'Pickup'
-      pickupMarkerRef.current = new mapboxgl.Marker({ element: el })
-        .setLngLat([ride.pickup_lng, ride.pickup_lat])
-        .addTo(map)
-    }
   }
+
+  // Place pickup marker once both map and ride data are available
+  useEffect(() => {
+    if (!mapRef.current || !ride?.pickup_lat || !ride?.pickup_lng) return
+    if (pickupMarkerRef.current) return // already placed
+
+    const el = document.createElement('div')
+    el.style.cssText = 'width:16px;height:16px;background:#4ade80;border:2px solid #fff;border-radius:50%;'
+    el.title = 'Pickup'
+    pickupMarkerRef.current = new mapboxgl.Marker({ element: el })
+      .setLngLat([ride.pickup_lng, ride.pickup_lat])
+      .addTo(mapRef.current)
+  }, [ride?.pickup_lat, ride?.pickup_lng]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Clean up markers on unmount
+  useEffect(() => {
+    return () => {
+      driverMarkerRef.current?.remove()
+      pickupMarkerRef.current?.remove()
+    }
+  }, [])
 
   async function handleCancel() {
     if (!ride) return
-    const supabase = createClient()
-    await supabase
-      .from('rides')
-      .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
-      .eq('id', ride.id)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('rides')
+        .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
+        .eq('id', ride.id)
+      if (error) throw error
+    } catch (err) {
+      console.error('Cancel ride failed:', err)
+    }
   }
 
   if (loading) return (

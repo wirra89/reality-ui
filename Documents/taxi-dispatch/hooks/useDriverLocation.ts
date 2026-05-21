@@ -16,13 +16,16 @@ export function useDriverLocation(driverId: string | null) {
       .select('current_lat, current_lng, status')
       .eq('id', driverId)
       .single()
-      .then(({ data }) => setDriver(data))
+      .then(({ data, error }) => {
+        if (!error && data) setDriver(data)
+      })
   }, [driverId])
 
   useRealtime({
     table: 'drivers',
-    filter: driverId ? `id=eq.${driverId}` : undefined,
+    filter: driverId ? `id=eq.${driverId}` : 'id=eq.null',
     onUpdate: (payload) => {
+      if (!driverId) return
       const d = payload.new as Driver
       setDriver({ current_lat: d.current_lat, current_lng: d.current_lng, status: d.status })
     },

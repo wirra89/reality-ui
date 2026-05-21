@@ -50,7 +50,7 @@ export default function DispatcherDashboard() {
             <button
               key={item.label}
               title={item.label}
-              className={`w-9 h-9 rounded-lg flex items-center justify-content text-base transition ${
+              className={`w-9 h-9 rounded-lg flex items-center justify-center text-base transition ${
                 item.active ? 'bg-taxi-yellow text-black' : 'bg-[#1a1a1a] text-taxi-muted hover:text-white'
               }`}
             >
