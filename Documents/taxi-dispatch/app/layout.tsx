@@ -1,19 +1,27 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'TaxiBase',
-  description: 'White-label taxi dispatch platform',
+  description: 'Modern taxi dispatch platform',
+  manifest: '/manifest.json',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export const viewport: Viewport = {
+  themeColor: '#FFD700',
+  width: 'device-width',
+  initialScale: 1,
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-taxi-dark text-white antialiased`}>
+        {children}
+      </body>
     </html>
   )
 }
