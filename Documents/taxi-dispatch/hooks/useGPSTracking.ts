@@ -5,12 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import type { DriverStatus } from '@/lib/types'
 
 export function getUpdateIntervalMs(status: DriverStatus | string): number {
-  const intervals: Partial<Record<DriverStatus, number>> = {
+  const intervals: Partial<Record<string, number>> = {
     on_trip:  3000,
     arriving: 5000,
     assigned: 10000,
   }
-  return intervals[status as DriverStatus] ?? 20000
+  return intervals[status] ?? 20000
 }
 
 interface GPSTrackingOptions {
@@ -20,7 +20,7 @@ interface GPSTrackingOptions {
 }
 
 export function useGPSTracking({ driverId, driverStatus, enabled }: GPSTrackingOptions) {
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
   const lastSentAt = useRef<number>(0)
   const watchIdRef = useRef<number | null>(null)
 
@@ -34,16 +34,17 @@ export function useGPSTracking({ driverId, driverStatus, enabled }: GPSTrackingO
     const timestamp = new Date().toISOString()
 
     // Update current position on drivers table
-    await supabase.from('drivers').update({
+    const { error: updateError } = await supabaseRef.current.from('drivers').update({
       current_lat: lat,
       current_lng: lng,
       heading: heading ?? null,
       speed: speed ?? null,
       last_location_update: timestamp,
     }).eq('id', driverId)
+    if (updateError) console.error('GPS location update failed:', updateError.message)
 
     // Insert historical record
-    await supabase.from('driver_locations').insert({
+    const { error: insertError } = await supabaseRef.current.from('driver_locations').insert({
       driver_id: driverId,
       lat,
       lng,
@@ -51,7 +52,8 @@ export function useGPSTracking({ driverId, driverStatus, enabled }: GPSTrackingO
       speed: speed ?? null,
       accuracy: accuracy ?? null,
     })
-  }, [driverId, driverStatus]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (insertError) console.error('GPS location insert failed:', insertError.message)
+  }, [driverId, driverStatus])
 
   useEffect(() => {
     if (!enabled || !navigator.geolocation) return

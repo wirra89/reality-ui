@@ -37,24 +37,34 @@ export default function DriverDashboard() {
   async function toggleOnline() {
     if (!driverRecord) return
     setToggling(true)
-    const supabase = createClient()
-    const newStatus = driverRecord.status === 'offline' ? 'online' : 'offline'
-    const { data } = await supabase
-      .from('drivers')
-      .update({ status: newStatus })
-      .eq('id', driverRecord.id)
-      .select()
-      .single()
-    setDriverRecord(data)
-    setToggling(false)
+    try {
+      const supabase = createClient()
+      const newStatus = driverRecord.status === 'offline' ? 'online' : 'offline'
+      const { data, error } = await supabase
+        .from('drivers')
+        .update({ status: newStatus })
+        .eq('id', driverRecord.id)
+        .select()
+        .single()
+      if (error) throw error
+      if (data) setDriverRecord(data)
+    } catch (err) {
+      console.error('Status toggle failed:', err)
+    } finally {
+      setToggling(false)
+    }
   }
 
   async function handleSignOut() {
-    const supabase = createClient()
-    if (driverRecord) {
-      await supabase.from('drivers').update({ status: 'offline' }).eq('id', driverRecord.id)
+    try {
+      const supabase = createClient()
+      if (driverRecord) {
+        await supabase.from('drivers').update({ status: 'offline' }).eq('id', driverRecord.id)
+      }
+      await supabase.auth.signOut()
+    } catch (err) {
+      console.error('Sign out error:', err)
     }
-    await supabase.auth.signOut()
     router.push('/login')
   }
 
