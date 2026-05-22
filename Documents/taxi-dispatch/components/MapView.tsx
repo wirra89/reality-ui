@@ -4,10 +4,8 @@ import { useEffect, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
-if (!MAPBOX_TOKEN) {
-  throw new Error('NEXT_PUBLIC_MAPBOX_TOKEN is not set')
-}
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? ''
+if (!MAPBOX_TOKEN) console.warn('NEXT_PUBLIC_MAPBOX_TOKEN is not set — maps will not render')
 mapboxgl.accessToken = MAPBOX_TOKEN
 
 interface LatLng { lat: number; lng: number }
