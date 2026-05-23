@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useRealtime } from '@/hooks/useRealtime'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { ETABadge } from '@/components/ETABadge'
 import { useETA } from '@/hooks/useETA'
@@ -43,6 +44,27 @@ export default function DispatcherRidesPage() {
   const [assigningId, setAssigningId] = useState<string | null>(null)
   const [selectedDriver, setSelectedDriver] = useState('')
   const [assigning, setAssigning] = useState(false)
+  const filterRef = useRef(filter)
+  useEffect(() => { filterRef.current = filter }, [filter])
+
+  const handleRideUpdate = useCallback((updated: Ride) => {
+    setRides(prev => {
+      const currentFilter = filterRef.current
+      const matches = currentFilter === 'all' || updated.status === currentFilter
+      const idx = prev.findIndex(r => r.id === updated.id)
+      if (idx >= 0) {
+        if (!matches) return prev.filter(r => r.id !== updated.id)
+        return prev.map(r => r.id === updated.id ? { ...r, ...updated } : r)
+      }
+      return matches ? [updated as RideWithDriverLocation, ...prev] : prev
+    })
+  }, [])
+
+  useRealtime({
+    table: 'rides',
+    onInsert: (p) => handleRideUpdate(p.new as Ride),
+    onUpdate: (p) => handleRideUpdate(p.new as Ride),
+  })
 
   useEffect(() => {
     const supabase = createClient()

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { usePendingRides } from '@/hooks/usePendingRides'
@@ -22,6 +22,30 @@ export default function DispatcherDashboard() {
   const [followedDriverId, setFollowedDriverId] = useState<string | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [currency, setCurrency] = useState('EUR')
+  const prevUnassignedRef = useRef(-1)
+
+  function playPing() {
+    try {
+      const ctx = new AudioContext()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain); gain.connect(ctx.destination)
+      osc.frequency.value = 880
+      gain.gain.setValueAtTime(0.25, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
+      osc.start(); osc.stop(ctx.currentTime + 0.4)
+    } catch { /* AudioContext unavailable */ }
+  }
+
+  useEffect(() => {
+    if (ridesLoading) return
+    const count = rides.filter(r => r.status === 'requested').length
+    document.title = count > 0 ? `(${count}) New Ride — TaxiBase` : 'TaxiBase Dispatcher'
+    if (prevUnassignedRef.current !== -1 && count > prevUnassignedRef.current) playPing()
+    prevUnassignedRef.current = count
+  }, [rides, ridesLoading])
+
+  useEffect(() => () => { document.title = 'TaxiBase' }, [])
 
   useEffect(() => {
     const supabase = createClient()

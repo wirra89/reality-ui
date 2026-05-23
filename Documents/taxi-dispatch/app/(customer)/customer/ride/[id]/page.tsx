@@ -28,6 +28,7 @@ export default function CustomerRidePage() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const driverMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null)
+  const routeAddedRef = useRef(false)
   const [mapReady, setMapReady] = useState(false)
   const { showToast } = useToast()
   const [ratingValue, setRatingValue] = useState(0)
@@ -123,11 +124,66 @@ export default function CustomerRidePage() {
       .addTo(mapRef.current)
   }, [ride?.pickup_lat, ride?.pickup_lng, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Clean up markers on unmount
+  // Draw route line: driver → pickup while en-route, driver → destination while in progress
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    const isEnRoute = ride?.status === 'assigned' || ride?.status === 'driver_arriving'
+    const isInProgress = ride?.status === 'in_progress'
+
+    if (!isEnRoute && !isInProgress) {
+      if (routeAddedRef.current) {
+        try { if (map.getLayer('route')) map.removeLayer('route') } catch {}
+        try { if (map.getSource('route')) map.removeSource('route') } catch {}
+        routeAddedRef.current = false
+      }
+      return
+    }
+    if (!driverLocation?.current_lat || !driverLocation?.current_lng) return
+    const toLat = isInProgress ? ride?.destination_lat : ride?.pickup_lat
+    const toLng = isInProgress ? ride?.destination_lng : ride?.pickup_lng
+    if (!toLat || !toLng) return
+
+    const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+    if (!TOKEN) return
+    const color = isInProgress ? '#60a5fa' : '#FFD700'
+
+    fetch(
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${driverLocation.current_lng},${driverLocation.current_lat};${toLng},${toLat}?geometries=geojson&overview=full&access_token=${TOKEN}`
+    )
+      .then(r => r.json())
+      .then(data => {
+        const geom = data?.routes?.[0]?.geometry
+        if (!geom || !mapRef.current) return
+        const m = mapRef.current
+        const feature = { type: 'Feature' as const, properties: {}, geometry: geom }
+        const src = m.getSource('route')
+        if (src && 'setData' in src) {
+          (src as mapboxgl.GeoJSONSource).setData(feature)
+          try { m.setPaintProperty('route', 'line-color', color) } catch {}
+        } else {
+          const firstSymbol = m.getStyle().layers?.find(l => l.type === 'symbol')?.id
+          m.addSource('route', { type: 'geojson', data: feature })
+          m.addLayer({
+            id: 'route', type: 'line', source: 'route',
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: { 'line-color': color, 'line-width': 3, 'line-opacity': 0.85 },
+          }, firstSymbol)
+          routeAddedRef.current = true
+        }
+      })
+      .catch(() => {})
+  }, [driverLocation?.current_lat, driverLocation?.current_lng, ride?.status, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Clean up markers and route on unmount
   useEffect(() => {
     return () => {
       driverMarkerRef.current?.remove()
       pickupMarkerRef.current?.remove()
+      if (routeAddedRef.current && mapRef.current) {
+        try { mapRef.current.removeLayer('route') } catch {}
+        try { mapRef.current.removeSource('route') } catch {}
+      }
     }
   }, [])
 
@@ -141,6 +197,10 @@ export default function CustomerRidePage() {
         .update({ status: 'cancelled', cancelled_at: new Date().toISOString(), cancellation_reason: reason })
         .eq('id', ride.id)
       if (error) throw error
+      // Free up the driver if one was assigned
+      if (ride.driver_id) {
+        await supabase.from('drivers').update({ status: 'online' }).eq('id', ride.driver_id)
+      }
       setShowCancelModal(false)
     } catch (err) {
       console.error('Cancel ride failed:', err)
@@ -256,7 +316,7 @@ export default function CustomerRidePage() {
           <ActiveRideTimeline currentStatus={ride.status} />
         </div>
 
-        {ride.status === 'requested' && (
+        {(ride.status === 'requested' || ride.status === 'assigned' || ride.status === 'driver_arriving') && (
           <button
             onClick={() => setShowCancelModal(true)}
             className="w-full border border-red-800 text-red-400 py-3 rounded-xl text-sm hover:bg-red-900/20 transition"
