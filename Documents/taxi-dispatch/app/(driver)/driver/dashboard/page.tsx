@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useAssignedRide } from '@/hooks/useAssignedRide'
 import { useGPSTracking } from '@/hooks/useGPSTracking'
 import { usePushNotifications } from '@/hooks/usePushNotifications'
 import { RideCard } from '@/components/RideCard'
+import { RideRequestAlert } from '@/components/RideRequestAlert'
 import type { Profile, Driver } from '@/lib/types'
 
 export default function DriverDashboard() {
@@ -14,7 +15,11 @@ export default function DriverDashboard() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [driverRecord, setDriverRecord] = useState<Driver | null>(null)
   const [toggling, setToggling] = useState(false)
+  const [showAlert, setShowAlert] = useState(false)
   const { ride } = useAssignedRide(driverRecord?.id ?? null)
+
+  // Track the last seen assigned ride ID to detect a new assignment
+  const lastAlertedRideId = useRef<string | null>(null)
 
   const isOnline = driverRecord?.status !== 'offline'
 
@@ -25,6 +30,21 @@ export default function DriverDashboard() {
   })
 
   usePushNotifications(driverRecord?.id ?? null, isOnline)
+
+  // Show alert when a new ride is assigned (status === 'assigned')
+  useEffect(() => {
+    if (ride?.status === 'assigned' && ride.id !== lastAlertedRideId.current) {
+      lastAlertedRideId.current = ride.id
+      setShowAlert(true)
+    }
+    // If the ride moves past 'assigned', close the alert
+    if (ride && ride.status !== 'assigned') {
+      setShowAlert(false)
+    }
+    if (!ride) {
+      setShowAlert(false)
+    }
+  }, [ride?.id, ride?.status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const supabase = createClient()
@@ -55,6 +75,31 @@ export default function DriverDashboard() {
       console.error('Status toggle failed:', err)
     } finally {
       setToggling(false)
+    }
+  }
+
+  async function handleAccept() {
+    setShowAlert(false)
+    if (ride) router.push(`/driver/ride/${ride.id}`)
+  }
+
+  async function handleReject() {
+    if (!ride || !driverRecord) return
+    setShowAlert(false)
+    try {
+      const supabase = createClient()
+      // Unassign the ride: set back to requested, clear driver, reset driver status
+      await supabase
+        .from('rides')
+        .update({ status: 'requested', driver_id: null, assigned_at: null })
+        .eq('id', ride.id)
+      await supabase
+        .from('drivers')
+        .update({ status: 'online' })
+        .eq('id', driverRecord.id)
+      setDriverRecord(prev => prev ? { ...prev, status: 'online' } : null)
+    } catch (err) {
+      console.error('Reject ride failed:', err)
     }
   }
 
@@ -126,6 +171,14 @@ export default function DriverDashboard() {
       >
         Ride History
       </button>
+
+      {showAlert && ride && (
+        <RideRequestAlert
+          ride={ride}
+          onAccept={handleAccept}
+          onReject={handleReject}
+        />
+      )}
     </div>
   )
 }
