@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { usePendingRides } from '@/hooks/usePendingRides'
 import { useOnlineDrivers } from '@/hooks/useOnlineDrivers'
 import { useDispatcherMap } from '@/hooks/useDispatcherMap'
@@ -12,15 +14,37 @@ import { CreateRideModal } from '@/components/CreateRideModal'
 import type { Ride } from '@/lib/types'
 
 export default function DispatcherDashboard() {
+  const router = useRouter()
   const { rides, loading: ridesLoading } = usePendingRides()
   const { drivers } = useOnlineDrivers()
-  const { handleMapReady, syncDriverMarkers } = useDispatcherMap()
+  const { handleMapReady, syncDriverMarkers, setFollowedDriver } = useDispatcherMap()
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null)
+  const [followedDriverId, setFollowedDriverId] = useState<string | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [currency, setCurrency] = useState('EUR')
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
+      if (s?.currency) setCurrency(s.currency)
+    })
+  }, [])
 
   useEffect(() => {
     syncDriverMarkers(drivers)
   }, [drivers, syncDriverMarkers])
+
+  useEffect(() => {
+    const id = selectedRide?.driver_id ?? null
+    setFollowedDriverId(id)
+    setFollowedDriver(id)
+  }, [selectedRide?.driver_id, setFollowedDriver])
+
+  function handleDriverCardClick(driverId: string) {
+    const next = followedDriverId === driverId ? null : driverId
+    setFollowedDriverId(next)
+    setFollowedDriver(next)
+  }
 
   return (
     <div className="h-screen flex flex-col bg-taxi-dark overflow-hidden">
@@ -43,15 +67,15 @@ export default function DispatcherDashboard() {
         {/* Sidebar */}
         <div className="w-14 bg-[#0a0a0a] border-r border-[#1e1e1e] flex flex-col items-center py-3 gap-2 shrink-0">
           {[
-            { icon: '⊞', label: 'Dashboard', active: true },
-            { icon: '🚗', label: 'Rides' },
-            { icon: '👥', label: 'Drivers' },
-            { icon: '👤', label: 'Customers' },
-            { icon: '📊', label: 'Analytics' },
+            { icon: '⊞', label: 'Dashboard',  href: '/dispatcher/dashboard', active: true },
+            { icon: '🚗', label: 'Rides',      href: '/dispatcher/rides' },
+            { icon: '👥', label: 'Drivers',    href: '/dispatcher/drivers' },
+            { icon: '📊', label: 'Analytics',  href: '/dispatcher/analytics' },
           ].map(item => (
             <button
               key={item.label}
               title={item.label}
+              onClick={() => router.push(item.href)}
               className={`w-9 h-9 rounded-lg flex items-center justify-center text-base transition ${
                 item.active ? 'bg-taxi-yellow text-black' : 'bg-[#1a1a1a] text-taxi-muted hover:text-white'
               }`}
@@ -59,7 +83,7 @@ export default function DispatcherDashboard() {
               {item.icon}
             </button>
           ))}
-          <button title="Settings" className="mt-auto w-9 h-9 rounded-lg bg-[#1a1a1a] text-taxi-muted hover:text-white flex items-center justify-center text-base">
+          <button title="Settings" onClick={() => router.push('/dispatcher/settings')} className="mt-auto w-9 h-9 rounded-lg bg-[#1a1a1a] text-taxi-muted hover:text-white flex items-center justify-center text-base">
             ⚙️
           </button>
         </div>
@@ -99,6 +123,7 @@ export default function DispatcherDashboard() {
           <DispatcherPanel
             ride={selectedRide}
             drivers={drivers.filter(d => ['online', 'waiting'].includes(d.status))}
+            currency={currency}
           />
         </div>
       </div>
@@ -107,7 +132,12 @@ export default function DispatcherDashboard() {
       <div className="shrink-0 bg-[#0a0a0a] border-t border-[#1e1e1e] px-4 py-2 flex items-center gap-2 overflow-x-auto">
         <span className="text-taxi-muted text-xs whitespace-nowrap">ONLINE</span>
         {drivers.map(driver => (
-          <DriverCard key={driver.id} driver={driver} />
+          <DriverCard
+            key={driver.id}
+            driver={driver}
+            selected={followedDriverId === driver.id}
+            onClick={() => handleDriverCardClick(driver.id)}
+          />
         ))}
       </div>
 
