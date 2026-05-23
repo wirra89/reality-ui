@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { DriverStatusBadge } from '@/components/DriverStatusBadge'
 import type { Driver } from '@/lib/types'
 
 export default function DispatcherDriversPage() {
+  const router = useRouter()
   const [drivers, setDrivers] = useState<Driver[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -34,7 +36,10 @@ export default function DispatcherDriversPage() {
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-6">Drivers ({drivers.length})</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <button onClick={() => router.push('/dispatcher/dashboard')} className="text-taxi-muted hover:text-white">←</button>
+        <h1 className="text-2xl font-bold">Drivers ({drivers.length})</h1>
+      </div>
 
       {loading && <p className="text-taxi-muted">Loading...</p>}
 

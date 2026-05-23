@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtime } from '@/hooks/useRealtime'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
@@ -36,6 +37,7 @@ function RideETA({ ride }: { ride: RideWithDriverLocation }) {
 }
 
 export default function DispatcherRidesPage() {
+  const router = useRouter()
   const [rides, setRides] = useState<RideWithDriverLocation[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
@@ -107,7 +109,10 @@ export default function DispatcherRidesPage() {
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-6">All Rides</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <button onClick={() => router.push('/dispatcher/dashboard')} className="text-taxi-muted hover:text-white">←</button>
+        <h1 className="text-2xl font-bold">All Rides</h1>
+      </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {FILTERS.map(f => (
