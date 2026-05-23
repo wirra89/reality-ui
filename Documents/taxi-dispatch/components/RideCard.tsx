@@ -23,8 +23,16 @@ export function RideCard({ ride, onClick, selected, currency = 'EUR' }: RideCard
       }`}
     >
       <div className="flex items-start justify-between mb-2">
-        <RideStatusBadge status={ride.status} />
-        <span className="text-xs text-taxi-muted">{elapsed}m ago</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <RideStatusBadge status={ride.status} />
+          {ride.scheduled_at && (
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-300 bg-blue-900/30 border border-blue-700/40 px-2 py-0.5 rounded-full">
+              Scheduled {new Date(ride.scheduled_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}{' '}
+              {new Date(ride.scheduled_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+        </div>
+        {!ride.scheduled_at && <span className="text-xs text-taxi-muted">{elapsed}m ago</span>}
       </div>
       <div className="space-y-1 mb-2">
         <p className="text-sm text-white flex items-center gap-1.5">

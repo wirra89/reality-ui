@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { estimateFare, formatPrice } from '@/lib/pricing'
+import { estimateFare, formatPrice, getActiveFareSettings } from '@/lib/pricing'
 import { geocodeAddress, getDistanceKm, reverseGeocode } from '@/lib/mapbox'
-import type { CompanySettings } from '@/lib/types'
+import type { CompanySettings, PricingShift } from '@/lib/types'
 import type { GeocodingFeature as MbFeature } from '@/lib/mapbox'
 
 export default function RequestRidePage() {
@@ -18,13 +18,22 @@ export default function RequestRidePage() {
   const [destSuggestions, setDestSuggestions] = useState<MbFeature[]>([])
   const [distanceKm, setDistanceKm] = useState<number | null>(null)
   const [settings, setSettings] = useState<CompanySettings | null>(null)
+  const [shifts, setShifts] = useState<PricingShift[]>([])
   const [notes, setNotes] = useState('')
+  const [scheduleMode, setScheduleMode] = useState<'asap' | 'scheduled'>('asap')
+  const [scheduledAt, setScheduledAt] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('*').single().then(({ data }) => setSettings(data))
+    Promise.all([
+      supabase.from('company_settings').select('*').single(),
+      supabase.from('pricing_shifts').select('*').order('shift'),
+    ]).then(([{ data: cs }, { data: ps }]) => {
+      if (cs) setSettings(cs)
+      if (ps) setShifts(ps as PricingShift[])
+    })
   }, [])
 
   useEffect(() => {
@@ -78,9 +87,15 @@ export default function RequestRidePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
 
+    const fareSettings = getActiveFareSettings(shifts) ?? settings
     const estimated_price = distanceKm
-      ? estimateFare(distanceKm, settings)
-      : settings.minimum_fare
+      ? estimateFare(distanceKm, fareSettings)
+      : fareSettings.minimum_fare
+
+    const scheduledAtISO =
+      scheduleMode === 'scheduled' && scheduledAt
+        ? new Date(scheduledAt).toISOString()
+        : null
 
     const { data: ride, error: rideError } = await supabase
       .from('rides')
@@ -95,6 +110,7 @@ export default function RequestRidePage() {
         estimated_price,
         notes: notes || null,
         status: 'requested',
+        scheduled_at: scheduledAtISO,
       })
       .select()
       .single()
@@ -108,7 +124,8 @@ export default function RequestRidePage() {
     router.push(`/customer/ride/${ride.id}`)
   }
 
-  const estimatedFare = distanceKm && settings ? estimateFare(distanceKm, settings) : null
+  const fareSettings = getActiveFareSettings(shifts) ?? settings
+  const estimatedFare = distanceKm && fareSettings ? estimateFare(distanceKm, fareSettings) : null
 
   return (
     <div className="min-h-screen p-6 pb-24">
@@ -174,6 +191,37 @@ export default function RequestRidePage() {
           </div>
         </div>
 
+        {/* Schedule toggle */}
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">When</label>
+          <div className="flex rounded-lg overflow-hidden border border-taxi-border">
+            {(['asap', 'scheduled'] as const).map(mode => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setScheduleMode(mode)}
+                className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
+                  scheduleMode === mode
+                    ? 'bg-taxi-yellow text-black'
+                    : 'bg-taxi-card text-taxi-muted hover:text-white'
+                }`}
+              >
+                {mode === 'asap' ? 'Now (ASAP)' : 'Schedule'}
+              </button>
+            ))}
+          </div>
+          {scheduleMode === 'scheduled' && (
+            <input
+              type="datetime-local"
+              value={scheduledAt}
+              onChange={e => setScheduledAt(e.target.value)}
+              min={new Date(Date.now() + 15 * 60_000).toISOString().slice(0, 16)}
+              required={scheduleMode === 'scheduled'}
+              className="mt-2 w-full bg-taxi-card border border-taxi-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-taxi-yellow [color-scheme:dark]"
+            />
+          )}
+        </div>
+
         <div>
           <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">Notes (optional)</label>
           <input type="text" value={notes} onChange={e => setNotes(e.target.value)}
@@ -193,9 +241,16 @@ export default function RequestRidePage() {
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
-        <button type="submit" disabled={loading || !pickupCoords || !destCoords}
-          className="w-full bg-taxi-yellow text-black font-bold py-4 rounded-xl text-lg hover:bg-yellow-400 transition disabled:opacity-50">
-          {loading ? 'Requesting...' : 'Request Taxi'}
+        <button
+          type="submit"
+          disabled={loading || !pickupCoords || !destCoords || (scheduleMode === 'scheduled' && !scheduledAt)}
+          className="w-full bg-taxi-yellow text-black font-bold py-4 rounded-xl text-lg hover:bg-yellow-400 transition disabled:opacity-50"
+        >
+          {loading
+            ? 'Booking...'
+            : scheduleMode === 'scheduled'
+              ? 'Schedule Ride'
+              : 'Request Taxi'}
         </button>
       </form>
     </div>

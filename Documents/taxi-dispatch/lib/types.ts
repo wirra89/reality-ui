@@ -66,6 +66,7 @@ export interface Ride {
   customer_rating: number | null
   rating_note: string | null
   cancellation_reason: string | null
+  scheduled_at: string | null
   customer?: Profile
   driver?: Driver
 }

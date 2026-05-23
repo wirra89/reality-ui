@@ -200,6 +200,15 @@ export default function CustomerRidePage() {
               <p className="text-sm text-taxi-muted">{ride.destination_address}</p>
             </div>
           </div>
+          {ride.scheduled_at && (
+            <p className="text-blue-300 text-sm mt-2">
+              Scheduled for{' '}
+              {new Date(ride.scheduled_at).toLocaleString(undefined, {
+                weekday: 'short', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+              })}
+            </p>
+          )}
           {ride.estimated_price && (
             <p className="text-taxi-yellow font-bold text-xl mt-3">
               ~{formatPrice(ride.estimated_price, currency)}
