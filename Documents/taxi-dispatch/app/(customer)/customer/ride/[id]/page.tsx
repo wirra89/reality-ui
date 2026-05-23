@@ -9,6 +9,7 @@ import { useDriverLocation } from '@/hooks/useDriverLocation'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { ActiveRideTimeline } from '@/components/ActiveRideTimeline'
 import { MapView } from '@/components/MapView'
+import { DriverInfoCard } from '@/components/DriverInfoCard'
 import { formatPrice } from '@/lib/pricing'
 import type { Ride } from '@/lib/types'
 
@@ -18,12 +19,17 @@ export default function CustomerRidePage() {
   const rideId = params.id as string
   const [ride, setRide] = useState<Ride | null>(null)
   const [loading, setLoading] = useState(true)
+  const [currency, setCurrency] = useState('EUR')
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const driverMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null)
+  const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
+    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
+      if (s?.currency) setCurrency(s.currency)
+    })
     supabase
       .from('rides')
       .select('*, driver:drivers(*, profile:profiles(*))')
@@ -45,7 +51,7 @@ export default function CustomerRidePage() {
     (ride?.status !== 'requested' && ride?.driver_id) ? ride.driver_id : null
   )
 
-  // Update driver marker when location changes
+  // Update driver marker when location changes or map becomes ready
   useEffect(() => {
     if (!mapRef.current || !driverLocation?.current_lat || !driverLocation?.current_lng) return
     const lngLat: [number, number] = [driverLocation.current_lng, driverLocation.current_lat]
@@ -62,11 +68,12 @@ export default function CustomerRidePage() {
         .addTo(mapRef.current)
     }
 
-    mapRef.current.panTo(lngLat)
-  }, [driverLocation?.current_lat, driverLocation?.current_lng])
+    mapRef.current.easeTo({ center: lngLat, duration: 800 })
+  }, [driverLocation?.current_lat, driverLocation?.current_lng, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleMapReady(map: mapboxgl.Map) {
     mapRef.current = map
+    setMapReady(true)
   }
 
   // Place pickup marker once both map and ride data are available
@@ -80,7 +87,7 @@ export default function CustomerRidePage() {
     pickupMarkerRef.current = new mapboxgl.Marker({ element: el })
       .setLngLat([ride.pickup_lng, ride.pickup_lat])
       .addTo(mapRef.current)
-  }, [ride?.pickup_lat, ride?.pickup_lng]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ride?.pickup_lat, ride?.pickup_lng, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Clean up markers on unmount
   useEffect(() => {
@@ -116,7 +123,7 @@ export default function CustomerRidePage() {
     </div>
   )
 
-  const driver = ride.driver as (Ride['driver'] & { profile?: { full_name?: string; phone?: string } }) | undefined
+  const driver = ride.driver
   const showMap = ride.status !== 'requested' && ride.status !== 'cancelled'
 
   return (
@@ -157,31 +164,13 @@ export default function CustomerRidePage() {
           </div>
           {ride.estimated_price && (
             <p className="text-taxi-yellow font-bold text-xl mt-3">
-              ~{formatPrice(ride.estimated_price, 'EUR')}
+              ~{formatPrice(ride.estimated_price, currency)}
             </p>
           )}
         </div>
 
         {/* Driver info */}
-        {driver && (
-          <div className="bg-taxi-card border border-taxi-border rounded-xl p-4 mb-4">
-            <p className="text-xs uppercase tracking-wider text-taxi-muted mb-3">Your Driver</p>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-white font-semibold">{driver.profile?.full_name ?? 'Driver'}</p>
-                <p className="text-taxi-muted text-sm">{(driver as { car_model?: string }).car_model} · {(driver as { car_plate?: string }).car_plate}</p>
-              </div>
-              {driver.profile?.phone && (
-                <a
-                  href={`tel:${driver.profile.phone}`}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold"
-                >
-                  📞 Call
-                </a>
-              )}
-            </div>
-          </div>
-        )}
+        {driver && <DriverInfoCard driver={driver} />}
 
         {/* Timeline */}
         <div className="bg-taxi-card border border-taxi-border rounded-xl p-4 mb-6">
