@@ -209,11 +209,18 @@ export default function CustomerRidePage() {
               })}
             </p>
           )}
-          {ride.estimated_price && (
+          {ride.status === 'completed' && (ride.final_price ?? ride.estimated_price) ? (
+            <div className="mt-3">
+              <p className="text-xs text-taxi-muted uppercase tracking-wider">Final fare</p>
+              <p className="text-taxi-yellow font-bold text-2xl">
+                {formatPrice((ride.final_price ?? ride.estimated_price)!, currency)}
+              </p>
+            </div>
+          ) : ride.estimated_price ? (
             <p className="text-taxi-yellow font-bold text-xl mt-3">
               ~{formatPrice(ride.estimated_price, currency)}
             </p>
-          )}
+          ) : null}
         </div>
 
         {/* Driver info */}
