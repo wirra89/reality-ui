@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useAssignedRide } from '@/hooks/useAssignedRide'
 import { useGPSTracking } from '@/hooks/useGPSTracking'
+import { usePushNotifications } from '@/hooks/usePushNotifications'
 import { RideCard } from '@/components/RideCard'
 import type { Profile, Driver } from '@/lib/types'
 
@@ -22,6 +23,8 @@ export default function DriverDashboard() {
     driverStatus: driverRecord?.status ?? 'offline',
     enabled: isOnline && !!driverRecord?.id,
   })
+
+  usePushNotifications(driverRecord?.id ?? null, isOnline)
 
   useEffect(() => {
     const supabase = createClient()
@@ -65,7 +68,7 @@ export default function DriverDashboard() {
     } catch (err) {
       console.error('Sign out error:', err)
     }
-    router.push('/login')
+    window.location.href = '/login'
   }
 
   return (
