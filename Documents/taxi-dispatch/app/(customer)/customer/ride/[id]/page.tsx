@@ -12,6 +12,7 @@ import { MapView } from '@/components/MapView'
 import { DriverInfoCard } from '@/components/DriverInfoCard'
 import { ETABadge } from '@/components/ETABadge'
 import { StarRating } from '@/components/StarRating'
+import { CancelRideModal } from '@/components/CancelRideModal'
 import { useETA } from '@/hooks/useETA'
 import { formatPrice } from '@/lib/pricing'
 import type { Ride } from '@/lib/types'
@@ -31,6 +32,8 @@ export default function CustomerRidePage() {
   const [ratingNote, setRatingNote] = useState('')
   const [ratingSubmitted, setRatingSubmitted] = useState(false)
   const [ratingSubmitting, setRatingSubmitting] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -115,18 +118,21 @@ export default function CustomerRidePage() {
     }
   }, [])
 
-  async function handleCancel() {
+  async function handleCancel(reason: string) {
     if (!ride) return
+    setCancelling(true)
     try {
       const supabase = createClient()
       const { error } = await supabase
         .from('rides')
-        .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
+        .update({ status: 'cancelled', cancelled_at: new Date().toISOString(), cancellation_reason: reason })
         .eq('id', ride.id)
       if (error) throw error
+      setShowCancelModal(false)
     } catch (err) {
       console.error('Cancel ride failed:', err)
     }
+    setCancelling(false)
   }
 
   async function submitRating() {
@@ -212,7 +218,7 @@ export default function CustomerRidePage() {
 
         {ride.status === 'requested' && (
           <button
-            onClick={handleCancel}
+            onClick={() => setShowCancelModal(true)}
             className="w-full border border-red-800 text-red-400 py-3 rounded-xl text-sm hover:bg-red-900/20 transition"
           >
             Cancel Ride
@@ -259,6 +265,14 @@ export default function CustomerRidePage() {
           </button>
         )}
       </div>
+
+      {showCancelModal && (
+        <CancelRideModal
+          onConfirm={handleCancel}
+          onClose={() => setShowCancelModal(false)}
+          submitting={cancelling}
+        />
+      )}
     </div>
   )
 }
