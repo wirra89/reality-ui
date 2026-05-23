@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtime } from '@/hooks/useRealtime'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
+import { NavigateButton } from '@/components/NavigateButton'
 import { DRIVER_TRANSITIONS } from '@/lib/ride-status'
 import { formatPrice } from '@/lib/pricing'
 import type { Ride, Driver } from '@/lib/types'
@@ -24,9 +25,13 @@ export default function DriverRidePage() {
   const [driverRecord, setDriverRecord] = useState<Driver | null>(null)
   const [loading, setLoading] = useState(true)
   const [advancing, setAdvancing] = useState(false)
+  const [currency, setCurrency] = useState('EUR')
 
   useEffect(() => {
     const supabase = createClient()
+    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
+      if (s?.currency) setCurrency(s.currency)
+    })
     async function load() {
       const [{ data: rideData }, { data: { user } }] = await Promise.all([
         supabase.from('rides').select('*, customer:profiles!customer_id(*)').eq('id', rideId).single(),
@@ -58,7 +63,6 @@ export default function DriverRidePage() {
     const now = new Date().toISOString()
     const updates: Record<string, unknown> = { status: transition.next }
 
-    if (transition.next === 'driver_arriving') updates.assigned_at = now
     if (transition.next === 'in_progress') updates.started_at = now
     if (transition.next === 'completed') { updates.completed_at = now; updates.final_price = ride.estimated_price }
 
@@ -128,25 +132,24 @@ export default function DriverRidePage() {
           </div>
         </div>
         {ride.estimated_price && (
-          <p className="text-taxi-yellow font-bold text-xl mt-3">~{formatPrice(ride.estimated_price, 'EUR')}</p>
+          <p className="text-taxi-yellow font-bold text-xl mt-3">~{formatPrice(ride.estimated_price, currency)}</p>
         )}
         {ride.notes && <p className="text-taxi-muted text-sm mt-2">📝 {ride.notes}</p>}
       </div>
 
-      {ride.pickup_lat && ride.pickup_lng && ride.status === 'assigned' && (
-        <a href={`https://www.google.com/maps/dir/?api=1&destination=${ride.pickup_lat},${ride.pickup_lng}`}
-          target="_blank" rel="noreferrer"
-          className="block w-full text-center bg-blue-600 text-white font-bold py-4 rounded-xl mb-4">
-          🗺️ Navigate to Pickup
-        </a>
+      {/* Navigate to pickup — show while driver is heading there or waiting */}
+      {ride.pickup_lat != null && ride.pickup_lng != null &&
+        (ride.status === 'assigned' || ride.status === 'driver_arriving' || ride.status === 'arrived') && (
+        <div className="mb-4">
+          <NavigateButton lat={ride.pickup_lat} lng={ride.pickup_lng} label="Navigate to Pickup" />
+        </div>
       )}
 
-      {ride.destination_lat && ride.destination_lng && ride.status === 'in_progress' && (
-        <a href={`https://www.google.com/maps/dir/?api=1&destination=${ride.destination_lat},${ride.destination_lng}`}
-          target="_blank" rel="noreferrer"
-          className="block w-full text-center bg-blue-600 text-white font-bold py-4 rounded-xl mb-4">
-          🗺️ Navigate to Destination
-        </a>
+      {/* Navigate to destination — show once ride is in progress */}
+      {ride.destination_lat != null && ride.destination_lng != null && ride.status === 'in_progress' && (
+        <div className="mb-4">
+          <NavigateButton lat={ride.destination_lat} lng={ride.destination_lng} label="Navigate to Destination" />
+        </div>
       )}
 
       {transition && (
