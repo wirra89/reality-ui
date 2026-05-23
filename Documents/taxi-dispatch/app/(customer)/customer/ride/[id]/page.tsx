@@ -10,6 +10,8 @@ import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { ActiveRideTimeline } from '@/components/ActiveRideTimeline'
 import { MapView } from '@/components/MapView'
 import { DriverInfoCard } from '@/components/DriverInfoCard'
+import { ETABadge } from '@/components/ETABadge'
+import { useETA } from '@/hooks/useETA'
 import { formatPrice } from '@/lib/pricing'
 import type { Ride } from '@/lib/types'
 
@@ -49,6 +51,17 @@ export default function CustomerRidePage() {
 
   const driverLocation = useDriverLocation(
     (ride?.status !== 'requested' && ride?.driver_id) ? ride.driver_id : null
+  )
+
+  // ETA: driver's current position → pickup (while driver is en-route)
+  const showETA = ride?.status === 'assigned' || ride?.status === 'driver_arriving'
+  const etaSeconds = useETA(
+    showETA && driverLocation?.current_lat != null && driverLocation?.current_lng != null
+      ? { lat: driverLocation.current_lat, lng: driverLocation.current_lng }
+      : null,
+    showETA && ride?.pickup_lat != null && ride?.pickup_lng != null
+      ? { lat: ride.pickup_lat, lng: ride.pickup_lng }
+      : null
   )
 
   // Update driver marker when location changes or map becomes ready
@@ -145,7 +158,8 @@ export default function CustomerRidePage() {
         <div className="flex items-center gap-3 mb-6">
           <button onClick={() => router.push('/customer/dashboard')} className="text-taxi-muted hover:text-white">←</button>
           <h1 className="text-xl font-bold">Your Ride</h1>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <ETABadge seconds={etaSeconds} />
             <RideStatusBadge status={ride.status} />
           </div>
         </div>
