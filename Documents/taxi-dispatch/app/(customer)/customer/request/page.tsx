@@ -70,13 +70,28 @@ export default function RequestRidePage() {
   }, [pickupCoords, destCoords])
 
   async function useCurrentLocation() {
-    navigator.geolocation.getCurrentPosition(async pos => {
-      const { latitude: lat, longitude: lng } = pos.coords
-      setPickupCoords({ lat, lng })
-      const address = await reverseGeocode(lat, lng)
-      setPickup(address)
-      setPickupSuggestions([])
-    })
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser.')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      async pos => {
+        const { latitude: lat, longitude: lng } = pos.coords
+        setPickupCoords({ lat, lng })
+        const address = await reverseGeocode(lat, lng)
+        setPickup(address)
+        setPickupSuggestions([])
+      },
+      err => {
+        const messages: Record<number, string> = {
+          1: 'Location access denied. Please enable it in your browser settings.',
+          2: 'Location unavailable. Please enter your address manually.',
+          3: 'Location request timed out. Please try again.',
+        }
+        setError(messages[err.code] ?? 'Could not get your location.')
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
   }
 
   function selectPickup(feature: MbFeature) {
@@ -257,7 +272,7 @@ export default function RequestRidePage() {
 
         <button
           type="submit"
-          disabled={loading || !pickupCoords || !destCoords || (scheduleMode === 'scheduled' && !scheduledAt)}
+          disabled={loading || !pickupCoords || !destCoords || !settings || (scheduleMode === 'scheduled' && !scheduledAt)}
           className="w-full bg-taxi-yellow text-black font-bold py-4 rounded-xl text-lg hover:bg-yellow-400 transition disabled:opacity-50"
         >
           {loading

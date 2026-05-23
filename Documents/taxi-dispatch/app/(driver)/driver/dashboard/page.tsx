@@ -6,12 +6,14 @@ import { createClient } from '@/lib/supabase/client'
 import { useAssignedRide } from '@/hooks/useAssignedRide'
 import { useGPSTracking } from '@/hooks/useGPSTracking'
 import { usePushNotifications } from '@/hooks/usePushNotifications'
+import { useToast } from '@/context/ToastContext'
 import { RideCard } from '@/components/RideCard'
 import { RideRequestAlert } from '@/components/RideRequestAlert'
 import type { Profile, Driver } from '@/lib/types'
 
 export default function DriverDashboard() {
   const router = useRouter()
+  const { showToast } = useToast()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [driverRecord, setDriverRecord] = useState<Driver | null>(null)
   const [toggling, setToggling] = useState(false)
@@ -27,6 +29,7 @@ export default function DriverDashboard() {
     driverId: driverRecord?.id ?? '',
     driverStatus: driverRecord?.status ?? 'offline',
     enabled: isOnline && !!driverRecord?.id,
+    onError: (msg) => showToast(msg, 'warning'),
   })
 
   usePushNotifications(driverRecord?.id ?? null, isOnline)
@@ -86,6 +89,8 @@ export default function DriverDashboard() {
   async function handleReject() {
     if (!ride || !driverRecord) return
     setShowAlert(false)
+    // Clear so the same ride ID can trigger a new alert if reassigned
+    lastAlertedRideId.current = null
     try {
       const supabase = createClient()
       // Unassign the ride: set back to requested, clear driver, reset driver status

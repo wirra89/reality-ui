@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useActiveRide } from '@/hooks/useActiveRide'
@@ -12,6 +12,15 @@ export default function CustomerDashboard() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
   const { ride, loading } = useActiveRide(userId)
+  const prevRideStatusRef = useRef<string | null>(null)
+
+  // Redirect to ride page when a trip completes while on the dashboard
+  useEffect(() => {
+    if (ride?.status === 'completed' && prevRideStatusRef.current && prevRideStatusRef.current !== 'completed') {
+      router.push(`/customer/ride/${ride.id}`)
+    }
+    prevRideStatusRef.current = ride?.status ?? null
+  }, [ride?.status, ride?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const supabase = createClient()
@@ -26,7 +35,7 @@ export default function CustomerDashboard() {
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/login')
+    window.location.href = '/login'
   }
 
   return (

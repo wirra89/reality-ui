@@ -26,12 +26,14 @@ export default function DriverRidePage() {
   const [loading, setLoading] = useState(true)
   const [advancing, setAdvancing] = useState(false)
   const [currency, setCurrency] = useState('EUR')
+  const [waitChargePerMin, setWaitChargePerMin] = useState(0.10)
   const [waitSeconds, setWaitSeconds] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
+    supabase.from('company_settings').select('currency,wait_charge_per_min').limit(1).single().then(({ data: s }) => {
       if (s?.currency) setCurrency(s.currency)
+      if (s?.wait_charge_per_min != null) setWaitChargePerMin(s.wait_charge_per_min)
     })
     async function load() {
       const [{ data: rideData }, { data: { user } }] = await Promise.all([
@@ -172,7 +174,7 @@ export default function DriverRidePage() {
           </p>
           {waitSeconds > 120 && (
             <p className="text-xs text-amber-400 mt-1">
-              +{formatPrice(Math.floor(waitSeconds / 60) * 0.10, currency)} wait charge
+              +{formatPrice(Math.floor(waitSeconds / 60) * waitChargePerMin, currency)} wait charge
             </p>
           )}
         </div>

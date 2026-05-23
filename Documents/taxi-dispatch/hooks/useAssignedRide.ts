@@ -32,10 +32,22 @@ export function useAssignedRide(driverId: string | null) {
     filter: driverId ? `driver_id=eq.${driverId}` : undefined,
     onUpdate: (payload) => {
       const updated = payload.new as Ride
-      setRide(prev => prev?.id === updated.id ? { ...prev, ...updated } : prev)
+      const activeStatuses = ['assigned', 'driver_arriving', 'arrived', 'in_progress']
+      setRide(prev => {
+        if (prev?.id === updated.id) {
+          // If ride is no longer active (rejected, completed, cancelled), clear it
+          if (!activeStatuses.includes(updated.status)) return null
+          return { ...prev, ...updated }
+        }
+        // New assignment: ride just got this driver_id set
+        if (activeStatuses.includes(updated.status)) return updated as Ride
+        return prev
+      })
     },
     onInsert: (payload) => {
-      setRide(payload.new as Ride)
+      const r = payload.new as Ride
+      // Guard: only accept rides actually assigned to this driver
+      if (r.driver_id === driverId) setRide(r)
     },
   })
 

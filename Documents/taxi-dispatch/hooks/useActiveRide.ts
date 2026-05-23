@@ -34,7 +34,12 @@ export function useActiveRide(customerId: string | null) {
     filter: customerId ? `customer_id=eq.${customerId}` : undefined,
     onUpdate: (payload) => {
       const updated = payload.new as Ride
-      setRide(prev => prev?.id === updated.id ? { ...prev, ...updated } : prev)
+      setRide(prev => {
+        if (prev?.id !== updated.id) return prev
+        // Clear ride when it's no longer active so customer can request a new one
+        if (!ACTIVE_STATUSES.includes(updated.status)) return null
+        return { ...prev, ...updated }
+      })
     },
   })
 

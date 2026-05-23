@@ -101,6 +101,7 @@ export interface CompanySettings {
   base_fare: number
   price_per_km: number
   minimum_fare: number
+  wait_charge_per_min: number
   currency: string
   created_at: string
 }

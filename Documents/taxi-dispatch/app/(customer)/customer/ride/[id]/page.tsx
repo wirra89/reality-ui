@@ -152,12 +152,16 @@ export default function CustomerRidePage() {
     if (!ride || ratingValue < 1) return
     setRatingSubmitting(true)
     const supabase = createClient()
-    await supabase
+    const { error } = await supabase
       .from('rides')
       .update({ customer_rating: ratingValue, rating_note: ratingNote || null })
       .eq('id', ride.id)
-    setRide(prev => prev ? { ...prev, customer_rating: ratingValue, rating_note: ratingNote || null } : null)
-    setRatingSubmitted(true)
+    if (error) {
+      showToast('Failed to submit rating. Please try again.', 'error')
+    } else {
+      setRide(prev => prev ? { ...prev, customer_rating: ratingValue, rating_note: ratingNote || null } : null)
+      setRatingSubmitted(true)
+    }
     setRatingSubmitting(false)
   }
 
@@ -196,7 +200,14 @@ export default function CustomerRidePage() {
           <button onClick={() => router.push('/customer/dashboard')} className="text-taxi-muted hover:text-white">←</button>
           <h1 className="text-xl font-bold">Your Ride</h1>
           <div className="ml-auto flex items-center gap-2">
-            <ETABadge seconds={etaSeconds} />
+            {ride.status === 'arrived' ? (
+              <span className="inline-flex items-center gap-1.5 bg-green-500/20 border border-green-500/40 text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                Driver is here!
+              </span>
+            ) : (
+              <ETABadge seconds={etaSeconds} />
+            )}
             <RideStatusBadge status={ride.status} />
           </div>
         </div>
