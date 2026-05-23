@@ -11,6 +11,7 @@ import { ActiveRideTimeline } from '@/components/ActiveRideTimeline'
 import { MapView } from '@/components/MapView'
 import { DriverInfoCard } from '@/components/DriverInfoCard'
 import { ETABadge } from '@/components/ETABadge'
+import { StarRating } from '@/components/StarRating'
 import { useETA } from '@/hooks/useETA'
 import { formatPrice } from '@/lib/pricing'
 import type { Ride } from '@/lib/types'
@@ -26,6 +27,10 @@ export default function CustomerRidePage() {
   const driverMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const [mapReady, setMapReady] = useState(false)
+  const [ratingValue, setRatingValue] = useState(0)
+  const [ratingNote, setRatingNote] = useState('')
+  const [ratingSubmitted, setRatingSubmitted] = useState(false)
+  const [ratingSubmitting, setRatingSubmitting] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -124,6 +129,19 @@ export default function CustomerRidePage() {
     }
   }
 
+  async function submitRating() {
+    if (!ride || ratingValue < 1) return
+    setRatingSubmitting(true)
+    const supabase = createClient()
+    await supabase
+      .from('rides')
+      .update({ customer_rating: ratingValue, rating_note: ratingNote || null })
+      .eq('id', ride.id)
+    setRide(prev => prev ? { ...prev, customer_rating: ratingValue, rating_note: ratingNote || null } : null)
+    setRatingSubmitted(true)
+    setRatingSubmitting(false)
+  }
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-6 h-6 border-2 border-taxi-yellow border-t-transparent rounded-full animate-spin" />
@@ -199,6 +217,37 @@ export default function CustomerRidePage() {
           >
             Cancel Ride
           </button>
+        )}
+
+        {/* Rating prompt — only for completed rides not yet rated */}
+        {ride.status === 'completed' && !ride.customer_rating && !ratingSubmitted && (
+          <div className="bg-taxi-card border border-taxi-border rounded-xl p-4 mb-4">
+            <p className="text-sm font-semibold text-white mb-3">How was your ride?</p>
+            <div className="flex justify-center mb-3">
+              <StarRating value={ratingValue} onChange={setRatingValue} size="lg" />
+            </div>
+            <textarea
+              value={ratingNote}
+              onChange={e => setRatingNote(e.target.value)}
+              placeholder="Optional comment…"
+              rows={2}
+              className="w-full bg-[#111] border border-taxi-border rounded-lg px-3 py-2 text-sm text-white placeholder-taxi-muted resize-none focus:outline-none focus:border-taxi-yellow mb-3"
+            />
+            <button
+              onClick={submitRating}
+              disabled={ratingValue < 1 || ratingSubmitting}
+              className="w-full bg-taxi-yellow text-black font-bold py-3 rounded-xl disabled:opacity-40 transition-opacity"
+            >
+              {ratingSubmitting ? 'Submitting…' : 'Submit Rating'}
+            </button>
+          </div>
+        )}
+
+        {ride.status === 'completed' && (ride.customer_rating || ratingSubmitted) && (
+          <div className="flex items-center justify-center gap-2 mb-4 text-sm text-taxi-muted">
+            <StarRating value={ride.customer_rating ?? ratingValue} readonly size="sm" />
+            <span>Rating saved</span>
+          </div>
         )}
 
         {(ride.status === 'completed' || ride.status === 'cancelled') && (

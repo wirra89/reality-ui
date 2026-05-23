@@ -1,5 +1,6 @@
 import type { Ride } from '@/lib/types'
 import { RideStatusBadge } from './RideStatusBadge'
+import { StarRating } from './StarRating'
 import { formatPrice } from '@/lib/pricing'
 
 interface RideCardProps {
@@ -35,11 +36,16 @@ export function RideCard({ ride, onClick, selected, currency = 'EUR' }: RideCard
           {ride.destination_address ?? 'Unknown destination'}
         </p>
       </div>
-      {ride.estimated_price && (
-        <p className="text-taxi-yellow text-sm font-bold">
-          {formatPrice(ride.estimated_price, currency)}
-        </p>
-      )}
+      <div className="flex items-center justify-between">
+        {ride.estimated_price && (
+          <p className="text-taxi-yellow text-sm font-bold">
+            {formatPrice(ride.estimated_price, currency)}
+          </p>
+        )}
+        {ride.customer_rating != null && (
+          <StarRating value={ride.customer_rating} readonly size="sm" />
+        )}
+      </div>
     </div>
   )
 }

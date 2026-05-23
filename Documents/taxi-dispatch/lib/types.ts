@@ -63,6 +63,8 @@ export interface Ride {
   started_at: string | null
   completed_at: string | null
   cancelled_at: string | null
+  customer_rating: number | null
+  rating_note: string | null
   customer?: Profile
   driver?: Driver
 }
@@ -101,6 +103,16 @@ export interface CompanySettings {
 }
 
 export interface FareSettings {
+  base_fare: number
+  price_per_km: number
+  minimum_fare: number
+}
+
+export interface PricingShift {
+  shift: 1 | 2 | 3
+  name: string
+  start_hour: number
+  end_hour: number
   base_fare: number
   price_per_km: number
   minimum_fare: number
