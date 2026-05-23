@@ -71,11 +71,31 @@ export default function CustomerHistoryPage() {
 
       <div className="space-y-3">
         {rides.map(ride => (
-          <RideCard
-            key={ride.id}
-            ride={ride}
-            onClick={() => router.push(`/customer/ride/${ride.id}`)}
-          />
+          <div key={ride.id} className="relative">
+            <RideCard
+              ride={ride}
+              onClick={() => router.push(`/customer/ride/${ride.id}`)}
+            />
+            {ride.status === 'completed' && ride.pickup_address && ride.destination_address && (
+              <button
+                onClick={e => {
+                  e.stopPropagation()
+                  sessionStorage.setItem('book_again', JSON.stringify({
+                    pickup: ride.pickup_address,
+                    pickup_lat: ride.pickup_lat,
+                    pickup_lng: ride.pickup_lng,
+                    destination: ride.destination_address,
+                    destination_lat: ride.destination_lat,
+                    destination_lng: ride.destination_lng,
+                  }))
+                  router.push('/customer/request')
+                }}
+                className="absolute top-3 right-3 bg-taxi-yellow text-black text-xs font-bold px-3 py-1 rounded-lg hover:bg-yellow-400 transition"
+              >
+                Book again
+              </button>
+            )}
+          </div>
         ))}
       </div>
 

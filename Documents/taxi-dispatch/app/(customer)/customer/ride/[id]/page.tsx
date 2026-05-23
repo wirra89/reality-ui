@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import mapboxgl from 'mapbox-gl'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtime } from '@/hooks/useRealtime'
+import { useToast } from '@/context/ToastContext'
 import { useDriverLocation } from '@/hooks/useDriverLocation'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { ActiveRideTimeline } from '@/components/ActiveRideTimeline'
@@ -28,6 +29,7 @@ export default function CustomerRidePage() {
   const driverMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const [mapReady, setMapReady] = useState(false)
+  const { showToast } = useToast()
   const [ratingValue, setRatingValue] = useState(0)
   const [ratingNote, setRatingNote] = useState('')
   const [ratingSubmitted, setRatingSubmitted] = useState(false)
@@ -56,6 +58,17 @@ export default function CustomerRidePage() {
     filter: `id=eq.${rideId}`,
     onUpdate: (payload) => setRide(prev => prev ? { ...prev, ...payload.new as Ride } : null),
   })
+
+  // Toast when driver is assigned
+  const prevStatusRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!ride) return
+    if (prevStatusRef.current === 'requested' && ride.status === 'assigned') {
+      const driverName = (ride.driver as { profile?: { full_name?: string } } | undefined)?.profile?.full_name
+      showToast(driverName ? `${driverName} is on the way!` : 'Driver assigned! On the way.', 'success')
+    }
+    prevStatusRef.current = ride.status
+  }, [ride?.status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const driverLocation = useDriverLocation(
     (ride?.status !== 'requested' && ride?.driver_id) ? ride.driver_id : null
@@ -269,6 +282,34 @@ export default function CustomerRidePage() {
           <div className="flex items-center justify-center gap-2 mb-4 text-sm text-taxi-muted">
             <StarRating value={ride.customer_rating ?? ratingValue} readonly size="sm" />
             <span>Rating saved</span>
+          </div>
+        )}
+
+        {ride.status === 'completed' && (
+          <div className="bg-taxi-card border border-taxi-border rounded-xl p-4 mb-4 text-sm space-y-2">
+            <p className="text-xs uppercase tracking-wider text-taxi-muted mb-3">Receipt</p>
+            <div className="flex justify-between">
+              <span className="text-taxi-muted">Date</span>
+              <span className="text-white">{new Date(ride.completed_at ?? ride.requested_at).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-taxi-muted">Pickup</span>
+              <span className="text-white text-right max-w-[60%] truncate">{ride.pickup_address}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-taxi-muted">Destination</span>
+              <span className="text-white text-right max-w-[60%] truncate">{ride.destination_address}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-taxi-muted">Payment</span>
+              <span className="text-white capitalize">{ride.payment_method ?? 'Cash'}</span>
+            </div>
+            <div className="flex justify-between border-t border-taxi-border pt-2 mt-2">
+              <span className="font-bold text-white">Total</span>
+              <span className="font-bold text-taxi-yellow text-base">
+                {formatPrice((ride.final_price ?? ride.estimated_price)!, currency)}
+              </span>
+            </div>
           </div>
         )}
 

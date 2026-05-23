@@ -25,6 +25,20 @@ export default function RequestRidePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Pre-fill from "Book again"
+  useEffect(() => {
+    const stored = sessionStorage.getItem('book_again')
+    if (!stored) return
+    sessionStorage.removeItem('book_again')
+    try {
+      const d = JSON.parse(stored)
+      if (d.pickup) setPickup(d.pickup)
+      if (d.pickup_lat && d.pickup_lng) setPickupCoords({ lat: d.pickup_lat, lng: d.pickup_lng })
+      if (d.destination) setDestination(d.destination)
+      if (d.destination_lat && d.destination_lng) setDestCoords({ lat: d.destination_lat, lng: d.destination_lng })
+    } catch {}
+  }, [])
+
   useEffect(() => {
     const supabase = createClient()
     Promise.all([

@@ -11,6 +11,7 @@ export default function DispatcherDriversPage() {
 
   useEffect(() => {
     const supabase = createClient()
+
     supabase
       .from('drivers')
       .select('*, profile:profiles(*)')
@@ -20,6 +21,15 @@ export default function DispatcherDriversPage() {
         setDrivers((data ?? []) as Driver[])
         setLoading(false)
       })
+
+    const channel = supabase
+      .channel('drivers_live')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'drivers' }, payload => {
+        setDrivers(prev => prev.map(d => d.id === payload.new.id ? { ...d, ...payload.new as Driver } : d))
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [])
 
   return (

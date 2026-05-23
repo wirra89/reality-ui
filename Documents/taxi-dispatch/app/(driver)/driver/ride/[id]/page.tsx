@@ -26,6 +26,7 @@ export default function DriverRidePage() {
   const [loading, setLoading] = useState(true)
   const [advancing, setAdvancing] = useState(false)
   const [currency, setCurrency] = useState('EUR')
+  const [waitSeconds, setWaitSeconds] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
@@ -53,6 +54,16 @@ export default function DriverRidePage() {
     onUpdate: (payload) => setRide(prev => prev ? { ...prev, ...payload.new as Ride } : null),
   })
 
+  // Wait timer — counts up while driver is at pickup
+  useEffect(() => {
+    if (ride?.status !== 'arrived') { setWaitSeconds(0); return }
+    const base = ride.arrived_at ? new Date(ride.arrived_at).getTime() : Date.now()
+    const tick = () => setWaitSeconds(Math.floor((Date.now() - base) / 1000))
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [ride?.status, ride?.arrived_at])
+
   async function advanceStatus() {
     if (!ride || !driverRecord) return
     const transition = DRIVER_TRANSITIONS[ride.status]
@@ -63,6 +74,7 @@ export default function DriverRidePage() {
     const now = new Date().toISOString()
     const updates: Record<string, unknown> = { status: transition.next }
 
+    if (transition.next === 'arrived')    updates.arrived_at   = now
     if (transition.next === 'in_progress') updates.started_at = now
     if (transition.next === 'completed') { updates.completed_at = now; updates.final_price = ride.estimated_price }
 
@@ -149,6 +161,20 @@ export default function DriverRidePage() {
       {ride.destination_lat != null && ride.destination_lng != null && ride.status === 'in_progress' && (
         <div className="mb-4">
           <NavigateButton lat={ride.destination_lat} lng={ride.destination_lng} label="Navigate to Destination" />
+        </div>
+      )}
+
+      {ride.status === 'arrived' && (
+        <div className={`border rounded-xl p-4 mb-4 ${waitSeconds > 120 ? 'bg-amber-950/40 border-amber-700' : 'bg-taxi-card border-taxi-border'}`}>
+          <p className="text-xs uppercase tracking-wider text-taxi-muted mb-1">Waiting at pickup</p>
+          <p className={`text-2xl font-bold font-mono ${waitSeconds > 120 ? 'text-amber-300' : 'text-white'}`}>
+            {String(Math.floor(waitSeconds / 60)).padStart(2, '0')}:{String(waitSeconds % 60).padStart(2, '0')}
+          </p>
+          {waitSeconds > 120 && (
+            <p className="text-xs text-amber-400 mt-1">
+              +{formatPrice(Math.floor(waitSeconds / 60) * 0.10, currency)} wait charge
+            </p>
+          )}
         </div>
       )}
 
