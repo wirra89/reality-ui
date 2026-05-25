@@ -26,14 +26,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
-    const supabase = createClient()
-    const [{ data: cs }, { data: ps }] = await Promise.all([
-      supabase.from('company_settings').select('*').single(),
-      supabase.from('pricing_shifts').select('*').order('shift'),
-    ])
-    if (cs) setSettings(cs as CompanySettings)
-    if (ps) setShifts(ps as PricingShift[])
-    setLoading(false)
+    try {
+      const supabase = createClient()
+      const [{ data: cs }, { data: ps }] = await Promise.all([
+        supabase.from('company_settings').select('*').single(),
+        supabase.from('pricing_shifts').select('*').order('shift'),
+      ])
+      if (cs) setSettings(cs as CompanySettings)
+      if (ps) setShifts(ps as PricingShift[])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { load() }, [load])
