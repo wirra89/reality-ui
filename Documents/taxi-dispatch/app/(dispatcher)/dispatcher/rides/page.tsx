@@ -53,7 +53,11 @@ export default function DispatcherRidesPage() {
   const handleRideUpdate = useCallback((updated: Ride) => {
     setRides(prev => {
       const currentFilter = filterRef.current
-      const matches = currentFilter === 'all' || updated.status === currentFilter
+      const matches =
+        currentFilter === 'all' ||
+        (currentFilter === 'scheduled'
+          ? updated.scheduled_at != null && updated.status === 'requested'
+          : updated.status === currentFilter)
       const idx = prev.findIndex(r => r.id === updated.id)
       if (idx >= 0) {
         if (!matches) return prev.filter(r => r.id !== updated.id)
@@ -84,7 +88,11 @@ export default function DispatcherRidesPage() {
       .select('*, customer:profiles!customer_id(full_name, phone), driver:drivers(car_model, car_plate, current_lat, current_lng, profile:profiles(full_name))')
       .order('requested_at', { ascending: false })
       .limit(100)
-    if (filter !== 'all') query = query.eq('status', filter)
+    if (filter === 'scheduled') {
+      query = query.eq('status', 'requested').not('scheduled_at', 'is', null)
+    } else if (filter !== 'all') {
+      query = query.eq('status', filter)
+    }
     query.then(({ data }) => {
       setRides((data ?? []) as RideWithDriverLocation[])
       setLoading(false)
@@ -103,7 +111,7 @@ export default function DispatcherRidesPage() {
     setAssigning(false)
   }
 
-  const FILTERS = ['all', 'requested', 'assigned', 'in_progress', 'completed', 'cancelled']
+  const FILTERS = ['all', 'requested', 'assigned', 'in_progress', 'completed', 'cancelled', 'scheduled']
 
   return (
     <div className="min-h-screen p-8">
@@ -140,6 +148,13 @@ export default function DispatcherRidesPage() {
                   </div>
                   <p className="text-sm text-white truncate">📍 {ride.pickup_address}</p>
                   <p className="text-sm text-taxi-muted truncate">→ {ride.destination_address}</p>
+                  {ride.scheduled_at && (
+                    <span className="text-blue-300 text-xs mt-1 block">
+                      Scheduled: {new Date(ride.scheduled_at).toLocaleString(undefined, {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                      })}
+                    </span>
+                  )}
                   <div className="flex gap-4 mt-2 text-xs text-taxi-muted">
                     {customer?.full_name && <span>Customer: {customer.full_name}</span>}
                     {driver?.profile?.full_name && <span>Driver: {driver.profile.full_name}</span>}
