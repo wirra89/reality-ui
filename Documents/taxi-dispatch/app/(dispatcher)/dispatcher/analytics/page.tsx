@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { formatPrice } from '@/lib/pricing'
+import { useSettings } from '@/context/SettingsContext'
 
 interface DayStat {
   hour: number
@@ -31,17 +32,13 @@ interface Stats {
 
 export default function AnalyticsPage() {
   const router = useRouter()
+  const { currency } = useSettings()
   const [stats, setStats] = useState<Stats | null>(null)
-  const [currency, setCurrency] = useState('EUR')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
-
-      supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
-        if (s?.currency) setCurrency(s.currency)
-      })
 
       const now = new Date()
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()

@@ -8,6 +8,7 @@ import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { ETABadge } from '@/components/ETABadge'
 import { useETA } from '@/hooks/useETA'
 import { formatPrice } from '@/lib/pricing'
+import { useSettings } from '@/context/SettingsContext'
 import type { Ride } from '@/lib/types'
 
 type RideWithDriverLocation = Omit<Ride, 'driver'> & {
@@ -38,10 +39,10 @@ function RideETA({ ride }: { ride: RideWithDriverLocation }) {
 
 export default function DispatcherRidesPage() {
   const router = useRouter()
+  const { currency } = useSettings()
   const [rides, setRides] = useState<RideWithDriverLocation[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
-  const [currency, setCurrency] = useState('EUR')
   const [availableDrivers, setAvailableDrivers] = useState<AvailableDriver[]>([])
   const [assigningId, setAssigningId] = useState<string | null>(null)
   const [selectedDriver, setSelectedDriver] = useState('')
@@ -70,9 +71,6 @@ export default function DispatcherRidesPage() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
-      if (s?.currency) setCurrency(s.currency)
-    })
     supabase.from('drivers').select('id, car_model, profile:profiles(full_name)')
       .in('status', ['online', 'waiting'])
       .then(({ data }) => setAvailableDrivers((data ?? []) as AvailableDriver[]))

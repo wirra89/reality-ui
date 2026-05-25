@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { estimateFare, formatPrice, getActiveFareSettings } from '@/lib/pricing'
 import { geocodeAddress, getDistanceKm, reverseGeocode } from '@/lib/mapbox'
-import type { CompanySettings, PricingShift } from '@/lib/types'
+import { useSettings } from '@/context/SettingsContext'
 import type { GeocodingFeature as MbFeature } from '@/lib/mapbox'
 
 export default function RequestRidePage() {
   const router = useRouter()
+  const { settings, shifts } = useSettings()
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null)
@@ -17,8 +18,6 @@ export default function RequestRidePage() {
   const [pickupSuggestions, setPickupSuggestions] = useState<MbFeature[]>([])
   const [destSuggestions, setDestSuggestions] = useState<MbFeature[]>([])
   const [distanceKm, setDistanceKm] = useState<number | null>(null)
-  const [settings, setSettings] = useState<CompanySettings | null>(null)
-  const [shifts, setShifts] = useState<PricingShift[]>([])
   const [notes, setNotes] = useState('')
   const [scheduleMode, setScheduleMode] = useState<'asap' | 'scheduled'>('asap')
   const [scheduledAt, setScheduledAt] = useState('')
@@ -37,17 +36,6 @@ export default function RequestRidePage() {
       if (d.destination) setDestination(d.destination)
       if (d.destination_lat && d.destination_lng) setDestCoords({ lat: d.destination_lat, lng: d.destination_lng })
     } catch {}
-  }, [])
-
-  useEffect(() => {
-    const supabase = createClient()
-    Promise.all([
-      supabase.from('company_settings').select('*').single(),
-      supabase.from('pricing_shifts').select('*').order('shift'),
-    ]).then(([{ data: cs }, { data: ps }]) => {
-      if (cs) setSettings(cs)
-      if (ps) setShifts(ps as PricingShift[])
-    })
   }, [])
 
   useEffect(() => {

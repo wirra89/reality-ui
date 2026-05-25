@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { formatPrice } from '@/lib/pricing'
+import { useSettings } from '@/context/SettingsContext'
 import type { Ride } from '@/lib/types'
 
 type Period = 'today' | 'week' | 'all'
@@ -20,17 +21,13 @@ function periodStart(period: Period): Date | null {
 
 export default function DriverHistoryPage() {
   const router = useRouter()
+  const { currency } = useSettings()
   const [rides, setRides] = useState<Ride[]>([])
   const [loading, setLoading] = useState(true)
-  const [currency, setCurrency] = useState('EUR')
   const [period, setPeriod] = useState<Period>('today')
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
-      if (s?.currency) setCurrency(s.currency)
-    })
-
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
 

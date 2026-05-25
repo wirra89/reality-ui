@@ -8,6 +8,7 @@ import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { NavigateButton } from '@/components/NavigateButton'
 import { DRIVER_TRANSITIONS } from '@/lib/ride-status'
 import { formatPrice, calculateWaitCharge } from '@/lib/pricing'
+import { useSettings } from '@/context/SettingsContext'
 import type { Ride, Driver } from '@/lib/types'
 
 const STATUS_TO_DRIVER_STATUS: Partial<Record<string, string>> = {
@@ -21,20 +22,16 @@ export default function DriverRidePage() {
   const params = useParams()
   const router = useRouter()
   const rideId = params.id as string
+  const { currency, settings } = useSettings()
+  const waitChargePerMin = settings?.wait_charge_per_min ?? 0.10
   const [ride, setRide] = useState<Ride | null>(null)
   const [driverRecord, setDriverRecord] = useState<Driver | null>(null)
   const [loading, setLoading] = useState(true)
   const [advancing, setAdvancing] = useState(false)
-  const [currency, setCurrency] = useState('EUR')
-  const [waitChargePerMin, setWaitChargePerMin] = useState(0.10)
   const [waitSeconds, setWaitSeconds] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('currency,wait_charge_per_min').limit(1).single().then(({ data: s }) => {
-      if (s?.currency) setCurrency(s.currency)
-      if (s?.wait_charge_per_min != null) setWaitChargePerMin(s.wait_charge_per_min)
-    })
     async function load() {
       const [{ data: rideData }, { data: { user } }] = await Promise.all([
         supabase.from('rides').select('*, customer:profiles!customer_id(*)').eq('id', rideId).single(),

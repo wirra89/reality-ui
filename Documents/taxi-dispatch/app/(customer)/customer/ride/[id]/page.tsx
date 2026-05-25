@@ -16,15 +16,16 @@ import { StarRating } from '@/components/StarRating'
 import { CancelRideModal } from '@/components/CancelRideModal'
 import { useETA } from '@/hooks/useETA'
 import { formatPrice } from '@/lib/pricing'
+import { useSettings } from '@/context/SettingsContext'
 import type { Ride } from '@/lib/types'
 
 export default function CustomerRidePage() {
   const params = useParams()
   const router = useRouter()
   const rideId = params.id as string
+  const { currency } = useSettings()
   const [ride, setRide] = useState<Ride | null>(null)
   const [loading, setLoading] = useState(true)
-  const [currency, setCurrency] = useState('EUR')
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const driverMarkerRef = useRef<mapboxgl.Marker | null>(null)
   const pickupMarkerRef = useRef<mapboxgl.Marker | null>(null)
@@ -40,9 +41,6 @@ export default function CustomerRidePage() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
-      if (s?.currency) setCurrency(s.currency)
-    })
     supabase
       .from('rides')
       .select('*, driver:drivers(*, profile:profiles(*))')

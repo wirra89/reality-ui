@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { getActiveShiftNumber } from '@/lib/pricing'
-import type { CompanySettings, PricingShift } from '@/lib/types'
+import { useSettings } from '@/context/SettingsContext'
 
 const SHIFT_META = [
   { shift: 1 as const, label: 'Shift 1', hours: '06:00 – 14:00' },
@@ -20,7 +20,7 @@ function emptyShiftForm(): ShiftForm {
 
 export default function SettingsPage() {
   const router = useRouter()
-  const [settings, setSettings] = useState<CompanySettings | null>(null)
+  const { settings, shifts: contextShifts, refresh } = useSettings()
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -38,30 +38,24 @@ export default function SettingsPage() {
   const activeShift = getActiveShiftNumber()
 
   useEffect(() => {
-    const supabase = createClient()
-    Promise.all([
-      supabase.from('company_settings').select('*').single(),
-      supabase.from('pricing_shifts').select('*').order('shift'),
-    ]).then(([{ data: cs }, { data: ps }]) => {
-      if (cs) {
-        setSettings(cs)
-        setForm({
-          company_name: cs.company_name,
-          phone: cs.phone ?? '',
-          currency: cs.currency,
-          primary_color: cs.primary_color,
-          wait_charge_per_min: String(cs.wait_charge_per_min ?? 0.10),
-        })
-      }
-      if (ps && ps.length === 3) {
-        setShifts(ps.map((s: PricingShift) => ({
-          base_fare:    String(s.base_fare),
-          price_per_km: String(s.price_per_km),
-          minimum_fare: String(s.minimum_fare),
-        })))
-      }
+    if (!settings) return
+    setForm({
+      company_name: settings.company_name,
+      phone: settings.phone ?? '',
+      currency: settings.currency,
+      primary_color: settings.primary_color,
+      wait_charge_per_min: String(settings.wait_charge_per_min ?? 0.10),
     })
-  }, [])
+  }, [settings])
+
+  useEffect(() => {
+    if (!contextShifts.length) return
+    setShifts(contextShifts.map((s) => ({
+      base_fare:    String(s.base_fare),
+      price_per_km: String(s.price_per_km),
+      minimum_fare: String(s.minimum_fare),
+    })))
+  }, [contextShifts])
 
   function field(key: keyof typeof form) {
     return {
@@ -107,6 +101,7 @@ export default function SettingsPage() {
       if (csErr || shiftErr) throw csErr ?? shiftErr
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
+      refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed')
     } finally {

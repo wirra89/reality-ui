@@ -7,6 +7,7 @@ import { useAssignedRide } from '@/hooks/useAssignedRide'
 import { useGPSTracking } from '@/hooks/useGPSTracking'
 import { usePushNotifications } from '@/hooks/usePushNotifications'
 import { useToast } from '@/context/ToastContext'
+import { useSettings } from '@/context/SettingsContext'
 import { RideCard } from '@/components/RideCard'
 import { RideRequestAlert } from '@/components/RideRequestAlert'
 import type { Profile, Driver } from '@/lib/types'
@@ -14,13 +15,13 @@ import type { Profile, Driver } from '@/lib/types'
 export default function DriverDashboard() {
   const router = useRouter()
   const { showToast } = useToast()
+  const { currency } = useSettings()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [driverRecord, setDriverRecord] = useState<Driver | null>(null)
   const [toggling, setToggling] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const [todayEarnings, setTodayEarnings] = useState(0)
   const [todayCount, setTodayCount] = useState(0)
-  const [currency, setCurrency] = useState('EUR')
   const { ride } = useAssignedRide(driverRecord?.id ?? null)
 
   // Track the last seen assigned ride ID to detect a new assignment
@@ -54,9 +55,6 @@ export default function DriverDashboard() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
-      if (s?.currency) setCurrency(s.currency)
-    })
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
       const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single()

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { usePendingRides } from '@/hooks/usePendingRides'
 import { useOnlineDrivers } from '@/hooks/useOnlineDrivers'
 import { useDispatcherMap } from '@/hooks/useDispatcherMap'
@@ -11,17 +10,18 @@ import { RideCard } from '@/components/RideCard'
 import { DriverCard } from '@/components/DriverCard'
 import { DispatcherPanel } from '@/components/DispatcherPanel'
 import { CreateRideModal } from '@/components/CreateRideModal'
+import { useSettings } from '@/context/SettingsContext'
 import type { Ride } from '@/lib/types'
 
 export default function DispatcherDashboard() {
   const router = useRouter()
+  const { currency } = useSettings()
   const { rides, loading: ridesLoading } = usePendingRides()
   const { drivers } = useOnlineDrivers()
   const { handleMapReady, syncDriverMarkers, setFollowedDriver } = useDispatcherMap()
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null)
   const [followedDriverId, setFollowedDriverId] = useState<string | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [currency, setCurrency] = useState('EUR')
   const prevUnassignedRef = useRef(-1)
 
   function playPing() {
@@ -46,13 +46,6 @@ export default function DispatcherDashboard() {
   }, [rides, ridesLoading])
 
   useEffect(() => () => { document.title = 'TaxiBase' }, [])
-
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.from('company_settings').select('currency').limit(1).single().then(({ data: s }) => {
-      if (s?.currency) setCurrency(s.currency)
-    })
-  }, [])
 
   useEffect(() => {
     syncDriverMarkers(drivers)
