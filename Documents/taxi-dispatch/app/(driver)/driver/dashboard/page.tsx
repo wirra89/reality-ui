@@ -121,18 +121,6 @@ export default function DriverDashboard() {
     }
   }
 
-  async function handleSignOut() {
-    try {
-      const supabase = createClient()
-      if (driverRecord) {
-        await supabase.from('drivers').update({ status: 'offline' }).eq('id', driverRecord.id)
-      }
-      await supabase.auth.signOut()
-    } catch (err) {
-      console.error('Sign out error:', err)
-    }
-    window.location.href = '/login'
-  }
 
   return (
     <div className="min-h-screen p-6 pb-24">
@@ -141,9 +129,6 @@ export default function DriverDashboard() {
           <p className="text-taxi-muted text-sm">Driver</p>
           <h1 className="text-xl font-bold">{profile?.full_name ?? 'Driver'}</h1>
         </div>
-        <button onClick={handleSignOut} className="text-taxi-muted text-sm hover:text-white">
-          Sign out
-        </button>
       </div>
 
       <div className="bg-taxi-card border border-taxi-border rounded-xl p-5 mb-6">

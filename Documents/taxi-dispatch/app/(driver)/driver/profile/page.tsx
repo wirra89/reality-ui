@@ -15,6 +15,7 @@ export default function DriverProfilePage() {
   const [carPlate, setCarPlate] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     const supabase = createClient()
@@ -33,6 +34,7 @@ export default function DriverProfilePage() {
     e.preventDefault()
     if (!profile || !driver) return
     setSaving(true)
+    setSaveError('')
     try {
       const supabase = createClient()
       const [{ error: e1 }, { error: e2 }] = await Promise.all([
@@ -43,10 +45,21 @@ export default function DriverProfilePage() {
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch (err) {
-      console.error('Profile save failed:', err)
+      setSaveError(err instanceof Error ? err.message : 'Save failed')
     } finally {
       setSaving(false)
     }
+  }
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: d } = await supabase.from('drivers').select('id').eq('user_id', user.id).single()
+      if (d) await supabase.from('drivers').update({ status: 'offline' }).eq('id', d.id)
+    }
+    await supabase.auth.signOut()
+    window.location.href = '/login'
   }
 
   return (
@@ -79,9 +92,17 @@ export default function DriverProfilePage() {
             placeholder="e.g. BG 123-AB"
             className="w-full bg-taxi-card border border-taxi-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-taxi-yellow" />
         </div>
+        {saveError && <p className="text-red-400 text-sm">{saveError}</p>}
         <button type="submit" disabled={saving}
           className="w-full bg-taxi-yellow text-black font-bold py-3 rounded-xl disabled:opacity-50">
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save Changes'}
+        </button>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="w-full border border-taxi-border text-taxi-muted py-3 rounded-xl text-sm hover:text-red-400 hover:border-red-800 transition mt-2"
+        >
+          Sign out
         </button>
       </form>
     </div>

@@ -32,12 +32,6 @@ export default function CustomerDashboard() {
     })
   }, [])
 
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/login'
-  }
-
   return (
     <div className="min-h-screen p-6 pb-24">
       <div className="flex items-center justify-between mb-8">
@@ -45,7 +39,6 @@ export default function CustomerDashboard() {
           <p className="text-taxi-muted text-sm">Welcome back</p>
           <h1 className="text-xl font-bold">{profile?.full_name ?? 'Customer'}</h1>
         </div>
-        <button onClick={handleSignOut} className="text-taxi-muted text-sm hover:text-white">Sign out</button>
       </div>
 
       {!loading && ride ? (
