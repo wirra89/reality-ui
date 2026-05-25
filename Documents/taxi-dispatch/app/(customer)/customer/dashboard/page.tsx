@@ -31,7 +31,7 @@ export default function CustomerDashboard() {
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       setProfile(data)
       const now = new Date().toISOString()
-      const { data: scheduled } = await supabase
+      const { data: scheduled, error: schedErr } = await supabase
         .from('rides')
         .select('*')
         .eq('customer_id', user.id)
@@ -40,7 +40,7 @@ export default function CustomerDashboard() {
         .gt('scheduled_at', now)
         .order('scheduled_at', { ascending: true })
         .limit(3)
-      setScheduledRides((scheduled ?? []) as Ride[])
+      if (!schedErr) setScheduledRides((scheduled ?? []) as Ride[])
     })
   }, [])
 
