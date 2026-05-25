@@ -25,6 +25,9 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
   const [assigning, setAssigning] = useState(false)
   const [assignError, setAssignError] = useState('')
   const [fareOverride, setFareOverride] = useState('')
+  const [showReassign, setShowReassign] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
 
   async function assignDriver() {
     if (!ride || !selectedDriverId) return
@@ -53,6 +56,54 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
     }
   }
 
+  async function reassignDriver() {
+    if (!ride || !selectedDriverId) return
+    setAssigning(true)
+    setAssignError('')
+    try {
+      const supabase = createClient()
+      if (ride.driver_id) {
+        await supabase.from('drivers').update({ status: 'online' }).eq('id', ride.driver_id)
+      }
+      const { error: rideErr } = await supabase.from('rides').update({
+        driver_id: selectedDriverId,
+        status: 'assigned',
+        assigned_at: new Date().toISOString(),
+      }).eq('id', ride.id)
+      if (rideErr) throw rideErr
+      const { error: driverErr } = await supabase.from('drivers').update({ status: 'assigned' }).eq('id', selectedDriverId)
+      if (driverErr) throw driverErr
+      setShowReassign(false)
+      setSelectedDriverId('')
+    } catch (err: unknown) {
+      setAssignError(err instanceof Error ? err.message : 'Reassign failed')
+    } finally {
+      setAssigning(false)
+    }
+  }
+
+  async function cancelRide() {
+    if (!ride) return
+    setCancelling(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from('rides').update({
+        status: 'cancelled',
+        cancelled_at: new Date().toISOString(),
+        cancellation_reason: 'dispatcher_cancelled',
+      }).eq('id', ride.id)
+      if (error) throw error
+      if (ride.driver_id) {
+        await supabase.from('drivers').update({ status: 'online' }).eq('id', ride.driver_id)
+      }
+      setShowCancelConfirm(false)
+    } catch (err) {
+      console.error('Cancel ride failed:', err)
+    } finally {
+      setCancelling(false)
+    }
+  }
+
   if (!ride) {
     return (
       <div className="p-4 flex items-center justify-center h-full">
@@ -75,6 +126,9 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
     .sort((a, b) => (a.dist ?? 9999) - (b.dist ?? 9999))
 
   const nearestDriver = driversWithDist[0]
+
+  const canCancel = ['requested', 'assigned', 'driver_arriving', 'arrived'].includes(ride.status)
+  const canReassign = ['assigned', 'driver_arriving'].includes(ride.status)
 
   return (
     <div className="p-3 space-y-4">
@@ -137,6 +191,67 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
             {assigning ? 'Assigning...' : 'Assign Ride'}
           </button>
           {assignError && <p className="text-red-400 text-xs mt-1">{assignError}</p>}
+        </div>
+      )}
+      {/* Reassign — for in-flight rides */}
+      {canReassign && (
+        <div>
+          {!showReassign ? (
+            <button onClick={() => { setShowReassign(true); setSelectedDriverId('') }}
+              className="w-full border border-taxi-border text-taxi-muted py-2 rounded-lg text-xs hover:border-taxi-yellow hover:text-white transition">
+              ↺ Reassign Driver
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-wider text-taxi-muted">Reassign to</p>
+              <select value={selectedDriverId} onChange={e => setSelectedDriverId(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-taxi-border text-white text-xs rounded-lg px-2 py-2 focus:outline-none focus:border-taxi-yellow">
+                <option value="">Select driver...</option>
+                {driversWithDist.map(d => (
+                  <option key={d.id} value={d.id}>
+                    {d.id === nearestDriver?.id ? '★ ' : ''}{d.profile?.full_name ?? 'Driver'} · {d.car_model}
+                    {d.dist != null ? ` (${d.dist.toFixed(1)} km)` : ''}
+                  </option>
+                ))}
+              </select>
+              <div className="flex gap-2">
+                <button onClick={reassignDriver} disabled={!selectedDriverId || assigning}
+                  className="flex-1 bg-taxi-yellow text-black font-bold py-2 rounded-lg text-xs disabled:opacity-50">
+                  {assigning ? '...' : 'Reassign'}
+                </button>
+                <button onClick={() => { setShowReassign(false); setSelectedDriverId('') }}
+                  className="border border-taxi-border text-taxi-muted px-3 py-2 rounded-lg text-xs hover:text-white">
+                  ✕
+                </button>
+              </div>
+              {assignError && <p className="text-red-400 text-xs">{assignError}</p>}
+            </div>
+          )}
+        </div>
+      )}
+      {/* Cancel */}
+      {canCancel && (
+        <div>
+          {!showCancelConfirm ? (
+            <button onClick={() => setShowCancelConfirm(true)}
+              className="w-full border border-red-900 text-red-500 py-2 rounded-lg text-xs hover:bg-red-950/40 transition">
+              ✕ Cancel Ride
+            </button>
+          ) : (
+            <div className="border border-red-900 rounded-lg p-3 space-y-2 bg-red-950/20">
+              <p className="text-xs text-red-400 font-semibold">Cancel this ride?</p>
+              <div className="flex gap-2">
+                <button onClick={cancelRide} disabled={cancelling}
+                  className="flex-1 bg-red-600 text-white font-bold py-2 rounded-lg text-xs disabled:opacity-50">
+                  {cancelling ? '...' : 'Yes, cancel'}
+                </button>
+                <button onClick={() => setShowCancelConfirm(false)}
+                  className="flex-1 border border-taxi-border text-taxi-muted py-2 rounded-lg text-xs hover:text-white">
+                  No
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {customer?.phone && (
