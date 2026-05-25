@@ -28,6 +28,7 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
   const [showReassign, setShowReassign] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [cancelError, setCancelError] = useState('')
 
   async function assignDriver() {
     if (!ride || !selectedDriverId) return
@@ -85,6 +86,7 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
   async function cancelRide() {
     if (!ride) return
     setCancelling(true)
+    setCancelError('')
     try {
       const supabase = createClient()
       const { error } = await supabase.from('rides').update({
@@ -97,8 +99,8 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
         await supabase.from('drivers').update({ status: 'online' }).eq('id', ride.driver_id)
       }
       setShowCancelConfirm(false)
-    } catch (err) {
-      console.error('Cancel ride failed:', err)
+    } catch (err: unknown) {
+      setCancelError(err instanceof Error ? err.message : 'Cancel failed')
     } finally {
       setCancelling(false)
     }
@@ -245,11 +247,12 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
                   className="flex-1 bg-red-600 text-white font-bold py-2 rounded-lg text-xs disabled:opacity-50">
                   {cancelling ? '...' : 'Yes, cancel'}
                 </button>
-                <button onClick={() => setShowCancelConfirm(false)}
+                <button onClick={() => { setShowCancelConfirm(false); setCancelError('') }}
                   className="flex-1 border border-taxi-border text-taxi-muted py-2 rounded-lg text-xs hover:text-white">
                   No
                 </button>
               </div>
+              {cancelError && <p className="text-red-400 text-xs">{cancelError}</p>}
             </div>
           )}
         </div>
