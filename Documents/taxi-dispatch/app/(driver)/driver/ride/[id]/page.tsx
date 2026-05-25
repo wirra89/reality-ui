@@ -7,7 +7,7 @@ import { useRealtime } from '@/hooks/useRealtime'
 import { RideStatusBadge } from '@/components/RideStatusBadge'
 import { NavigateButton } from '@/components/NavigateButton'
 import { DRIVER_TRANSITIONS } from '@/lib/ride-status'
-import { formatPrice } from '@/lib/pricing'
+import { formatPrice, calculateWaitCharge } from '@/lib/pricing'
 import type { Ride, Driver } from '@/lib/types'
 
 const STATUS_TO_DRIVER_STATUS: Partial<Record<string, string>> = {
@@ -78,7 +78,11 @@ export default function DriverRidePage() {
 
     if (transition.next === 'arrived')    updates.arrived_at   = now
     if (transition.next === 'in_progress') updates.started_at = now
-    if (transition.next === 'completed') { updates.completed_at = now; updates.final_price = ride.estimated_price }
+    if (transition.next === 'completed') {
+      updates.completed_at = now
+      const waitCharge = calculateWaitCharge(ride.arrived_at, ride.started_at, waitChargePerMin)
+      updates.final_price = (ride.estimated_price ?? 0) + waitCharge
+    }
 
     await supabase.from('rides').update(updates).eq('id', ride.id)
 

@@ -24,3 +24,14 @@ export function getActiveFareSettings(shifts: PricingShift[]): FareSettings | nu
   const num = getActiveShiftNumber()
   return shifts.find(s => s.shift === num) ?? null
 }
+
+export function calculateWaitCharge(
+  arrivedAt: string | null,
+  startedAt: string | null,
+  chargePerMin: number
+): number {
+  if (!arrivedAt || !startedAt) return 0
+  const waitSecs = (new Date(startedAt).getTime() - new Date(arrivedAt).getTime()) / 1000
+  if (waitSecs <= 120) return 0
+  return Math.floor(waitSecs / 60) * chargePerMin
+}
