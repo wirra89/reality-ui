@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [waitChargeEnabled, setWaitChargeEnabled] = useState(false)
   const [form, setForm] = useState({
     company_name: '',
     phone: '',
@@ -39,12 +40,14 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!settings) return
+    const rate = settings.wait_charge_per_min ?? 0
+    setWaitChargeEnabled(rate > 0)
     setForm({
       company_name: settings.company_name,
       phone: settings.phone ?? '',
       currency: settings.currency,
       primary_color: settings.primary_color,
-      wait_charge_per_min: String(settings.wait_charge_per_min ?? 0.10),
+      wait_charge_per_min: rate > 0 ? String(rate) : '0.10',
     })
   }, [settings])
 
@@ -93,7 +96,7 @@ export default function SettingsPage() {
           phone:               form.phone || null,
           currency:            form.currency,
           primary_color:       form.primary_color,
-          wait_charge_per_min: parseFloat(form.wait_charge_per_min) || 0,
+          wait_charge_per_min: waitChargeEnabled ? (parseFloat(form.wait_charge_per_min) || 0) : 0,
         }).eq('id', settings.id),
         ...shiftUpdates,
       ])
@@ -148,17 +151,47 @@ export default function SettingsPage() {
         {/* Wait time charge */}
         <div>
           <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Wait Time Charge</h2>
-          <div className="bg-taxi-card border border-taxi-border rounded-xl p-4">
-            <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">
-              Charge per minute (after 2 min free)
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number" step="0.01" min="0" {...field('wait_charge_per_min')}
-                className="w-40 bg-taxi-dark border border-taxi-border rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-taxi-yellow"
-              />
-              <span className="text-taxi-muted text-sm">{form.currency}/min</span>
+          <div className="bg-taxi-card border border-taxi-border rounded-xl p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-white font-medium">Enable wait charge</p>
+                <p className="text-xs text-taxi-muted mt-0.5">Charge passengers for waiting beyond 2 minutes</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setWaitChargeEnabled(prev => !prev)
+                  if (waitChargeEnabled) {
+                    setForm(f => ({ ...f, wait_charge_per_min: '0' }))
+                  } else {
+                    setForm(f => ({ ...f, wait_charge_per_min: f.wait_charge_per_min === '0' ? '0.10' : f.wait_charge_per_min }))
+                  }
+                }}
+                className={`relative w-12 h-6 rounded-full transition-colors focus:outline-none ${
+                  waitChargeEnabled ? 'bg-taxi-yellow' : 'bg-taxi-border'
+                }`}
+                aria-checked={waitChargeEnabled}
+                role="switch"
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                  waitChargeEnabled ? 'translate-x-6' : 'translate-x-0'
+                }`} />
+              </button>
             </div>
+            {waitChargeEnabled && (
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-taxi-muted mb-2">
+                  Charge per minute (after 2 min free)
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number" step="0.01" min="0.01" {...field('wait_charge_per_min')}
+                    className="w-40 bg-taxi-dark border border-taxi-border rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-taxi-yellow"
+                  />
+                  <span className="text-taxi-muted text-sm">{form.currency}/min</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
