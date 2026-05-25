@@ -52,14 +52,17 @@ export default function DriverProfilePage() {
   }
 
   async function handleSignOut() {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: d } = await supabase.from('drivers').select('id').eq('user_id', user.id).single()
-      if (d) await supabase.from('drivers').update({ status: 'offline' }).eq('id', d.id)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: d } = await supabase.from('drivers').select('id').eq('user_id', user.id).single()
+        if (d) await supabase.from('drivers').update({ status: 'offline' }).eq('id', d.id)
+      }
+      await supabase.auth.signOut()
+    } finally {
+      window.location.href = '/login'
     }
-    await supabase.auth.signOut()
-    window.location.href = '/login'
   }
 
   return (
