@@ -103,6 +103,7 @@ export default function AnalyticsPage() {
 
   const load = useCallback(async (p: Period) => {
     setLoading(true)
+    try {
     const supabase = createClient()
     const start = periodStart(p).toISOString()
 
@@ -143,7 +144,9 @@ export default function AnalyticsPage() {
       .map(d => ({ name: d.name, trips: d.trips, avg_rating: d.ratingCount > 0 ? d.totalRating / d.ratingCount : null, revenue: d.revenue }))
 
     setStats({ totalRides: ridesArr.length, revenue, cancelRate, avgRating, trend: buildTrend(ridesArr, p), topDrivers })
-    setLoading(false)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { load(period) }, [period, load])
