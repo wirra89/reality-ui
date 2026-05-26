@@ -20,6 +20,7 @@ export default function DriverDashboard() {
   const [driverRecord, setDriverRecord] = useState<Driver | null>(null)
   const [toggling, setToggling] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
+  const [rejecting, setRejecting] = useState(false)
   const [todayEarnings, setTodayEarnings] = useState(0)
   const [todayCount, setTodayCount] = useState(0)
   const { ride } = useAssignedRide(driverRecord?.id ?? null)
@@ -101,12 +102,9 @@ export default function DriverDashboard() {
 
   async function handleReject() {
     if (!ride || !driverRecord) return
-    setShowAlert(false)
-    // Clear so the same ride ID can trigger a new alert if reassigned
-    lastAlertedRideId.current = null
+    setRejecting(true)
     try {
       const supabase = createClient()
-      // Unassign the ride: set back to requested, clear driver, reset driver status
       await supabase
         .from('rides')
         .update({ status: 'requested', driver_id: null, assigned_at: null })
@@ -116,8 +114,12 @@ export default function DriverDashboard() {
         .update({ status: 'online' })
         .eq('id', driverRecord.id)
       setDriverRecord(prev => prev ? { ...prev, status: 'online' } : null)
-    } catch (err) {
-      console.error('Reject ride failed:', err)
+      setShowAlert(false)
+      lastAlertedRideId.current = null
+    } catch {
+      showToast('Failed to reject ride. Please try again.', 'error')
+    } finally {
+      setRejecting(false)
     }
   }
 
@@ -194,6 +196,7 @@ export default function DriverDashboard() {
           ride={ride}
           onAccept={handleAccept}
           onReject={handleReject}
+          rejectDisabled={rejecting}
         />
       )}
     </div>
