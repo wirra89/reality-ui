@@ -23,7 +23,7 @@ export default function CustomerRidePage() {
   const params = useParams()
   const router = useRouter()
   const rideId = params.id as string
-  const { currency } = useSettings()
+  const { currency, settings } = useSettings()
   const [ride, setRide] = useState<Ride | null>(null)
   const [loading, setLoading] = useState(true)
   const mapRef = useRef<mapboxgl.Map | null>(null)
@@ -38,6 +38,7 @@ export default function CustomerRidePage() {
   const [ratingSubmitting, setRatingSubmitting] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [waitSeconds, setWaitSeconds] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
@@ -173,6 +174,15 @@ export default function CustomerRidePage() {
       .catch(() => {})
   }, [driverLocation?.current_lat, driverLocation?.current_lng, ride?.status, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (ride?.status !== 'arrived') { setWaitSeconds(0); return }
+    const base = ride.arrived_at ? new Date(ride.arrived_at).getTime() : Date.now()
+    const tick = () => setWaitSeconds(Math.floor((Date.now() - base) / 1000))
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [ride?.status, ride?.arrived_at])
+
   // Clean up markers and route on unmount
   useEffect(() => {
     return () => {
@@ -304,6 +314,17 @@ export default function CustomerRidePage() {
               ~{formatPrice(ride.estimated_price, currency)}
             </p>
           ) : null}
+          {ride.status === 'arrived' && waitSeconds > 120 && (settings?.wait_charge_per_min ?? 0) > 0 && (
+            <div className="mt-3 flex items-center gap-2 text-amber-400 text-sm">
+              <span>⏱</span>
+              <span>
+                Driver is waiting · Wait charge: +{formatPrice(
+                  Math.floor(waitSeconds / 60) * (settings?.wait_charge_per_min ?? 0),
+                  currency
+                )}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Driver info */}
