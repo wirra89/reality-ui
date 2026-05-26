@@ -9,9 +9,10 @@ interface RideRequestAlertProps {
   ride: Ride
   onAccept: () => void
   onReject: () => void
+  rejectDisabled?: boolean
 }
 
-export function RideRequestAlert({ ride, onAccept, onReject }: RideRequestAlertProps) {
+export function RideRequestAlert({ ride, onAccept, onReject, rejectDisabled }: RideRequestAlertProps) {
   const [seconds, setSeconds] = useState(TIMEOUT_SECONDS)
 
   const handleReject = useCallback(() => {
@@ -21,12 +22,12 @@ export function RideRequestAlert({ ride, onAccept, onReject }: RideRequestAlertP
   // Countdown — auto-reject when it hits 0
   useEffect(() => {
     if (seconds <= 0) {
-      handleReject()
+      if (!rejectDisabled) handleReject()
       return
     }
     const t = setTimeout(() => setSeconds(s => s - 1), 1000)
     return () => clearTimeout(t)
-  }, [seconds, handleReject])
+  }, [seconds, handleReject, rejectDisabled])
 
   const progress = ((TIMEOUT_SECONDS - seconds) / TIMEOUT_SECONDS) * 100
   const urgent = seconds <= 10
@@ -76,9 +77,12 @@ export function RideRequestAlert({ ride, onAccept, onReject }: RideRequestAlertP
             <button
               type="button"
               onClick={onReject}
-              className="flex-1 border border-red-800 text-red-400 py-3.5 rounded-xl font-semibold text-sm hover:bg-red-900/20 transition-colors"
+              disabled={rejectDisabled}
+              className={`flex-1 border border-red-800 text-red-400 py-3.5 rounded-xl font-semibold text-sm transition-colors ${
+                rejectDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-900/20'
+              }`}
             >
-              Reject
+              {rejectDisabled ? 'Rejecting...' : 'Reject'}
             </button>
             <button
               type="button"
