@@ -105,14 +105,17 @@ export default function DriverDashboard() {
     setRejecting(true)
     try {
       const supabase = createClient()
-      await supabase
+      const { error: rideError } = await supabase
         .from('rides')
         .update({ status: 'requested', driver_id: null, assigned_at: null })
         .eq('id', ride.id)
-      await supabase
+      if (rideError) throw rideError
+
+      const { error: driverError } = await supabase
         .from('drivers')
         .update({ status: 'online' })
         .eq('id', driverRecord.id)
+      if (driverError) throw driverError
       setDriverRecord(prev => prev ? { ...prev, status: 'online' } : null)
       setShowAlert(false)
       lastAlertedRideId.current = null
