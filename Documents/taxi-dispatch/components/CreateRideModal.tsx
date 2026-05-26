@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { geocodeAddress, getDistanceKm } from '@/lib/mapbox'
-import { estimateFare, formatPrice } from '@/lib/pricing'
-import type { CompanySettings } from '@/lib/types'
+import { estimateFare, formatPrice, getActiveFareSettings } from '@/lib/pricing'
+import { useSettings } from '@/context/SettingsContext'
 import type { GeocodingFeature } from '@/lib/mapbox'
 
 interface CreateRideModalProps {
@@ -13,6 +13,7 @@ interface CreateRideModalProps {
 }
 
 export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
+  const { settings, shifts } = useSettings()
   const [customerPhone, setCustomerPhone] = useState('')
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
@@ -22,16 +23,8 @@ export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
   const [destSuggestions, setDestSuggestions] = useState<GeocodingFeature[]>([])
   const [distanceKm, setDistanceKm] = useState<number | null>(null)
   const [notes, setNotes] = useState('')
-  const [settings, setSettings] = useState<CompanySettings | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.from('company_settings').select('*').single().then(({ data }) => {
-      if (data) setSettings(data)
-    })
-  }, [])
 
   useEffect(() => {
     if (!pickup) { setPickupSuggestions([]); return }
@@ -82,9 +75,10 @@ export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
         .eq('role', 'customer')
         .maybeSingle()
 
+      const fareSettings = getActiveFareSettings(shifts) ?? settings
       const estimated_price = distanceKm
-        ? estimateFare(distanceKm, settings)
-        : settings.minimum_fare
+        ? estimateFare(distanceKm, fareSettings)
+        : fareSettings.minimum_fare
 
       const { error: rideError } = await supabase.from('rides').insert({
         customer_id: profiles?.id ?? null,
@@ -110,7 +104,8 @@ export function CreateRideModal({ onClose, onCreated }: CreateRideModalProps) {
     }
   }
 
-  const fare = distanceKm && settings ? estimateFare(distanceKm, settings) : null
+  const fareSettings = getActiveFareSettings(shifts) ?? settings
+  const fare = distanceKm && fareSettings ? estimateFare(distanceKm, fareSettings) : null
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">

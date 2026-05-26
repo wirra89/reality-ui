@@ -6,11 +6,13 @@ import { createClient } from '@/lib/supabase/client'
 import { estimateFare, formatPrice, getActiveFareSettings } from '@/lib/pricing'
 import { geocodeAddress, getDistanceKm, reverseGeocode } from '@/lib/mapbox'
 import { useSettings } from '@/context/SettingsContext'
+import { useToast } from '@/context/ToastContext'
 import type { GeocodingFeature as MbFeature } from '@/lib/mapbox'
 
 export default function RequestRidePage() {
   const router = useRouter()
   const { settings, shifts } = useSettings()
+  const { showToast } = useToast()
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null)
@@ -138,7 +140,12 @@ export default function RequestRidePage() {
       return
     }
 
-    router.push(`/customer/ride/${ride.id}`)
+    if (scheduledAtISO) {
+      showToast('Ride scheduled! A driver will be assigned closer to your pickup time.', 'success')
+      setTimeout(() => router.push(`/customer/ride/${ride.id}`), 1500)
+    } else {
+      router.push(`/customer/ride/${ride.id}`)
+    }
   }
 
   const fareSettings = getActiveFareSettings(shifts) ?? settings

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { haversineKm } from '@/lib/mapbox'
 import { RideStatusBadge } from './RideStatusBadge'
 import { formatPrice } from '@/lib/pricing'
 import type { Ride, Driver } from '@/lib/types'
@@ -10,14 +11,6 @@ interface DispatcherPanelProps {
   ride: Ride | null
   drivers: Driver[]
   currency?: string
-}
-
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371
-  const dLat = (lat2 - lat1) * Math.PI / 180
-  const dLng = (lng2 - lng1) * Math.PI / 180
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
 export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherPanelProps) {
@@ -29,6 +22,9 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [cancelling, setCancelling] = useState(false)
   const [cancelError, setCancelError] = useState('')
+  const [forcingComplete, setForcingComplete] = useState(false)
+  const [forceError, setForceError] = useState('')
+  const [showForceConfirm, setShowForceConfirm] = useState(false)
 
   async function assignDriver() {
     if (!ride || !selectedDriverId) return
@@ -83,6 +79,29 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
     }
   }
 
+  async function forceComplete() {
+    if (!ride) return
+    setForcingComplete(true)
+    setForceError('')
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from('rides').update({
+        status: 'completed',
+        final_price: ride.final_price ?? ride.estimated_price,
+        completed_at: new Date().toISOString(),
+      }).eq('id', ride.id)
+      if (error) throw error
+      if (ride.driver_id) {
+        await supabase.from('drivers').update({ status: 'online' }).eq('id', ride.driver_id)
+      }
+      setShowForceConfirm(false)
+    } catch (err: unknown) {
+      setForceError(err instanceof Error ? err.message : 'Force complete failed')
+    } finally {
+      setForcingComplete(false)
+    }
+  }
+
   async function cancelRide() {
     if (!ride) return
     setCancelling(true)
@@ -131,6 +150,7 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
 
   const canCancel = ['requested', 'assigned', 'driver_arriving', 'arrived'].includes(ride.status)
   const canReassign = ['assigned', 'driver_arriving'].includes(ride.status)
+  const canForceComplete = ride.status === 'in_progress'
 
   return (
     <div className="p-3 space-y-4">
@@ -253,6 +273,33 @@ export function DispatcherPanel({ ride, drivers, currency = 'EUR' }: DispatcherP
                 </button>
               </div>
               {cancelError && <p className="text-red-400 text-xs">{cancelError}</p>}
+            </div>
+          )}
+        </div>
+      )}
+      {/* Force complete — for rides stuck in_progress */}
+      {canForceComplete && (
+        <div>
+          {!showForceConfirm ? (
+            <button onClick={() => setShowForceConfirm(true)}
+              className="w-full border border-taxi-border text-taxi-muted py-2 rounded-lg text-xs hover:border-taxi-yellow hover:text-white transition">
+              ✓ Force Complete
+            </button>
+          ) : (
+            <div className="border border-taxi-border rounded-lg p-3 space-y-2 bg-white/5">
+              <p className="text-xs text-white font-semibold">Mark this ride as completed?</p>
+              <p className="text-xs text-taxi-muted">Final price: {formatPrice(ride.final_price ?? ride.estimated_price ?? 0, currency)}</p>
+              <div className="flex gap-2">
+                <button onClick={forceComplete} disabled={forcingComplete}
+                  className="flex-1 bg-taxi-yellow text-black font-bold py-2 rounded-lg text-xs disabled:opacity-50">
+                  {forcingComplete ? '...' : 'Yes, complete'}
+                </button>
+                <button onClick={() => { setShowForceConfirm(false); setForceError('') }}
+                  className="flex-1 border border-taxi-border text-taxi-muted py-2 rounded-lg text-xs hover:text-white">
+                  No
+                </button>
+              </div>
+              {forceError && <p className="text-red-400 text-xs">{forceError}</p>}
             </div>
           )}
         </div>

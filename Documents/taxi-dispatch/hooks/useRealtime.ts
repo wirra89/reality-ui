@@ -18,7 +18,15 @@ interface RealtimeOptions {
 
 export function useRealtime(options: RealtimeOptions) {
   const supabase = createClient()
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
+
+  // Keep callback refs current on every render so the subscription
+  // always calls the latest version without reconnecting the channel.
+  const onInsertRef = useRef(options.onInsert)
+  const onUpdateRef = useRef(options.onUpdate)
+  const onDeleteRef = useRef(options.onDelete)
+  onInsertRef.current = options.onInsert
+  onUpdateRef.current = options.onUpdate
+  onDeleteRef.current = options.onDelete
 
   useEffect(() => {
     const channelName = `${options.table}-${options.filter ?? 'all'}-${Date.now()}`
@@ -33,14 +41,13 @@ export function useRealtime(options: RealtimeOptions) {
         filter: options.filter,
       },
       (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-        if (payload.eventType === 'INSERT' && options.onInsert) options.onInsert(payload)
-        if (payload.eventType === 'UPDATE' && options.onUpdate) options.onUpdate(payload)
-        if (payload.eventType === 'DELETE' && options.onDelete) options.onDelete(payload)
+        if (payload.eventType === 'INSERT') onInsertRef.current?.(payload)
+        if (payload.eventType === 'UPDATE') onUpdateRef.current?.(payload)
+        if (payload.eventType === 'DELETE') onDeleteRef.current?.(payload)
       }
     )
 
     channel.subscribe()
-    channelRef.current = channel
 
     return () => {
       supabase.removeChannel(channel)
