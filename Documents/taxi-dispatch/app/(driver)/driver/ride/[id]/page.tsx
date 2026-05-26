@@ -18,6 +18,13 @@ const STATUS_TO_DRIVER_STATUS: Partial<Record<string, string>> = {
   completed:       'online',
 }
 
+const TRANSITION_HINTS: Partial<Record<string, string>> = {
+  assigned:        "Customer will be notified you're on the way",
+  driver_arriving: 'Starts the wait timer when you arrive',
+  arrived:         'Starts the trip and the fare meter',
+  in_progress:     'Calculates the final fare and closes the ride',
+}
+
 export default function DriverRidePage() {
   const params = useParams()
   const router = useRouter()
@@ -182,10 +189,17 @@ export default function DriverRidePage() {
       )}
 
       {transition && (
-        <button onClick={advanceStatus} disabled={advancing}
-          className="w-full bg-taxi-yellow text-black font-bold py-5 rounded-xl text-lg disabled:opacity-50">
-          {advancing ? 'Updating...' : transition.label}
-        </button>
+        <div>
+          <button onClick={advanceStatus} disabled={advancing}
+            className="w-full bg-taxi-yellow text-black font-bold py-5 rounded-xl text-lg disabled:opacity-50">
+            {advancing ? 'Updating...' : transition.label}
+          </button>
+          {TRANSITION_HINTS[ride.status] && (
+            <p className="text-center text-taxi-muted text-xs mt-2">
+              {TRANSITION_HINTS[ride.status]}
+            </p>
+          )}
+        </div>
       )}
     </div>
   )
