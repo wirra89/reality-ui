@@ -8,15 +8,10 @@ import type { Driver } from '@/lib/types'
 export function useDispatcherMap() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map())
+  const latestDriversRef = useRef<Driver[]>([])
+  const followDriverIdRef = useRef<string | null>(null)
 
-  const handleMapReady = useCallback((map: mapboxgl.Map) => {
-    mapRef.current = map
-  }, [])
-
-  const syncDriverMarkers = useCallback((drivers: Driver[]) => {
-    const map = mapRef.current
-    if (!map) return
-
+  const doSync = useCallback((map: mapboxgl.Map, drivers: Driver[]) => {
     const seen = new Set<string>()
 
     for (const driver of drivers) {
@@ -29,14 +24,47 @@ export function useDispatcherMap() {
         const marker = createDriverMarker(driver, map)
         if (marker) markersRef.current.set(driver.id, marker)
       }
+
+      // Pan map if this is the followed driver and their position updated
+      if (
+        driver.id === followDriverIdRef.current &&
+        driver.current_lat && driver.current_lng
+      ) {
+        map.easeTo({ center: [driver.current_lng, driver.current_lat], duration: 800 })
+      }
     }
 
-    // Remove markers for drivers no longer online
     for (const [id, marker] of markersRef.current.entries()) {
       if (!seen.has(id)) {
         marker.remove()
         markersRef.current.delete(id)
       }
+    }
+  }, [])
+
+  const handleMapReady = useCallback((map: mapboxgl.Map) => {
+    mapRef.current = map
+    // Sync any drivers that arrived before the map was ready
+    doSync(map, latestDriversRef.current)
+  }, [doSync])
+
+  const syncDriverMarkers = useCallback((drivers: Driver[]) => {
+    latestDriversRef.current = drivers
+    const map = mapRef.current
+    if (!map) return // map not ready yet — handleMapReady will sync when it fires
+    doSync(map, drivers)
+  }, [doSync])
+
+  const setFollowedDriver = useCallback((driverId: string | null) => {
+    followDriverIdRef.current = driverId
+    if (!driverId || !mapRef.current) return
+    const driver = latestDriversRef.current.find(d => d.id === driverId)
+    if (driver?.current_lat && driver?.current_lng) {
+      mapRef.current.easeTo({
+        center: [driver.current_lng, driver.current_lat],
+        zoom: Math.max(mapRef.current.getZoom(), 14),
+        duration: 800,
+      })
     }
   }, [])
 
@@ -50,5 +78,5 @@ export function useDispatcherMap() {
       .addTo(mapRef.current)
   }, [])
 
-  return { handleMapReady, syncDriverMarkers, addPickupMarker, mapRef }
+  return { handleMapReady, syncDriverMarkers, setFollowedDriver, addPickupMarker, mapRef }
 }

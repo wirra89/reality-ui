@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/', '/login', '/register']
+const PUBLIC_PATHS = ['/', '/login', '/register', '/reset-password']
 const ROLE_HOME: Record<string, string> = {
   customer:   '/customer/dashboard',
   driver:     '/driver/dashboard',

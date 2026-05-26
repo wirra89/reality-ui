@@ -36,10 +36,11 @@ export default function RegisterPage() {
     }
 
     if (phone) {
-      await supabase.from('profiles').update({ phone }).eq('id', (await supabase.auth.getUser()).data.user!.id)
+      const { data: { user: newUser } } = await supabase.auth.getUser()
+      if (newUser) await supabase.from('profiles').update({ phone }).eq('id', newUser.id)
     }
 
-    router.refresh()
+    window.location.href = '/'
   }
 
   return (
