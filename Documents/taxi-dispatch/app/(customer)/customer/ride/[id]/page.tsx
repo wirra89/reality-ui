@@ -327,6 +327,23 @@ export default function CustomerRidePage() {
           )}
         </div>
 
+        {/* Scheduled ride banner */}
+        {ride.scheduled_at && ride.status === 'requested' && (
+          <div className="bg-blue-950/40 border border-blue-700/50 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
+            <span className="text-blue-400 text-lg mt-0.5">🗓</span>
+            <div>
+              <p className="text-blue-300 text-sm font-semibold">Scheduled ride</p>
+              <p className="text-blue-400/80 text-xs mt-0.5">
+                A driver will be assigned on{' '}
+                {new Date(ride.scheduled_at).toLocaleString(undefined, {
+                  weekday: 'short', month: 'short', day: 'numeric',
+                  hour: '2-digit', minute: '2-digit',
+                })}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Driver info */}
         {driver && <DriverInfoCard driver={driver} />}
 
