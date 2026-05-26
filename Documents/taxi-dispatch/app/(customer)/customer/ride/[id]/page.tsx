@@ -200,10 +200,11 @@ export default function CustomerRidePage() {
         await supabase.from('drivers').update({ status: 'online' }).eq('id', ride.driver_id)
       }
       setShowCancelModal(false)
-    } catch (err) {
-      console.error('Cancel ride failed:', err)
+    } catch {
+      showToast('Failed to cancel ride. Please try again.', 'error')
+    } finally {
+      setCancelling(false)
     }
-    setCancelling(false)
   }
 
   async function submitRating() {
