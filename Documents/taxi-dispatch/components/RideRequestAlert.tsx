@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Ride } from '@/lib/types'
 
 const TIMEOUT_SECONDS = 30
@@ -14,6 +14,7 @@ interface RideRequestAlertProps {
 
 export function RideRequestAlert({ ride, onAccept, onReject, rejectDisabled }: RideRequestAlertProps) {
   const [seconds, setSeconds] = useState(TIMEOUT_SECONDS)
+  const didAutoReject = useRef(false)
 
   const handleReject = useCallback(() => {
     onReject()
@@ -22,7 +23,10 @@ export function RideRequestAlert({ ride, onAccept, onReject, rejectDisabled }: R
   // Countdown — auto-reject when it hits 0
   useEffect(() => {
     if (seconds <= 0) {
-      if (!rejectDisabled) handleReject()
+      if (!rejectDisabled && !didAutoReject.current) {
+        didAutoReject.current = true
+        handleReject()
+      }
       return
     }
     const t = setTimeout(() => setSeconds(s => s - 1), 1000)
